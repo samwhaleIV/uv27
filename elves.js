@@ -1,295 +1,30 @@
-function BattleSeqeuencer(renderer) {
+/*
+BattleObject = {
+        isPlayer: <bool>
+        isElf: <bool>
+        isDead: <bool>
+        isAlive: <bool>
+        health: <number/int>
+        maxHealth: <number/int>
 
-    this.elf = renderer.elf;
-
-    this.playerDiedMethod = () => {
-        this.bottomMessage = "you are dead";
-        renderer.firstInputMask = "game over";
-        
-        setTimeout(() => {
-            elfIndex--;
-            renderer.battleEndCallback();
-        },3000);
-
-        if(this.elf.getWinSpeech) {
-            this.showElfSpeech(this.elf.getWinSpeech(),0,Infinity);
+        name: <return string>,
+        disabledMoves: {
+            <name>: <bool>
         }
-    }
-    this.elfDiedMethod = () => {
-        this.bottomMessage = `${this.elf.name} ran out of christmas spirit`;
-        renderer.firstInputMask = "a job well done";
-        setTimeout(renderer.battleEndCallback,3000);
 
-        if(this.elf.getLoseSpeech) {
-            this.showElfSpeech(this.elf.getLoseSpeech(),0,Infinity);
-        }
-    }
-
-    this.playerHasDied = false;
-    this.elfHasDied = false;
-
-    this.playerBattleObject = {
-        isPlayer: true,
-        isElf: false,
-        isDead: false,
-        isAlive: true,
-        health: 100,
-        maxHealth: 100,
-        jitterHealthBar: false,
-        healthBarDrop: false,
-        name: "you",
-        disabledMoves: {},
-        lastMove: null
     };
-    this.elfBattleObject = {
-        isPlayer: false,
-        isElf: true,
-        isDead: false,
-        isAlive: true,
-        health: this.elf.health,
-        maxHealth: this.elf.health,
-        jitterHealthBar: false,
-        healthBarDrop: false,
-        name: this.elf.name,
-        disabledMoves: {},
-        lastMove: null
-    };
-    
-    this.dropHealth = (target,amount) => {
-        target.health -= amount;
-        target.jitterHealthBar = true;
-        if(target.health <= 0) {
-            if(target.isPlayer) {
-                this.playerHasDied = true;
-                playerBattleObject.isDead = true;
-                playerBattleObject.isAlive = false;
-            } else {
-                this.elfHasDied = true;
-                this.elfBattleObject.isDead = true;
-                this.elfBattleObject.isAlive = false;
-            }
-        } else {
-            setTimeout(()=>{
-                target.jitterHealthBar = false;
-            },100);
-        }
-    },
-    this.addHealth = (target,amount) => {
-        target.health += amount;
-        target.healthBarDrop = true;
-        if(target.health > target.maxHealth) {
-            target.health = target.maxHealth;
-        }
-        setTimeout(()=>{
-            target.healthBarDrop = false;
-        },80);
-    }
 
-    if(this.elf.getDefaultPlayerState) {
-        this.playerBattleObject.state = this.elf.getDefaultPlayerState();
-    } else {
-        this.playerBattleObject.state = getSuperDefaultPlayerState();
-    }
-    if(this.elf.getDefaultElfState) {
-        this.elfBattleObject.state = this.elf.getDefaultElfState();
-    } else {
-        this.elfBattleObject.state = getSuperDefaultElfState();
-    }
+/*
 
-    this.processPlayerInput = moveIndex => {
-        this.playerMove(
-            this.elf.playerMoves[moveIndex]
-        );
-    }
+Adding health and removing health:
+sequencer.dropHealth(target,amount)
+sequencer.addHealth(target,amount)
 
-    this.showText = (text,delay,duration,callback) => {
-        if(!duration) {
-            duration = 1000;
-        }
-        const innerMethod = () => {
-            this.bottomMessage = text;
-            if(duration !== Infinity) {
-                setTimeout(()=>{
-                    this.bottomMessage = null;
-                    if(callback) {
-                        callback();
-                    }
-                },duration);
-            }
-        }
-        if(delay) {
-            setTimeout(innerMethod,delay);
-        } else {
-            innerMethod();
-        }
-    }
+sequencer.turnNumber -> <number/int>
 
-    this.genericMove = (move,user,target,callback) => {
-        const text = `${user.name} used ${move.name}`;
-        this.showText(text,0,this.getTextDuration(text),()=>{
-            let moveResult;
-            if(!move) {
-                moveResult = {
-                    text: "but the developer made a mistake"
-                }
-                console.error("Hey idiot, you probably have a move key wrong");
-            } else if(user.disabledMoves[move.name]) {
-                moveResult = {
-                    text: "but it has been disabled"
-                }
-            } else if(target.isDead && move.type === "target") {
-                moveResult = {
-                    text: "but their target is already dead"
-                }
-            } else {
-                moveResult = move.process(
-                    this,
-                    user,
-                    target
-                );
-            }
-            user.lastMove = move.name;
-            if(moveResult.text) {
-                this.showText(
-                    moveResult.text,0,
-                    this.getTextDuration(moveResult.text),
-                    callback
-                );
-            } else if(callback) {
-                callback(moveResult);
-            }
-        });
+sequencer.globalBattleState -> {}
 
-    }
-
-    this.getTextDuration = text => {
-        return 500 + (text.split(" ").length * 200);
-    }
-
-    this.playerMove = move => {
-        this.genericMove(move,
-            this.playerBattleObject,
-            this.elfBattleObject,
-            ()=>{
-                if(!this.elfHasDied) {
-                    this.elfMove();
-                } else {
-                    this.returnInput();
-                }
-            }
-        );
-        renderer.disablePlayerInputs();
-    }
-
-    this.elfMove = () => {
-        let move;
-        if(!this.elf.getMove) {
-            move = moves[0];
-        } else {
-            move = this.elf.getMove(this);
-        }
-        this.genericMove(
-            move,
-            this.elfBattleObject,
-            this.playerBattleObject,
-            () => {
-                if(!this.playerHasDied) {
-                    let elfSpeech = null;
-                    if(this.elf.getSpeech) {
-                        elfSpeech = this.elf.getSpeech(this);
-                    }
-                    if(elfSpeech !== null) {
-                        this.showElfSpeech(
-                            elfSpeech,0,
-                            this.getTextDuration(elfSpeech) * 1.33,
-                            this.returnInput
-                        );
-                    } else {
-                        this.returnInput();
-                    }
-                } else {
-                    this.returnInput();
-                }
-            }
-        );
-    }
-    this.elfSpeech = null;
-    this.showElfSpeech = (text,delay,duration,callback) => {
-        if(!duration) {
-            duration = 1000;
-        }
-        const innerMethod = () => {
-            this.elfSpeech = text.split("\n");
-            renderer.moveElf(80,0.25);
-            if(duration !== Infinity) {
-                setTimeout(()=>{
-                    this.elfSpeech = null;
-                    renderer.moveElf(80,0.5);
-                    if(callback) {
-                        callback();
-                    }
-                },duration);
-            }
-        }
-        if(delay) {
-            setTimeout(innerMethod,delay);
-        } else {
-            innerMethod();
-        }
-    }
-
-    this.turnNumber = 0;
-
-    this.returnInput = () => {
-        if(this.elfHasDied) {
-            this.elfDiedMethod();
-        } else if(this.playerHasDied) {
-            this.playerDiedMethod();
-        } else {
-            this.turnNumber++;
-            renderer.enablePlayerInputs();
-        }
-    }
-
-    this.bottomMessage = null;
-
-    if(this.elf.startText) {
-        renderer.playerInputs = this.elf.playerMoves;
-        const endMethod = !this.elf.startSpeech?
-            renderer.enablePlayerInputs: 
-            () => {
-                this.showElfSpeech(
-                    this.elf.startSpeech,
-                    0,this.getTextDuration(this.elf.startSpeech),
-                    renderer.enablePlayerInputs
-                );
-            }
-        this.showText(
-            this.elf.startText,0,
-            500+this.getTextDuration(this.elf.startText),
-            endMethod
-        );
-    } else {
-        const startEnd = () => {
-            renderer.playerInputs = this.elf.playerMoves;
-            renderer.enablePlayerInputs();
-        }
-        if(this.elf.startSpeech) {
-            this.showElfSpeech(
-                this.elf.startSpeech,0,
-                500+this.getTextDuration(this.elf.startSpeech),
-                startEnd
-            );
-        } else {
-            startEnd();
-        }
-    }
-
-
-}
-
-const getSuperDefaultPlayerState = () => {return {}};
-const getSuperDefaultElfState = () => {return {}};
+*/
 
 const moves = {
     "nothing": {   
@@ -307,7 +42,7 @@ const moves = {
         process: (sequencer,user,target) => {
             if(target.lastMove === null) {
                 return {
-                    text: "but it failed"
+                    failed: true
                 }
             } else {
                 if(target.disabledMoves[target.lastMove]) {
@@ -371,6 +106,148 @@ const moves = {
             }
         }
     },
+    "decent punch": {
+        type: "target",
+        name: "decent punch",
+        process: (sequencer,user,target) => {
+            sequencer.dropHealth(target,15);
+            if(target.health > 0) {
+                return {
+                    text: `${target.name} might need some ice`
+                }
+            } else {
+                return {
+                    text: `${target.name} didn't survive that`
+                }
+            }
+        }
+    },
+    "wimpy punch": {
+        type: "target",
+        name: "wimpy punch",
+        process: (sequencer,user,target) => {
+            sequencer.dropHealth(target,10);
+            if(target.health > 0) {
+                return {
+                    text: `${target.name} might cry now`
+                }
+            } else {
+                return {
+                    text: `${target.name} got punched out`
+                }
+            }
+        }
+    },
+    "wimpier punch": {
+        type: "target",
+        name: "wimpier punch",
+        process: (sequencer,user,target) => {
+            const responses = [
+                ()=>`${user.name} look${user.isElf ?"s" : ""} confused`,
+                ()=>`${target.name} think${target.isElf ?"s" : ""} ${user.name} held back`
+            ];
+            sequencer.dropHealth(target,5);
+            if(target.health > 0) {
+                return {
+                    text: responses[Math.floor(Math.random() * responses.length)]()
+                };
+            } else {
+                return {
+                    text: "it was a knock out hit"
+                }
+            }
+        }
+    },
+    "nutcracker": {
+        type: "target",
+        name: "nutcracker",
+        process: (sequencer,user,target) => {
+            sequencer.dropHealth(target,Math.floor(target.maxHealth * 0.25));
+            if(target.health > 0) {
+                return {
+                    text: `${target.name} ${target.isPlayer ? "are" : "is"} in immeasurable pain`
+                }
+            } else {
+                return {
+                    text: `${target.name} tragically died`
+                }
+            }
+        }
+    },
+    "i love santa": {
+        type: "self",
+        name: "i love santa",
+        process: (sequencer,user,target) => {
+            sequencer.addHealth(user,user.maxHealth);
+            return {
+                text: `${user.name} had ${user.isPlayer ? "your" : "their"} health restored`
+            }
+        }
+    },
+    "band aid": {
+        type: "self",
+        name: "band aid",
+        process: (sequencer,user,target) => {
+            sequencer.addHealth(user,10);
+            return {
+                text: `${user.name} used a band aid`
+            }
+        }
+    },
+    "health swap": {
+        type: "target",
+        name: "health swap",
+        process: (sequencer,user,target) => {
+            const userHealth = user.health;
+            const targetHealth = target.health;
+            if(userHealth === targetHealth) {
+                return {
+                    text: "but it had no effect"
+                }
+            } else if(userHealth < targetHealth) {
+                const difference = userHealth - targetHealth;
+                sequencer.addHealth(target,difference);
+                sequencer.dropHealth(user,difference);
+            } else {
+                const difference = targetHealth - userHealth;
+                sequencer.dropHealth(target,difference);
+                sequencer.addHealth(user,difference);
+            }
+            return {
+                text: `${user.name} and ${target.name} swapped health`
+            }
+        }
+    },
+    "violent spell": {
+        type: "target",
+        name: "violent spell",
+        process: (sequencer,user,target) => {
+            sequencer.dropHealth(user,10);
+            sequencer.dropHealth(target,20);
+            return {
+                text: "and got hurt by recoil"
+            }
+        }
+    },
+    "magic": {
+        type: "self",
+        name: "magic",
+        process: (sequencer,user,target) => {
+            return {
+                text: "but there's no such thing"
+            }
+        }
+    },
+    "self punch": {
+        type: "self",
+        name: "self punch",
+        process: (sequencer,user,target) => {
+            sequencer.dropHealth(user,15);
+            return {
+                text: `${user.name} ha${user.isPlayer ? "ve" : "s"} self esteem issues`
+            }
+        }
+    }
 };
 
 const elves = [
@@ -399,7 +276,11 @@ const elves = [
 
         The text to show in the message feed box when the elf screen loads
         -startText: <string>
+        -startSpeech: <string>
 
+        -getDefaultPlayerState: function() -> {}
+        -getDefaultElfState: function() -> {}
+        -getDefaultGlobalState: function() -> {}
     }
 
     */
@@ -407,10 +288,10 @@ const elves = [
         name: "wimpy red elf",
         background: "background-1",
         backgroundColor: "red",
-        getMove: () => {
+        getMove: sequencer => {
             return moves["cry"];
         },
-        getSpeech: (sequencer) => {
+        getSpeech: sequencer => {
             const elfBattleObject = sequencer.elfBattleObject;
 
             const speeches = ["i never learned to fight","stop this plz","i am just a poor elf"];
@@ -434,27 +315,296 @@ const elves = [
         background: "background-1",
         backgroundColor: "green",
         health: 100,
-        startText: "this battle will be harder",
+        startText: "this battle will be harder so no crying",
         playerMoves: [
-            moves["nothing"],
-            moves["cry"]
+            moves["wimpy punch"],
+            moves["cry"],
+            moves["nothing"]
         ],
-        getMove: (elfBattleObject) => {
-            return moves["disable"];
+        getMove: sequencer => {
+            if(sequencer.elfBattleObject.health <= 20) {
+                return moves["i love santa"];
+            } else if(sequencer.playerBattleObject.health < 50) {
+                return moves["nutcracker"];
+            }else {
+                return moves["wimpier punch"];
+            }
         },
-        getStartSpeech: () => "hello i am green elf\nplz be nice\ni come in piece"
+        getSpeech: sequencer => {
+            if(sequencer.playerBattleObject.lastMove === "cry") {
+                if(!sequencer.globalBattleState.turnsCrying) {
+                    sequencer.globalBattleState.turnsCrying = 0;
+                }
+                sequencer.globalBattleState.turnsCrying++;
+                if(!sequencer.globalBattleState.noticedThatCryingStopped || sequencer.globalBattleState.turnsCrying === 4) {
+                    sequencer.globalBattleState.noticedThatCryingStopped = false;
+                    switch(sequencer.globalBattleState.turnsCrying) {
+                        case 1:
+                            return "ah what did i say\nabout crying"
+                        case 2:
+                            return "i really don't like this";
+                        case 3:
+                            return "your crying makes me\nuncomfortable";
+                        default:
+                        case 4:
+                            return "i can't take it\nanymore";
+                    }
+                } else {
+                    sequencer.globalBattleState.noticedThatCryingStopped = false;
+                    return "ugh\nyou stopped\nwhy start again\njust be happy";
+                }
+            } else {
+                sequencer.playerBattleObject.state.isCrying = false;
+                if(sequencer.globalBattleState.turnsCrying && sequencer.globalBattleState.turnsCrying > 0) {
+                    sequencer.globalBattleState.noticedThatCryingStopped = true;
+                    const responses = ["phew\nthanks for stopping","good\nno more crying","this is fine"];
+                    return responses[Math.floor(Math.random() * responses.length)];
+                } else {
+                    return "this is fine\njust don't cry"
+                }
+            }
+            return null;
+        },
+        getDefaultGlobalState: () => {
+            return {
+                postTurnProcess: (sequencer) => {
+                    if(sequencer.globalBattleState.turnsCrying) {
+                        if(sequencer.globalBattleState.turnsCrying >= 4) {
+                            sequencer.dropHealth(sequencer.elfBattleObject,sequencer.elfBattleObject.maxHealth);
+                            return {
+                                text: `${sequencer.elfBattleObject.name} was consumed by your sadness`
+                            }
+                        }
+                    }
+                    return {};
+                }
+            }
+        },
+        startSpeech: "hello i am green elf\nplz be nice\ni come in piece"
     },
     {
         name: "wimpy blue elf",
         background: "background-1",
         backgroundColor: "blue",
-        health: 100
+        health: 100,
+        startText: "you received an empty revolver",
+        startSpeech: "here is a revolver\nlet's see if you know\nhow to use it",
+        getLoseSpeech: sequencer => {
+            return "took you long enough\n*ded*"
+        },
+        getWinSpeech: sequencer => {
+            return "well that's the\nlast time i give\nsomeone a gun"
+        },
+        getSpeech: sequencer => {
+            const responses = [
+                "hi\ni love talking",
+                "do you like talking",
+                "you don't look well",
+                "are you nervous",
+                "who sent you here",
+                "i had a cat once",
+                "idk what color i am\ni am color blind",
+                "the other elves are cool",
+                "have you ever used\na gun before",
+                "why did i give you\na gun anyways",
+                "this is seeming\nlike a bad idea in\nhindsight",
+                (()=>{
+                    if(sequencer.playerBattleObject.state.loadedBullets && sequencer.playerBattleObject.state.loadedBullets > 0) {
+                        return "oh jeez\nquick and painless\nplz";
+                    } else {
+                        return "good thing you haven't\nloaded your revolver"
+                    }
+                })(),
+                "i really like spinning",
+                "here is my new single\n*spinning*\nby me",
+                "just keep spinning\n",
+                "spinning spinning\nspinning spinning",
+                "baby you spin me\nright round\nbaby right round",
+                "spin spin spin",
+                "come on already",
+                "i didn't think\nyou would be\nthis useless",
+                "i am getting impatient",
+                "don't make me talk\nabout my neighbor",
+                "okay\nmy neighbor's\nname is dave",
+                "my neighbor dave\nis a cool dude",
+                "i bet you'd like to\nmeet dave",
+                "did you give up on\nshooting me",
+                "i give up too",
+                "*yawn*",
+                "i talked about\everything",
+                "there's nothing left\nto say",
+                "just kill me",
+                "*more yawning*"
+            ];
+            let responseIndex;
+            if(sequencer.turnNumber >= responses.length) {
+                responseIndex = responses.length - 1;
+            } else {
+                responseIndex = sequencer.turnNumber;
+            }
+            return responses[responseIndex];
+        },
+        getMove: sequencer => {
+            if(sequencer.turnNumber % 2 !== 0) {
+                return {
+                    type: "target",
+                    name: "charity",
+                    process: (sequencer,user,target) => {
+                        if(!target.state.money) {
+                            target.state.money = 0;
+                        }
+                        target.state.money += 4;
+                        target.subText = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
+                        return {
+                            text: `${user.name} gave you 4 coins for your pain`
+                        }
+                    }
+                }
+            } else {
+                return {
+                    type: "target",
+                    name: "chit chat",
+                    process: (sequencer,user,target) => {
+                        sequencer.dropHealth(target,2.5);
+                        return {
+                            text: "the build up scares and hurts you a little"
+                        }
+                    }
+                }
+            }
+        },
+        playerMoves: [
+            {
+                type: "self",
+                name: "purchase bullet",
+                process: (sequencer,user) => {
+                    if(user.state.money && user.state.money >= 5) {
+                        user.state.money -= 5;
+                        user.subText = `${user.state.money} coin${user.state.money === 1 ? "" : "s"}`;
+                        if(!user.state.bullets) {
+                            user.state.bullets = 0;
+                        }
+                        user.state.bullets++;
+                        return {
+                            text: "you bought one bullet for 5 coins"
+                        }
+                    } else {
+                        return {
+                            text: "but you have don't have enough coins"
+                        }
+                    }
+                }
+            },
+            {
+                type: "self",
+                name: "load chamber",
+                process: (sequencer,user) => {
+                    if(user.state.bullets && user.state.bullets > 0) {
+                        if(!user.state.loadedBullets) {
+                            user.state.loadedBullets = 0;
+                        } else if(user.state.loadedBullets === 6) {
+                            return {
+                                text: "but you can't jam more bullets in"
+                            }
+                        }
+                        user.state.freshSpin = false;
+                        let newBullets = 0;
+                        while(user.state.loadedBullets < 6 && user.state.bullets > 0) {
+                            newBullets++;
+                            user.state.bullets--;
+                            user.state.loadedBullets++;
+                        }
+                        return {
+                            text: `you loaded the chamber with ${newBullets} bullet${newBullets !== 1 ? "s":""}`
+                        }
+                    } else {
+                        return {
+                            text: "but you have no bullets"
+                        }
+                    }
+                }
+            },
+            {
+                type: "self",
+                name: "spin chamber",
+                process: (sequencer,user) => {
+                    if(user.state.loadedBullets && user.state.loadedBullets > 0) {
+                        user.state.freshSpin = true;
+                        return {
+                            text: "you spun your chamber"
+                        }
+                    } else {
+                        return {
+                            text: "you spun an empty chamber"
+                        }
+                    }
+                }
+            },
+            {
+                type: "target",
+                name: "boom",
+                process: (sequencer,user,target) => {
+                    if(user.state.loadedBullets && user.state.loadedBullets > 0) {
+                        if(user.state.freshSpin) {
+                            user.state.freshSpin = false;
+                            if(Math.random() <= user.state.loadedBullets / 6) {
+                                user.state.loadedBullets--;
+                                if(Math.random() > 0.5) {
+                                    sequencer.dropHealth(target,target.maxHealth);
+                                    return {
+                                        text: "you landed your shot"
+                                    }
+                                } else {
+                                    return {
+                                        text: "but you missed your shot"
+                                    }
+                                }
+                            } else {
+                                return {
+                                    text: "but the odds weren't in your favor"
+                                }
+                            }
+                        } else {
+                            return {
+                                text: "but you need spin and pray first"
+                            }
+                        }
+                    } else {
+                        return {
+                            text: "but there's no loaded bullets in the chamber"
+                        }
+                    }
+                }
+            }
+        ],
+
     },
     {
         name: "wizard elf",
         background: "background-1",
         backgroundColor: "purple",
-        health: 125
+        health: 125,
+        playerMoves: [
+            moves["decent punch"],
+            moves["self punch"],
+            moves["band aid"],
+            moves["health swap"]
+        ],
+        getMove: sequencer => {
+            if(sequencer.elfBattleObject.health <= 10 &&
+                sequencer.playerBattleObject.health > sequencer.elfBattleObject.health && sequencer.playerBattleObject.lastMove !== "health swap") {
+                return moves["health swap"]
+            } else {
+                switch(sequencer.turnNumber % 3) {
+                    case 0:
+                        return moves["decent punch"]
+                    case 1:
+                        return moves["violent spell"]
+                    case 2:
+                        return moves["magic"];
+                }
+            }
+        }
     },
     {
         name: "red elfette",

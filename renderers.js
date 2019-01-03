@@ -615,6 +615,15 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
             }
         }
 
+        if(this.battleSequencer.playerBattleObject.subText !== null) {
+            drawText(
+                this.battleSequencer.playerBattleObject.subText,
+                this.leftHealthBar.x,
+                this.leftHealthBar.textY+32,
+                2.5
+            );
+        }
+
         if(this.playerInputs) {
 
             let evenOffset = 0;
