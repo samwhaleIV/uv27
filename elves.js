@@ -281,6 +281,8 @@ const elves = [
         -getDefaultPlayerState: function() -> {}
         -getDefaultElfState: function() -> {}
         -getDefaultGlobalState: function() -> {}
+
+        -setup: function(sequencer)
     }
 
     */
@@ -389,6 +391,9 @@ const elves = [
         health: 100,
         startText: "you received an empty revolver",
         startSpeech: "here is a revolver\nlet's see if you know\nhow to use it",
+        setup: sequencer => {
+            sequencer.playerBattleObject.subText = "0 coins";
+        },
         getLoseSpeech: sequencer => {
             return "took you long enough\n*ded*"
         },
@@ -490,7 +495,7 @@ const elves = [
                         }
                     } else {
                         return {
-                            text: "but you have don't have enough coins"
+                            text: "but you have don't have 5 coins"
                         }
                     }
                 }

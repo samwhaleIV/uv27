@@ -721,6 +721,7 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
 
     this.processClick = (x,y) => {
         if(!this.playerInputsEnabled) {
+            this.battleSequencer.skipEvent();
             return;
         }
         if(this.playerInputEnableStartTime !== null) {

@@ -1,5 +1,24 @@
 function BattleSeqeuencer(renderer) {
 
+    this.skipHandles = [];
+    this.skipEvent = () => {
+        if(this.skipHandles.length > 0) {
+            if(this.skipHandles.length > 100) {
+                console.warn("Warning: The skip handle count is very high");
+            }
+            let skipHandle;
+            do {
+                skipHandle = this.skipHandles.shift();
+            } while (
+                !timeouts[skipHandle] && //If we have a timeout the still exists, we break the loop
+                this.skipHandles.length > 0);//If we run out of handles, we break the loop
+
+            if(timeouts[skipHandle]) {
+                clearSkippableTimeout(skipHandle);
+            }
+        }
+    }
+
     this.elf = renderer.elf;
 
     this.playerDiedMethod = () => {
@@ -13,10 +32,10 @@ function BattleSeqeuencer(renderer) {
             duration += this.getTextDuration(speech);
         }
         
-        setTimeout(() => {
+        this.skipHandles.push(setSkippableTimeout(() => {
             elfIndex--;
             renderer.battleEndCallback();
-        },duration);
+        },duration));
 
     }
     this.elfDiedMethod = () => {
@@ -31,7 +50,7 @@ function BattleSeqeuencer(renderer) {
             duration += this.getTextDuration(speech);
         }
 
-        setTimeout(renderer.battleEndCallback,duration);
+        this.skipHandles.push(setSkippableTimeout(renderer.battleEndCallback,duration));
     }
 
     this.globalBattleState = this.elf.getDefaultGlobalState ?
@@ -137,16 +156,16 @@ function BattleSeqeuencer(renderer) {
         const innerMethod = () => {
             this.bottomMessage = text;
             if(duration !== Infinity) {
-                setTimeout(()=>{
+                this.skipHandles.push(setSkippableTimeout(()=>{
                     this.bottomMessage = null;
                     if(callback) {
                         callback();
                     }
-                },duration);
+                },duration));
             }
         }
         if(delay) {
-            setTimeout(innerMethod,delay);
+            this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
         } else {
             innerMethod();
         }
@@ -261,17 +280,17 @@ function BattleSeqeuencer(renderer) {
             this.elfSpeech = text.split("\n");
             renderer.moveElf(80,0.25);
             if(duration !== Infinity) {
-                setTimeout(()=>{
+                this.skipHandles.push(setSkippableTimeout(()=>{
                     this.elfSpeech = null;
                     renderer.moveElf(80,0.5);
                     if(callback) {
                         callback();
                     }
-                },duration);
+                },duration));
             }
         }
         if(delay) {
-            setTimeout(innerMethod,delay);
+            this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
         } else {
             innerMethod();
         }
@@ -280,6 +299,7 @@ function BattleSeqeuencer(renderer) {
     this.turnNumber = 0;
 
     this.returnInput = () => {
+        this.skipHandles = [];
         if(this.elfHasDied) {
             this.elfDiedMethod();
         } else if(this.playerHasDied) {
@@ -322,6 +342,10 @@ function BattleSeqeuencer(renderer) {
 
     this.bottomMessage = null;
 
+    if(this.elf.setup) {
+        this.elf.setup(this);
+    }
+
     if(this.elf.startText) {
         renderer.playerInputs = this.elf.playerMoves;
         const endMethod = !this.elf.startSpeech?
@@ -353,6 +377,33 @@ function BattleSeqeuencer(renderer) {
             startEnd();
         }
     }
+}
 
+const timeouts = {};
+const setSkippableTimeout = (handler,timeout,...args) => {
+    const handle = setTimeout((...args)=>{
 
+        handler.apply(this,args);
+        delete timeouts[handle];
+
+    },timeout,...args);
+
+    timeouts[handle] = {
+        handler: handler,
+        args: args
+    }
+
+    return handle;
+}
+
+const clearSkippableTimeout = handle => {
+    clearTimeout(handle);
+
+    const timeout = timeouts[handle];
+
+    timeout.handler.apply(
+        this,timeout.args
+    );
+
+    delete timeouts[handle];
 }

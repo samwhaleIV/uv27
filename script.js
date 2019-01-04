@@ -157,6 +157,25 @@ const gameLoop = () => {
 
 }
 
+const debug_reset = () => {
+    localStorage.clear();
+    location.reload();
+}
+
+const debug_reload = () => {
+    elfIndex--;
+    rendererState.battleEndCallback();
+}
+
+const debug_goBack = () => {
+    elfIndex-=2;
+    rendererState.battleEndCallback();
+}
+
+const debug_goForward = () => {
+    rendererState.battleEndCallback();
+}
+
 loadImages(gameLoop);
 
 
