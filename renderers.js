@@ -353,9 +353,6 @@ function EndScreenRenderer() {
 }
 
 function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
-
-    this.name = "ElfScreenRenderer";
-
     this.halfWidth = canvas.width / 2;
 
     this.elf = elves[elfID];
@@ -447,6 +444,8 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
     this.bottomMessageHeight = 40;
     this.bottomMessageX = 0;
     this.bottomMessageY = 332;
+
+    this.subTextY = this.leftHealthBar.textY+32;
 
     this.bottomMessageTextScale = 4;
 
@@ -621,7 +620,7 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
             drawText(
                 this.battleSequencer.playerBattleObject.subText,
                 this.leftHealthBar.x,
-                this.leftHealthBar.textY+32,
+                this.subTextY,
                 2.5
             );
         }
