@@ -44,7 +44,7 @@ const processMouseMove = event => {
 
 canvas.onpointerdown = processMouseMove;
 canvas.onpointermove = processMouseMove;
-window.onkeypress = event => {
+window.onkeydown = event => {
     if(paused || !rendererState) {
         return;
     }

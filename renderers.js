@@ -709,6 +709,8 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
         switch(key) {
             case "w":
             case "a":
+            case "ArrowUp":
+            case "ArrowLeft":
                 if(this.hoverEffectIndex !== null) {
                     this.hoverEffectIndex--;
                     if(this.hoverEffectIndex < 0) {
@@ -717,10 +719,11 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
                 } else {
                     this.hoverEffectIndex = 0;
                 }
-                console.log(this.hoverEffectIndex);
                 break;
             case "d":
             case "s":
+            case "ArrowDown":
+            case "ArrowRight":
                 if(this.hoverEffectIndex !== null) {
                     this.hoverEffectIndex++;
                     const max =  this.playerInputs.length-1;
@@ -730,10 +733,9 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
                 } else {
                     this.hoverEffectIndex = 0;
                 }
-                console.log(this.hoverEffectIndex);
                 break;
             case "Enter":
-            case "Space":
+            case " ":
                 this.processClick();
                 return;
         }
@@ -753,7 +755,6 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
 
     this.processMove = (x,y) => {
         this.hoverEffectIndex = this.getHitRegister(x,y);
-        console.log(this.hoverEffectIndex);
     }
 
     this.processClick = (x,y) => {
@@ -762,7 +763,6 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
             if(x && y) {
                 this.hoverEffectIndex = this.getHitRegister(x,y);
             }
-            console.log(this.hoverEffectIndex);
             return;
         }
         if(this.playerInputEnableStartTime !== null) {
@@ -785,7 +785,6 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
                 hitRegister
             );
         }
-        console.log(this.hoverEffectIndex);
     }
 }
 
