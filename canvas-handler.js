@@ -26,7 +26,7 @@ canvas.onpointerup = event => {
 }
 
 let lastRelativeX = -1, lastRelativeY = -1;
-canvas.onpointermove = event => {
+const processMouseMove = event => {
     if(touchEnabled(event)) {
         const relativeEventLocation = getRelativeEventLocation(
             event
@@ -42,6 +42,16 @@ canvas.onpointermove = event => {
     }
 }
 
+canvas.onpointerdown = processMouseMove;
+canvas.onpointermove = processMouseMove;
+window.onkeypress = event => {
+    if(paused || !rendererState) {
+        return;
+    }
+    if(rendererState.processKey) {
+        rendererState.processKey(event.key);
+    }
+}
 
 const context = canvas.getContext("2d");
 context.imageSmoothingEnabled = false;

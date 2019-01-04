@@ -354,6 +354,8 @@ function EndScreenRenderer() {
 
 function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
 
+    this.name = "ElfScreenRenderer";
+
     this.halfWidth = canvas.width / 2;
 
     this.elf = elves[elfID];
@@ -703,6 +705,40 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
 
     this.battleSequencer = new BattleSeqeuencer(this);
 
+    this.processKey = key => {
+        switch(key) {
+            case "w":
+            case "a":
+                if(this.hoverEffectIndex !== null) {
+                    this.hoverEffectIndex--;
+                    if(this.hoverEffectIndex < 0) {
+                        this.hoverEffectIndex = 0;
+                    }
+                } else {
+                    this.hoverEffectIndex = 0;
+                }
+                console.log(this.hoverEffectIndex);
+                break;
+            case "d":
+            case "s":
+                if(this.hoverEffectIndex !== null) {
+                    this.hoverEffectIndex++;
+                    const max =  this.playerInputs.length-1;
+                    if(this.hoverEffectIndex > max) {
+                        this.hoverEffectIndex = max;
+                    }
+                } else {
+                    this.hoverEffectIndex = 0;
+                }
+                console.log(this.hoverEffectIndex);
+                break;
+            case "Enter":
+            case "Space":
+                this.processClick();
+                return;
+        }
+    }
+
     this.getHitRegister = (x,y) => {
         if(this.playerInputs && x >= this.playerInputsX && x <= this.playerInputsX + this.playerInputsWidth) {
             for(let i = 0;i<this.playerInputs.length;i++) {
@@ -717,11 +753,16 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
 
     this.processMove = (x,y) => {
         this.hoverEffectIndex = this.getHitRegister(x,y);
+        console.log(this.hoverEffectIndex);
     }
 
     this.processClick = (x,y) => {
         if(!this.playerInputsEnabled) {
             this.battleSequencer.skipEvent();
+            if(x && y) {
+                this.hoverEffectIndex = this.getHitRegister(x,y);
+            }
+            console.log(this.hoverEffectIndex);
             return;
         }
         if(this.playerInputEnableStartTime !== null) {
@@ -733,12 +774,18 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
                 return;
             }
         }
-        const hitRegister = this.getHitRegister(x,y);
+        let hitRegister;
+        if(x && y) {
+            hitRegister = this.getHitRegister(x,y)
+        } else {
+            hitRegister = this.hoverEffectIndex;
+        }
         if(hitRegister !== null) {
             this.battleSequencer.processPlayerInput(
                 hitRegister
             );
         }
+        console.log(this.hoverEffectIndex);
     }
 }
 

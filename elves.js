@@ -596,7 +596,7 @@ const elves = [
             moves["health swap"]
         ],
         getMove: sequencer => {
-            if(sequencer.elfBattleObject.health <= 10 &&
+            if(sequencer.elfBattleObject.health <= 20 &&
                 sequencer.playerBattleObject.health > sequencer.elfBattleObject.health && sequencer.playerBattleObject.lastMove !== "health swap") {
                 return moves["health swap"]
             } else {
