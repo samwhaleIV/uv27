@@ -34,7 +34,7 @@ function BattleSeqeuencer(renderer) {
         
         this.skipHandles.push(setSkippableTimeout(() => {
             elfIndex--;
-            renderer.battleEndCallback();
+            renderer.loseCallback();
         },duration));
 
     }
@@ -50,7 +50,7 @@ function BattleSeqeuencer(renderer) {
             duration += this.getTextDuration(speech);
         }
 
-        this.skipHandles.push(setSkippableTimeout(renderer.battleEndCallback,duration));
+        this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
     }
 
     this.globalBattleState = this.elf.getDefaultGlobalState ?

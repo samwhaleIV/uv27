@@ -352,7 +352,50 @@ function EndScreenRenderer() {
 
 }
 
-function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
+function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
+
+    this.endCallback = endCallback;
+    this.highestElfIndex = highestElfIndex || 0;
+    this.currentIndex = loadIndex || this.highestElfIndex;
+
+    this.fader = getFader();
+
+    this.goLeft = () => {
+
+    }
+
+    this.goRight = () => {
+
+    }
+
+    this.elfClicked = () => {
+        if(this.currentIndex <= highestElfIndex) {
+            this.endCallback(this.currentIndex);
+        }
+    }
+
+    this.processClick = (x,y) => {
+
+    }
+
+    this.processKey = key => {
+
+    }
+
+    this.processMove = (x,y) => {
+
+    }
+
+
+    this.renderMethod = (context,timestamp,width,height) => {
+
+        context.clearRect(0,0,width,height);
+
+        rendererState.fader.process(context,timestamp,width,height);
+    }
+}
+
+function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.halfWidth = canvas.width / 2;
 
     this.elf = elves[elfID];
@@ -379,7 +422,8 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
         this.elfMoveStartTime = performance.now();
     }
 
-    this.battleEndCallback = battleEndCallback;
+    this.winCallback = winCallback;
+    this.loseCallback = loseCallback;
 
     this.playerInputs = null;
     this.playerInputsEnabled = false;
@@ -787,7 +831,7 @@ function ElfScreenRenderer(battleEndCallback,elfID,isBoss) {
     }
 }
 
-function IntroductionRenderer(battleEndCallback) {
+function IntroductionRenderer(endCallback) {
 
     this.messages = [
         "i bring terrible news",
@@ -812,7 +856,7 @@ function IntroductionRenderer(battleEndCallback) {
     this.start = () => {
         this.startTime = performance.now() + startTimeOffset;
         const timeout = (this.messages.length+1)*this.fadeIn + (startTimeOffset*0.75);
-        setTimeout(battleEndCallback,timeout);
+        setTimeout(endCallback,timeout);
     }
 
     this.renderMethod = (context,timestamp,width,height) => {

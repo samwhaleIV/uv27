@@ -8,8 +8,7 @@ body {
 }
 canvas {
     width: 100em;
-    height: 86.66em;
-    top: 3em;
+    top: 5em;
     position: absolute;
     background-color: black;
     image-rendering: optimizeSpeed;
@@ -30,9 +29,9 @@ canvas {
     }
 }
 @media screen and (orientation: portrait) {
-    div#square {
+    canvas {
         width: 100vw;
-        top: calc(50vh - 50vw);
+        top: calc(50vh - 45vw);
         position: absolute;
         font-size: 1vw;
     }

@@ -109,53 +109,82 @@ processMetaTileset();
 adjustFontPositions();
 processElvesMeta();
 
-let elfIndex;
 const gameLoop = () => {
-    
-    const localStorageResult = localStorage.getItem("elfIndex");
-    if(localStorage.getItem("elfIndex")) {
-        elfIndex = Number(localStorageResult);
-    } else {
-        elfIndex = -1;
-        localStorage.setItem("elfIndex",elfIndex);
+
+    let elfIndex = 0, highestIndex;
+
+    const getWinSelectScreen = () => {
+        if(elfIndex > highestIndex) {
+            highestIndex++;
+            elfIndex = highestIndex;
+        }
+        getSelectScreen(elfIndex);
+        localStorage.setItem("elfIndex",highestIndex);
     }
 
-    const entryRenderer =
-        elfIndex === -1 ? IntroductionRenderer : ElfScreenRenderer;
+    const getSelectScreen = highestIndex => {
+        if(!highestIndex) {
+            highestIndex = 0;
+        }
+        rendererState.fader.fadeOut(
+            ElfSelectScreen,
+            getBattleScreen,
+            highestIndex,elfIndex
+        );
+    }
 
-    const incrementBattleScreen = () => {
-        elfIndex++;
-        localStorage.setItem("elfIndex",elfIndex);
-        if(elfIndex === 26) {
+    const getEndScreen = () => {
+        rendererState.fader.fadeOut(
+            EndScreenRenderer,
+            getSelectScreen
+        );
+    }
+
+    const getBattleScreen = battleIndex => {
+        elfIndex = battleIndex;
+        if(battleIndex === 26) {
             rendererState.fader.fadeOut(
                 ElfScreenRenderer,
-                incrementBattleScreen,
+                getEndScreen,
+                getSelectScreen,
                 elfIndex,true
             );
-        } else if(elfIndex === 27) {
-            rendererState.fader.fadeOut(
-                EndScreenRenderer
-            );
-            localStorage.setItem("elfIndex",-1);
         } else {
             rendererState.fader.fadeOut(
                 ElfScreenRenderer,
-                incrementBattleScreen,
+                getWinSelectScreen,
+                getSelectScreen,
                 elfIndex,false
             );
         }
     }
 
-    rendererState = new entryRenderer(
-        incrementBattleScreen,elfIndex
-    );
+    const localStorageResult = localStorage.getItem("elfIndex");
+    if(localStorage.getItem("elfIndex")) {
+        elfIndex = Number(localStorageResult);
+    } else {
+        elfIndex = -1;
+        localStorage.setItem("elfIndex",0);
+    }
 
+    if(elfIndex === -1) {
+        rendererState = new IntroductionRenderer(
+            getSelectScreen
+        );
+    } else {
+        rendererState = new ElfSelectScreen(
+            getBattleScreen,
+            elfIndex,elfIndex
+        );
+    }
     startRenderer();
     if(elfIndex === -1) {
         rendererState.start();
+        elfIndex = 0;
     } else {
         rendererState.fader.fadeIn();
     }
+    highestIndex = elfIndex;
 
 }
 
@@ -164,20 +193,9 @@ const debug_reset = () => {
     location.reload();
 }
 
-const debug_reload = () => {
-    elfIndex--;
-    rendererState.battleEndCallback();
-}
-
-const debug_goBack = () => {
-    elfIndex-=2;
-    rendererState.battleEndCallback();
-}
-
-const debug_goForward = () => {
-    rendererState.battleEndCallback();
-}
-
 loadImages(gameLoop);
+
+
+
 
 
