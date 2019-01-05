@@ -40,7 +40,9 @@ const fontDictionary = {
     z:{x:0,width:3},'0':{x:0,width:3},'1':{x:0,width:1},
     '2':{x:0,width:3},'3':{x:0,width:3},'4':{x:0,width:3},
     '5':{x:0,width:3},'6':{x:0,width:3},'7':{x:0,width:3},
-    '8':{x:0,width:3},'9':{x:0,width:3},"*":{x:0,width:5},"'":{x:0,width:1}
+    '8':{x:0,width:3},'9':{x:0,width:3},"*":{x:0,width:5},
+    "'":{x:0,width:1},".":{x:0,width:1},":":{x:0,width:1},
+    "-":{x:0,width:4}
 }
 
 const elfSourceWidth = 11;
@@ -73,7 +75,7 @@ const processElvesMeta = () => {
 
 const adjustFontPositions = () => {
     const innerSpace = 1;
-    let values = " abcdefghijklmnopqrstuvwxyz0123456789*'";
+    let values = " abcdefghijklmnopqrstuvwxyz0123456789*'.:-";
     let totalWidth = 0;
     for(let i = 0;i<values.length;i++) {
         const value = values.substr(i,1);

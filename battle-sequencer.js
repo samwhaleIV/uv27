@@ -101,7 +101,6 @@ function BattleSeqeuencer(renderer) {
             this.dropHealth(elfBattleObject,amount)
         }
     };
-    
     this.dropHealth = (target,amount) => {
         target.health -= amount;
         target.jitterHealthBar = true;
@@ -200,13 +199,13 @@ function BattleSeqeuencer(renderer) {
                     user,
                     target
                 );
-                if(moveResult.failed === true) {
+                if(moveResult.failed === true && !moveResult.text) {
                     moveResult = {
                         text: "but it failed"
                     }
                 }
             }
-            user.lastMove = move.name;
+            user.lastMove = move.name || null;
             if(moveResult.text) {
                 this.showText(
                     moveResult.text,0,
@@ -300,6 +299,7 @@ function BattleSeqeuencer(renderer) {
 
     this.returnInput = () => {
         this.skipHandles = [];
+        this.turnNumber++;
         if(this.elfHasDied) {
             this.elfDiedMethod();
         } else if(this.playerHasDied) {
@@ -311,13 +311,12 @@ function BattleSeqeuencer(renderer) {
                 } else if(this.playerHasDied) {
                     this.playerDiedMethod();
                 } else {
-                    this.turnNumber++;
                     renderer.enablePlayerInputs();
                 }
             }
             if(this.globalBattleState.postTurnProcess !== null) {
                 const turnProcessResult = this.globalBattleState.postTurnProcess(this);
-                if(turnProcessResult.text) {
+                if(turnProcessResult && turnProcessResult.text) {
                     this.showText(turnProcessResult.text,0,
                         this.getTextDuration(turnProcessResult.text),
                     ()=>{

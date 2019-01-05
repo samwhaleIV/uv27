@@ -28,7 +28,7 @@ sequencer.globalBattleState -> {}
 
 const moves = {
     "nothing": {   
-        type: "target",
+        type: "self",
         name: "nothing",
         process: (sequencer,user,target) => {
             return {
@@ -110,7 +110,7 @@ const moves = {
         type: "target",
         name: "decent punch",
         process: (sequencer,user,target) => {
-            sequencer.dropHealth(target,15);
+            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 30 : 15);
             if(target.health > 0) {
                 return {
                     text: `${target.name} might need some ice`
@@ -126,7 +126,7 @@ const moves = {
         type: "target",
         name: "wimpy punch",
         process: (sequencer,user,target) => {
-            sequencer.dropHealth(target,10);
+            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 20 : 10);
             if(target.health > 0) {
                 return {
                     text: `${target.name} might cry now`
@@ -146,7 +146,7 @@ const moves = {
                 ()=>`${user.name} look${user.isElf ?"s" : ""} confused`,
                 ()=>`${target.name} think${target.isElf ?"s" : ""} ${user.name} held back`
             ];
-            sequencer.dropHealth(target,5);
+            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 10 : 5);
             if(target.health > 0) {
                 return {
                     text: responses[Math.floor(Math.random() * responses.length)]()
@@ -205,13 +205,15 @@ const moves = {
                     text: "but it had no effect"
                 }
             } else if(userHealth < targetHealth) {
+                const difference = targetHealth - userHealth;
+
+                sequencer.addHealth(user,difference);
+                sequencer.dropHealth(target,difference);
+            } else {
                 const difference = userHealth - targetHealth;
+
                 sequencer.addHealth(target,difference);
                 sequencer.dropHealth(user,difference);
-            } else {
-                const difference = targetHealth - userHealth;
-                sequencer.dropHealth(target,difference);
-                sequencer.addHealth(user,difference);
             }
             return {
                 text: `${user.name} and ${target.name} swapped health`
@@ -242,9 +244,32 @@ const moves = {
         type: "self",
         name: "self punch",
         process: (sequencer,user,target) => {
-            sequencer.dropHealth(user,15);
+            sequencer.dropHealth(
+                user,user.state.atePunchingVitamins ? 30 : 15
+            );
             return {
                 text: `${user.name} ha${user.isPlayer ? "ve" : "s"} self esteem issues`
+            }
+        }
+    },
+    "protect": {
+        type: "self",
+        name: "protect",
+        process: (sequencer,user,target) => {
+            user.state.protectTurn = sequencer.turnNumber;
+            user.state.isProtected = true;
+            return {
+                failed: false
+            }
+        }
+    },
+    "punching vitamins": {
+        type: "self",
+        name: "punching vitamins",
+        process: (sequencer,user,target) => {
+            user.state.atePunchingVitamins = true;
+            return {
+                text: `${user.name} will have stronker punches now`
             }
         }
     }
@@ -369,7 +394,7 @@ const elves = [
         },
         getDefaultGlobalState: () => {
             return {
-                postTurnProcess: (sequencer) => {
+                postTurnProcess: sequencer => {
                     if(sequencer.globalBattleState.turnsCrying) {
                         if(sequencer.globalBattleState.turnsCrying >= 4) {
                             sequencer.dropHealth(sequencer.elfBattleObject,sequencer.elfBattleObject.maxHealth);
@@ -379,7 +404,7 @@ const elves = [
                         }
                     }
                     return {};
-                }
+                },
             }
         },
         startSpeech: "hello i am green elf\nplz be nice\ni come in piece"
@@ -596,7 +621,10 @@ const elves = [
             moves["health swap"]
         ],
         getMove: sequencer => {
-            if(sequencer.elfBattleObject.health <= 20 &&
+            if(sequencer.elfBattleObject.health === 15) {
+                return moves["decent punch"];
+            }
+            if(sequencer.elfBattleObject.health <= 30 &&
                 sequencer.playerBattleObject.health > sequencer.elfBattleObject.health && sequencer.playerBattleObject.lastMove !== "health swap") {
                 return moves["health swap"]
             } else {
@@ -615,7 +643,88 @@ const elves = [
         name: "red elfette",
         background: "background-1",
         backgroundColor: "red",
-        health: 150
+        health: 150,
+        playerMoves: [
+            moves["protect"],
+            moves["wimpy punch"],
+            moves["punching vitamins"]
+        ],
+        getWinSpeech: sequencer => {
+            return "i told you i was\na good boxer\nsee ya around"
+        },
+        getLoseSpeech: sequencer => {
+            return "this is...\nimpossible"
+        },
+        startSpeech: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best",
+        getSpeech: sequencer => {
+            if(sequencer.turnNumber % 4 === 3) {
+                return "i could do this\nall day";
+            }
+            return null;
+        },
+        getMove: sequencer => {
+            if(sequencer.turnNumber % 4 === 3) {
+                return {
+                    name: "water break",
+                    type: "self",
+                    process: () => {
+                        return {
+                            failed: false
+                        }
+                    }
+                }
+            } else {
+                return moves["decent punch"];
+            }
+        },
+        getDefaultGlobalState: () => {
+            return {
+                postTurnProcess: sequencer => {
+                    sequencer.playerBattleObject.subText = `turn ${sequencer.turnNumber + 1}`;
+                }
+            }
+        },
+        setup: sequencer => {
+
+            sequencer.playerBattleObject.subText = `turn ${sequencer.turnNumber + 1}`;
+
+            sequencer.playerBattleObject.movePreProcess = move => {
+                if(move.name === "protect") {
+                    if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
+                        if(sequencer.turnNumber >= sequencer.playerBattleObject.state.protectTurn+2) {
+                            return move;
+                        } else {
+                            return {
+                                process: () => {
+                                    return {
+                                        failed: true,
+                                        text: "but you used it last turn"
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        return move;
+                    }
+                }
+                return move;
+            }
+
+            sequencer.elfBattleObject.movePreProcess = move => {
+                if(move.type === "target" && sequencer.playerBattleObject.state.isProtected) {
+                    sequencer.playerBattleObject.state.isProtected = false;
+                    return {
+                        process: () => {
+                            return {
+                                failed: true,
+                                text: "but you are protected"
+                            }
+                        }
+                    }
+                }
+                return move;
+            }
+        }
     },
     {
         name: "golden elfette",
