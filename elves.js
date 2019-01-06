@@ -417,7 +417,7 @@ const elves = [
         startText: "you received an empty revolver",
         startSpeech: "here is a revolver\nlet's see if you know\nhow to use it",
         setup: sequencer => {
-            sequencer.playerBattleObject.subText = "0 coins";
+            sequencer.playerBattleObject.subText = ["0 coins"];
         },
         getLoseSpeech: sequencer => {
             return "took you long enough\n*ded*"
@@ -484,7 +484,7 @@ const elves = [
                             target.state.money = 0;
                         }
                         target.state.money += 4;
-                        target.subText = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
+                        target.subText[0] = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
                         return {
                             text: `${user.name} gave you 4 coins for your pain`
                         }
@@ -495,7 +495,7 @@ const elves = [
                     type: "target",
                     name: "chit chat",
                     process: (sequencer,user,target) => {
-                        sequencer.dropHealth(target,2.5);
+                        sequencer.dropHealth(target,4);
                         return {
                             text: "the build up scares and hurts you a little"
                         }
@@ -510,11 +510,12 @@ const elves = [
                 process: (sequencer,user) => {
                     if(user.state.money && user.state.money >= 5) {
                         user.state.money -= 5;
-                        user.subText = `${user.state.money} coin${user.state.money === 1 ? "" : "s"}`;
+                        user.subText[0] = `${user.state.money} coin${user.state.money === 1 ? "" : "s"}`;
                         if(!user.state.bullets) {
                             user.state.bullets = 0;
                         }
                         user.state.bullets++;
+                        user.subText[1] = `${user.state.bullets} bullet${user.state.bullets === 1 ? "" : "s"}`;
                         return {
                             text: "you bought one bullet for 5 coins"
                         }
@@ -544,6 +545,8 @@ const elves = [
                             user.state.bullets--;
                             user.state.loadedBullets++;
                         }
+                        user.subText[1] = `${user.state.bullets} bullet${user.state.bullets === 1 ? "" : "s"}`;
+                        user.subText[2] = `${user.state.loadedBullets} loaded`;
                         return {
                             text: `you loaded the chamber with ${newBullets} bullet${newBullets !== 1 ? "s":""}`
                         }
@@ -579,6 +582,7 @@ const elves = [
                             user.state.freshSpin = false;
                             if(Math.random() <= user.state.loadedBullets / 6) {
                                 user.state.loadedBullets--;
+                                user.subText[2] = `${user.state.loadedBullets} loaded`;
                                 if(Math.random() > 0.5) {
                                     sequencer.dropHealth(target,target.maxHealth);
                                     return {
@@ -621,7 +625,7 @@ const elves = [
             moves["health swap"]
         ],
         getMove: sequencer => {
-            if(sequencer.elfBattleObject.health === 15) {
+            if(sequencer.playerBattleObject.health === 15) {
                 return moves["decent punch"];
             }
             if(sequencer.elfBattleObject.health <= 30 &&
@@ -680,13 +684,13 @@ const elves = [
         getDefaultGlobalState: () => {
             return {
                 postTurnProcess: sequencer => {
-                    sequencer.playerBattleObject.subText = `turn ${sequencer.turnNumber + 1}`;
+                    sequencer.playerBattleObject.subText[0] = `turn ${sequencer.turnNumber + 1}`;
                 }
             }
         },
         setup: sequencer => {
 
-            sequencer.playerBattleObject.subText = `turn ${sequencer.turnNumber + 1}`;
+            sequencer.playerBattleObject.subText[0] = `turn ${sequencer.turnNumber + 1}`;
 
             sequencer.playerBattleObject.movePreProcess = move => {
                 if(move.name === "protect") {
@@ -854,7 +858,8 @@ const elves = [
     },
     {
         name: "the boss elf",
-        background: null,
+        background: "background-1",
         backgroundColor: "red",
+        health: 1000
     }
 ];

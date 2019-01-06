@@ -28,23 +28,29 @@ const drawText = function(text,x,y,scale,spacing=1,image,doNotDraw=false) {
     const drawHeight = 5 * scale;
     const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-    if(!image) {
-        image = imageDictionary["fontspace"];
-    }
-    for(let i = 0;i<text.length;i++) {
-        const character = fontDictionary[text.substr(i,1)];
-        const drawWidth = character.width * scale;
-        if(!doNotDraw) {
+    if(doNotDraw) {
+        for(let i = 0;i<text.length;i++) {
+            const character = fontDictionary[text.substr(i,1)];
+            const drawWidth = character.width * scale;
+            xOffset += drawWidth;
+            if(i < lastOffsetIndex) {
+                xOffset += spaceOffset;
+            }
+        }
+    } else {
+        for(let i = 0;i<text.length;i++) {
+            const character = fontDictionary[text.substr(i,1)];
+            const drawWidth = character.width * scale;
             context.drawImage(
                 image,
                 character.x,0,character.width,5,
                 x+xOffset,y,
                 drawWidth,drawHeight
             );
-        }
-        xOffset += drawWidth;
-        if(i < lastOffsetIndex) {
-            xOffset += spaceOffset;
+            xOffset += drawWidth;
+            if(i < lastOffsetIndex) {
+                xOffset += spaceOffset;
+            }
         }
     }
     return {
@@ -297,7 +303,9 @@ function Background(name,color,cycleTime) {
     }
 }
 
-function EndScreenRenderer() {
+function EndScreenRenderer(endCallback) {
+
+    this.endCallback = endCallback;
 
     this.fader = getFader();
 
@@ -324,6 +332,19 @@ function EndScreenRenderer() {
     this.bottomTextY = canvas.height - this.textMargin - bottomTextTestResult.height;
     this.topTextY = this.textMargin;
 
+    this.processClick = () => {
+        this.endCallback();
+    }
+
+    this.processKey = key => {
+        switch(key) {
+            case "Enter":
+            case "Space":
+                this.endCallback();
+                break;
+        }
+    }
+
     this.renderMethod = (context,timestamp,width,height) => {
 
 
@@ -335,12 +356,12 @@ function EndScreenRenderer() {
         drawText(
             this.topText,
             this.topTextX,this.topTextY,
-            this.textScale
+            this.textScale,1,imageDictionary["fontspace"]
         );
         drawText(
             this.bottomText,
             this.bottomTextX,this.bottomTextY,
-            this.textScale
+            this.textScale,1,imageDictionary["fontspace"]
         );
 
 
@@ -354,42 +375,298 @@ function EndScreenRenderer() {
 
 function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
 
+    this.halfWidth = canvas.width / 2;
+
     this.endCallback = endCallback;
     this.highestElfIndex = highestElfIndex || 0;
-    this.currentIndex = loadIndex || this.highestElfIndex;
+
+    if(loadIndex || loadIndex === 0) {
+        this.currentIndex = loadIndex;
+    } else {
+        this.currentIndex = this.highestElfIndex;
+    }
+
+    this.elfWidth = 160;
+    this.elfHeight = Math.floor((elfSourceHeight / elfSourceWidth) * this.elfWidth);
+
+    this.textScale = 8;
+    this.elf = null;
+    this.text = null;
+    this.textX = null;
+    this.textHeight = null;
+
+    this.background = new Background("background-1","rgb(30,30,30)");
+
+    this.leftDisabled = null;
+    this.rightDisabled = null;
+
+    this.setElf = () => {
+        this.elf = elves[this.currentIndex];
+        const testDrawResult = drawText(this.elf.name,0,0,this.textScale,1,null,true);
+        this.text = this.elf.name;
+        this.textX = Math.round(this.halfWidth - (testDrawResult.width / 2));
+        this.textHeight = testDrawResult.height;
+        this.background.name = this.elf.background;
+        if(this.currentIndex === this.highestElfIndex) {
+            this.rightDisabled = true;
+        } else {
+            this.rightDisabled = false;
+        }
+        if(this.currentIndex === 0) {
+            this.leftDisabled = true;
+        } else {
+            this.leftDisabled = false;
+        }
+    }
+    this.setElf();
+
+    this.elfX = Math.round(this.halfWidth - (this.elfWidth / 2));
 
     this.fader = getFader();
+    this.buttonHeight = 40;
+
+    const verticalSpacing = 10;
+
+    const totalHeight =
+        this.textHeight + this.elfHeight +
+        this.buttonHeight + (verticalSpacing * 2);
+
+    this.textY = Math.floor((canvas.height / 2) - (totalHeight / 2)) - 45;
+    this.elfY = this.textY + verticalSpacing + this.textHeight;
+    this.buttonY = this.elfY + verticalSpacing + this.elfHeight;
 
     this.goLeft = () => {
-
-    }
-
-    this.goRight = () => {
-
-    }
-
-    this.elfClicked = () => {
-        if(this.currentIndex <= highestElfIndex) {
-            this.endCallback(this.currentIndex);
+        this.currentIndex--;
+        if(this.currentIndex < 0) {
+            this.currentIndex = 0;
+        } else {
+            this.setElf();
         }
     }
 
-    this.processClick = (x,y) => {
+    this.goRight = () => {
+        this.currentIndex++;
+        if(this.currentIndex > this.highestElfIndex) {
+            this.currentIndex = this.highestElfIndex;
+        } else {
+            this.setElf();
+        }
+    }
 
+    this.transitioning = false;
+
+    this.elfClicked = () => {
+        if(this.transitioning) {
+            return;
+        }
+        if(this.currentIndex <= highestElfIndex) {
+            this.endCallback(this.currentIndex);
+            this.transitioning = true;
+        }
+    }
+
+    this.hoverEffectIndex = null;
+
+    const buttonSpacing = 10;
+    this.buttonWidth = 200;
+
+    const spacedWidth = this.buttonWidth + buttonSpacing;
+    const totalWidth = (spacedWidth * 3) - buttonSpacing;
+
+    this.leftButtonX = Math.round(this.halfWidth - (totalWidth / 2));
+    this.centerButtonX = this.leftButtonX + spacedWidth;
+    this.rightButtonX = this.centerButtonX + spacedWidth;
+    
+    const hoverEffectSize = 3;
+    const doubleHoverSize = hoverEffectSize * 2;
+    this.hoverEffectHeight = this.buttonHeight + doubleHoverSize;
+    this.hoverEffectWidth = this.buttonWidth + doubleHoverSize;
+    this.hoverEffectY = this.buttonY - hoverEffectSize;
+
+    this.leftButtonHoverX = this.leftButtonX - hoverEffectSize;
+    this.centerButtonHoverX = this.centerButtonX - hoverEffectSize;
+    this.rightButtonHoverX = this.rightButtonX - hoverEffectSize;
+
+    const halfButtonWidth = this.buttonWidth / 2;
+
+    this.leftText = "back";
+    this.centerText = "battle";
+    this.rightText = "next";
+
+    this.buttonTextScale = 4;
+
+    const firstResult = drawText(this.leftText,0,0,this.buttonTextScale,1,null,true);
+    this.leftButtonTextX = this.leftButtonX + Math.floor(
+        halfButtonWidth - (firstResult.width / 2)
+    );
+    this.centerButtonTextX = this.centerButtonX + Math.floor(
+        halfButtonWidth - (drawText(this.centerText,0,0,this.buttonTextScale,1,null,true).width / 2)
+    );
+    this.rightButtonTextX = this.rightButtonX + Math.floor(
+        halfButtonWidth - (drawText(this.rightText,0,0,this.buttonTextScale,1,null,true).width / 2)
+    );
+
+    this.buttonTextY = Math.floor((this.buttonHeight / 2) - (firstResult.height / 2)) + this.buttonY;
+
+    
+    this.processClick = (x,y) => {
+        if(x && y) {
+            this.processMove(x,y);
+        }
+        switch(this.hoverEffectIndex) {
+            case 0:
+                this.goLeft();
+                break;
+            case 1:
+                this.elfClicked();
+                break;
+            case 2:
+                this.goRight();
+            break;
+        }
     }
 
     this.processKey = key => {
+        switch(key) {
+            case "KeyW":
+            case "KeyD":
+            case "ArrowUp":
+            case "ArrowRight":
+                if(this.hoverEffectIndex === null) {
+                     this.hoverEffectIndex = 1;
+                } else {
+                    switch(this.hoverEffectIndex) {
+                        case 0:
+                            this.hoverEffectIndex = 1;
+                            break;
+                        case 1:
+                            this.hoverEffectIndex = 2;
+                            break;
+                    }
+                }
+                break;
+            case "KeyS":
+            case "KeyA":
+            case "ArrowLeft":
+            case "ArrowDown":
+                if(this.hoverEffectIndex === null) {
+                    this.hoverEffectIndex = 1;
+                } else {
+                    switch(this.hoverEffectIndex) {
+                        case 1:
+                            this.hoverEffectIndex = 0;
+                            break;
+                        case 2:
+                            this.hoverEffectIndex = 1;
+                            break;
 
+                    }
+                }
+                break;
+            case "Space":
+            case "Enter":
+                this.processClick();
+                break;
+        }
     }
 
     this.processMove = (x,y) => {
-
+        if(y >= this.buttonY && y <= this.buttonY + this.buttonHeight) {
+            if(x > this.rightButtonX) {
+                if(x <= this.rightButtonX + this.buttonWidth) {
+                    this.hoverEffectIndex = 2;
+                    return;
+                }
+            } else if(x > this.centerButtonX) {
+                if(x <= this.centerButtonX + this.buttonWidth) {
+                    this.hoverEffectIndex = 1;
+                    return;
+                }
+            } else if(x > this.leftButtonX) {
+                if(x <= this.leftButtonHoverX + this.buttonWidth) {
+                    this.hoverEffectIndex = 0;
+                    return;
+                }
+            }
+        }
+        this.hoverEffectIndex = null;
     }
-
 
     this.renderMethod = (context,timestamp,width,height) => {
 
-        context.clearRect(0,0,width,height);
+        this.background.renderNormal(context,timestamp,width,height);
+
+        context.drawImage(
+            imageDictionary["elves"],
+            this.elf.x,0,elfSourceWidth,elfSourceHeight,
+            this.elfX,this.elfY,this.elfWidth,this.elfHeight
+        );
+
+        drawText(this.text,this.textX,this.textY,this.textScale,1,imageDictionary["fontspace"]);
+
+        if(this.hoverEffectIndex !== null) {
+            let hoverEffectX;
+            switch(this.hoverEffectIndex) {
+                case 0:
+                    hoverEffectX = this.leftButtonHoverX;
+                    break;
+                case 1:
+                    hoverEffectX = this.centerButtonHoverX;
+                    break;
+                case 2:
+                    hoverEffectX = this.rightButtonHoverX;
+                    break;
+            }
+            context.fillStyle = "rgba(255,255,255,0.7)";
+            context.fillRect(
+                hoverEffectX,this.hoverEffectY,
+                this.hoverEffectWidth,this.hoverEffectHeight
+            );
+        }
+
+        if(this.leftDisabled) {
+            context.fillStyle = "rgba(100,100,100,1)";
+        } else {
+            context.fillStyle = "rgba(255,255,255,1)";
+        }
+        context.fillRect(
+            this.leftButtonX,this.buttonY,
+            this.buttonWidth,this.buttonHeight
+        );
+        context.fillStyle = "rgba(255,255,255,1)";
+        context.fillRect(
+            this.centerButtonX,this.buttonY,
+            this.buttonWidth,this.buttonHeight
+        );
+
+        if(this.rightDisabled) {
+            context.fillStyle = "rgba(100,100,100,1)";
+        } else {
+            context.fillStyle = "rgba(255,255,255,1)";
+        }
+        context.fillRect(
+            this.rightButtonX,this.buttonY,
+            this.buttonWidth,this.buttonHeight
+        );
+
+        drawText(
+            this.leftText,this.leftButtonTextX,
+
+            this.buttonTextY,this.buttonTextScale,
+            1,imageDictionary["fontspace-black"]
+        );
+        drawText(
+            this.centerText,this.centerButtonTextX,
+
+            this.buttonTextY,this.buttonTextScale,
+            1,imageDictionary["fontspace-black"]
+        );
+        drawText(
+            this.rightText,this.rightButtonTextX,
+
+            this.buttonTextY,this.buttonTextScale,
+            1,imageDictionary["fontspace-black"]
+        );
 
         rendererState.fader.process(context,timestamp,width,height);
     }
@@ -399,7 +676,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.halfWidth = canvas.width / 2;
 
     this.elf = elves[elfID];
-    this.elfScale = 20;
     this.elfWidth = 180;
     this.elfHeight = 372;
     this.elfCenterX = Math.floor(this.halfWidth - (this.elfWidth / 2));
@@ -581,7 +857,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             );
         }
 
-        drawText(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize);
+        drawText(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize,1,imageDictionary["fontspace"]);
     }
 
     this.renderMethod = (context,timestamp,width,height) => {
@@ -633,7 +909,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             const textResult = drawText(
                 this.battleSequencer.bottomMessage,
                 0,0,this.bottomMessageTextScale,
-                1,null,true
+                1,imageDictionary["fontspace"],true
             );
             drawText(
                 this.battleSequencer.bottomMessage,
@@ -661,12 +937,14 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
-            drawText(
-                this.battleSequencer.playerBattleObject.subText,
-                this.leftHealthBar.x,
-                this.subTextY,
-                2.5
-            );
+            for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
+                drawText(
+                    this.battleSequencer.playerBattleObject.subText[i],
+                    this.leftHealthBar.x,
+                    this.subTextY + (i*20),
+                    2.5,1,imageDictionary["fontspace"]
+                );
+            }
         }
 
         if(this.playerInputs) {
@@ -737,7 +1015,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         inputText,
                         this.playerInputsTextX + xOffset,
                         yValues.textValue,
-                        this.playerInputTextScale
+                        this.playerInputTextScale,1,imageDictionary["fontspace"]
                     );
                 }
             }
@@ -750,8 +1028,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.processKey = key => {
         switch(key) {
-            case "w":
-            case "a":
+            case "KeyW":
+            case "KeyA":
             case "ArrowUp":
             case "ArrowLeft":
                 if(this.hoverEffectIndex !== null) {
@@ -763,8 +1041,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     this.hoverEffectIndex = 0;
                 }
                 break;
-            case "d":
-            case "s":
+            case "KeyD":
+            case "KeyS":
             case "ArrowDown":
             case "ArrowRight":
                 if(this.hoverEffectIndex !== null) {
@@ -778,7 +1056,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 }
                 break;
             case "Enter":
-            case " ":
+            case "Space":
                 this.processClick();
                 return;
         }
@@ -885,7 +1163,7 @@ function IntroductionRenderer(endCallback) {
         let runningYOffset = 150;
         for(let i = 0;i<this.messages.length;i++) {
             if(step >= i) {
-                const textArea = drawText(this.messages[i],20,runningYOffset,4);
+                const textArea = drawText(this.messages[i],20,runningYOffset,4,1,imageDictionary["fontspace"]);
                 if(step === i) {
                     context.fillStyle = `rgba(0,0,0,${1-innerProgress})`;
                     context.fillRect(textArea.x,textArea.y,textArea.width,textArea.height);

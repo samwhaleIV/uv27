@@ -37,7 +37,12 @@ const processMouseMove = event => {
             rendererState.processMove(
                 relativeEventLocation.x,
                 relativeEventLocation.y
-            );           
+            );/*
+            if(rendererState.hoverEffectIndex !== null) {
+                canvas.style.cursor = "pointer"
+            } else {
+                canvas.style.cursor = "";
+            }*/   
         }
     }
 }
@@ -49,7 +54,7 @@ window.onkeydown = event => {
         return;
     }
     if(rendererState.processKey) {
-        rendererState.processKey(event.key);
+        rendererState.processKey(event.code);
     }
 }
 
@@ -78,6 +83,7 @@ const stopRenderer = function() {
 }
 
 const startRenderer = function() {
+    //canvas.style.cursor = "";
     paused = false;
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot start.");

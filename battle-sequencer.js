@@ -33,7 +33,6 @@ function BattleSeqeuencer(renderer) {
         }
         
         this.skipHandles.push(setSkippableTimeout(() => {
-            elfIndex--;
             renderer.loseCallback();
         },duration));
 

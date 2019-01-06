@@ -66,7 +66,7 @@ const processMetaTileset = () => {
 }
 
 const processElvesMeta = () => {
-    for(let i = 0;i<26;i++) {
+    for(let i = 0;i<27;i++) {
         if(elves[i]) {
             elves[i].x = i * elfSourceWidth;
         }
@@ -114,7 +114,7 @@ const gameLoop = () => {
     let elfIndex = 0, highestIndex;
 
     const getWinSelectScreen = () => {
-        if(elfIndex > highestIndex) {
+        if(elfIndex >= highestIndex) {
             highestIndex++;
             elfIndex = highestIndex;
         }
@@ -122,14 +122,14 @@ const gameLoop = () => {
         localStorage.setItem("elfIndex",highestIndex);
     }
 
-    const getSelectScreen = highestIndex => {
-        if(!highestIndex) {
-            highestIndex = 0;
+    const getSelectScreen = index => {
+        if(!index && index !== 0) {
+            index = elfIndex;
         }
         rendererState.fader.fadeOut(
             ElfSelectScreen,
             getBattleScreen,
-            highestIndex,elfIndex
+            highestIndex,index
         );
     }
 
@@ -160,7 +160,7 @@ const gameLoop = () => {
     }
 
     const localStorageResult = localStorage.getItem("elfIndex");
-    if(localStorage.getItem("elfIndex")) {
+    if(localStorageResult !== null && localStorageResult >= 0) {
         elfIndex = Number(localStorageResult);
     } else {
         elfIndex = -1;
@@ -181,8 +181,6 @@ const gameLoop = () => {
     if(elfIndex === -1) {
         rendererState.start();
         elfIndex = 0;
-    } else {
-        rendererState.fader.fadeIn();
     }
     highestIndex = elfIndex;
 
