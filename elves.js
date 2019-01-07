@@ -267,6 +267,12 @@ const moves = {
         type: "self",
         name: "punching vitamins",
         process: (sequencer,user,target) => {
+            if(user.state.atePunchingVitamins) {
+                sequencer.dropHealth(user,user.maxHealth);
+                return {
+                    text: `but ${user.isPlayer ? "you" : "they"} didn't read the warning label`
+                }
+            }
             user.state.atePunchingVitamins = true;
             return {
                 text: `${user.name} will have stronker punches now`
