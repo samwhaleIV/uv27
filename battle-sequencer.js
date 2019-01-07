@@ -104,6 +104,7 @@ function BattleSeqeuencer(renderer) {
         target.health -= amount;
         target.jitterHealthBar = true;
         if(target.health <= 0) {
+            target.health = 0;
             if(target.isPlayer) {
                 this.playerHasDied = true;
                 this.playerBattleObject.isDead = true;
