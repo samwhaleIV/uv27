@@ -327,6 +327,7 @@ function EndScreenRenderer(endCallback) {
     this.topTextY = this.textMargin;
 
     this.processClick = () => {
+        playSound("audio/click.mp3");
         this.endCallback();
     }
 
@@ -437,6 +438,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex < 0) {
             this.currentIndex = 0;
         } else {
+            playSound("audio/click.mp3");
             this.setElf();
         }
     }
@@ -446,6 +448,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex > this.highestElfIndex) {
             this.currentIndex = this.highestElfIndex;
         } else {
+            playSound("audio/click.mp3");
             this.setElf();
         }
     }
@@ -457,6 +460,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             return;
         }
         if(this.currentIndex <= highestElfIndex) {
+            playSound("audio/click.mp3");
             this.endCallback(this.currentIndex);
             this.transitioning = true;
         }
@@ -519,7 +523,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
                 break;
             case 2:
                 this.goRight();
-            break;
+                break;
         }
     }
 
@@ -1079,6 +1083,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.processClick = (x,y) => {
         if(!this.playerInputsEnabled) {
+            if(this.battleSequencer.skipHandles.length > 0) {
+                playSound("audio/click.mp3");
+            }
             this.battleSequencer.skipEvent();
             if(x && y) {
                 this.hoverEffectIndex = this.getHitRegister(x,y);
@@ -1101,6 +1108,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             hitRegister = this.hoverEffectIndex;
         }
         if(hitRegister !== null) {
+            playSound("audio/click.mp3");
             this.battleSequencer.processPlayerInput(
                 hitRegister
             );

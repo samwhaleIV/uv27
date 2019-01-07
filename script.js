@@ -84,6 +84,27 @@ const adjustFontPositions = () => {
     }
 }
 
+let soundsLoaded = false;
+let imagesLoaded = false;
+
+const loadSounds = callback => {
+    const sounds = [
+        "audio/menu.mp3",
+        "audio/click.mp3"
+    ];
+    let loadedSounds = 0;
+    const soundProcessed = () => {
+        if(++loadedSounds === sounds.length) {
+            console.log("Runtime host: All sounds loaded");
+            soundsLoaded = true;
+            if(imagesLoaded) {
+                callback();
+            }
+        }
+    }
+    sounds.forEach(value => addBufferSource(value,soundProcessed,soundProcessed));
+}
+
 const loadImages = callback => {
     for(let i = 0;i<images.length;i++) {
         const image = new Image();
@@ -96,8 +117,11 @@ const loadImages = callback => {
 
                 imageDictionary[name] = image;
                 if(++loadedImages === images.length) {
-                    console.log("All images loaded");
-                    callback();
+                    console.log("Runtime host: All images loaded");
+                    imagesLoaded = true;
+                    if(soundsLoaded) {
+                        callback();
+                    }
                 }
             };
         })(image);
@@ -192,7 +216,7 @@ const debug_reset = () => {
 }
 
 loadImages(gameLoop);
-
+loadSounds(gameLoop);
 
 
 
