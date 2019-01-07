@@ -400,6 +400,8 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
     this.leftDisabled = null;
     this.rightDisabled = null;
 
+    this.currentIndexText = null;
+
     this.setElf = () => {
         this.elf = elves[this.currentIndex];
         const testDrawResult = drawText(this.elf.name,0,0,this.textScale,1,null,true);
@@ -417,6 +419,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         } else {
             this.leftDisabled = false;
         }
+        this.currentIndexText = `elf ${this.currentIndex+1}`;
     }
     this.setElf();
 
@@ -603,6 +606,8 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         );
 
         drawText(this.text,this.textX,this.textY,this.textScale,1,imageDictionary["fontspace"]);
+
+        drawText(this.currentIndexText,15,15,3,1,imageDictionary["fontspace"]);
 
         if(this.hoverEffectIndex !== null) {
             let hoverEffectX;
