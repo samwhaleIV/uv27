@@ -89,8 +89,15 @@ let imagesLoaded = false;
 
 const loadSounds = callback => {
     const sounds = [
-        "audio/menu.mp3",
-        "audio/click.mp3"
+        "audio/click.mp3",
+
+        "audio/swish-1.mp3",
+        "audio/swish-2.mp3",
+        
+        "audio/clip.mp3",
+        "audio/reverse-clip.mp3",
+
+        "audio/menu.mp3"
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {
@@ -200,6 +207,7 @@ const gameLoop = () => {
             getBattleScreen,
             elfIndex,elfIndex
         );
+        playMusic(rendererState.song);
     }
     startRenderer();
     if(elfIndex === -1) {

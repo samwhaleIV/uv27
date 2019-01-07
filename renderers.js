@@ -77,12 +77,22 @@ const getFader = function() {
             if(exitMethod) {
                 rendererState.fader.inMethod = exitMethod;
             }
+            const staticTime = rendererState.fader.time / 1000;
+            playSound("swish-2.mp3",staticTime);
+            if(rendererState.song) {
+                playMusic(rendererState.song,staticTime);
+            }
         },
         fadeOut: (rendererGenerator,...parameters) => {
             rendererState.fader.delta = 1;
             rendererState.fader.start = performance.now();
             rendererState.fader.transitionRenderer = rendererGenerator;
             rendererState.fader.transitionParameters = parameters;
+            const staticTime = rendererState.fader.time / 1000;
+            playSound("swish-1.mp3",staticTime);
+            if(musicNode) {
+                stopMusic(staticTime);
+            }
         },
         oninEnd: () => {
             if(rendererState.fader.inMethod) {
@@ -327,7 +337,7 @@ function EndScreenRenderer(endCallback) {
     this.topTextY = this.textMargin;
 
     this.processClick = () => {
-        playSound("audio/click.mp3");
+        playSound("click.mp3");
         this.endCallback();
     }
 
@@ -369,6 +379,8 @@ function EndScreenRenderer(endCallback) {
 }
 
 function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
+
+    this.song = "menu.mp3";
 
     this.halfWidth = canvas.width / 2;
 
@@ -438,7 +450,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex < 0) {
             this.currentIndex = 0;
         } else {
-            playSound("audio/click.mp3");
+            playSound("click.mp3");
             this.setElf();
         }
     }
@@ -448,7 +460,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex > this.highestElfIndex) {
             this.currentIndex = this.highestElfIndex;
         } else {
-            playSound("audio/click.mp3");
+            playSound("click.mp3");
             this.setElf();
         }
     }
@@ -460,7 +472,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             return;
         }
         if(this.currentIndex <= highestElfIndex) {
-            playSound("audio/click.mp3");
+            playSound("click.mp3");
             this.endCallback(this.currentIndex);
             this.transitioning = true;
         }
@@ -676,9 +688,15 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
 }
 
 function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
-    this.halfWidth = canvas.width / 2;
 
     this.elf = elves[elfID];
+
+    if(this.elf.song) {
+        this.song = this.elf.song;
+    }
+
+    this.halfWidth = canvas.width / 2;
+
     this.elfWidth = 180;
     this.elfHeight = 372;
     this.elfCenterX = Math.floor(this.halfWidth - (this.elfWidth / 2));
@@ -1083,7 +1101,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.processClick = (x,y) => {
         if(!this.playerInputsEnabled) {
             if(this.battleSequencer.skipHandles.length > 0) {
-                playSound("audio/click.mp3");
+                playSound("click.mp3");
             }
             this.battleSequencer.skipEvent();
             if(x && y) {
@@ -1107,7 +1125,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             hitRegister = this.hoverEffectIndex;
         }
         if(hitRegister !== null) {
-            playSound("audio/click.mp3");
+            playSound("click.mp3");
             this.battleSequencer.processPlayerInput(
                 hitRegister
             );

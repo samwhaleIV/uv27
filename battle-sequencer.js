@@ -101,6 +101,7 @@ function BattleSeqeuencer(renderer) {
         }
     };
     this.dropHealth = (target,amount) => {
+        playSound("clip.mp3");
         target.health -= amount;
         target.jitterHealthBar = true;
         if(target.health <= 0) {
@@ -122,6 +123,7 @@ function BattleSeqeuencer(renderer) {
     },
     this.addHealth = (target,amount) => {
         target.health += amount;
+        playSound("reverse-clip.mp3");
         target.healthBarDrop = true;
         if(target.health > target.maxHealth) {
             target.health = target.maxHealth;

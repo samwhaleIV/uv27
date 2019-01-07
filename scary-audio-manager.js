@@ -1,26 +1,57 @@
 const audioContext = new AudioContext();
 const volumeNode = audioContext.createGain();
 volumeNode.connect(audioContext.destination);
-volumeNode.gain.value = 0.6;
+volumeNode.gain.value = 1;
 
+const musicNodeGain = 0.1;
 const musicVolumeNode = audioContext.createGain();
 musicVolumeNode.connect(audioContext.destination);
-musicVolumeNode.gain.value = 0.1;
+musicVolumeNode.gain.value = musicNodeGain;
 
 const audioBuffers = {};
 
-const playSoundLooping = (name,isMusic,duration) => {
-    console.error("Audio manager: Function not yet implemented");
+let musicNode = null;
+
+const playMusic = (name,fadeTime=0) => {
+    return;//DEBUG
+    if(musicNode) {
+        console.error("Error: Music is already playing");
+    } else {
+        const buffer = audioBuffers[name];
+        if(!buffer) {
+            console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
+        } else {
+            musicNode = audioContext.createBufferSource();
+            musicNode.buffer = buffer;
+            musicNode.loop = true;
+            musicNode.connect(musicVolumeNode);
+            musicNode.start();
+            musicVolumeNode.gain.linearRampToValueAtTime(musicNodeGain,audioContext.currentTime + fadeTime);
+        }
+    }
+}
+const stopMusic = (fadeTime=0) => {
+    if(musicNode) {
+        let oldMusicNode = musicNode;
+        musicNode = null;
+        musicVolumeNode.gain.linearRampToValueAtTime(0,audioContext.currentTime + fadeTime);
+        setTimeout(()=>{
+            oldMusicNode.stop();
+        },(fadeTime*1000)+50);
+    } else {
+        console.warn("Warning: No music is playing and cannot be stopped again");
+    }
 }
 
-const playSound = (name,isMusic,duration) => {
+const playSound = (name,duration) => {
     const buffer = audioBuffers[name];
     if(buffer) {
         const bufferSourceNode = audioContext.createBufferSource();
-        bufferSourceNode.buffer = audioBuffers[name];
-        bufferSourceNode.connect(
-            isMusic ? musicVolumeNode : volumeNode
-        );
+        bufferSourceNode.buffer = buffer;
+        if(duration) {
+            bufferSourceNode.playbackRate.value = buffer.duration / duration;
+        }
+        bufferSourceNode.connect(volumeNode);
         bufferSourceNode.start();
     } else {
         console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
@@ -32,8 +63,9 @@ const addBufferSource = (fileName,callback,errorCallback) => {
         audioContext.decodeAudioData(
             audioData,
             audioBuffer => {
-                audioBuffers[fileName] = audioBuffer;
-                console.log(`Audio manager: Added '${fileName}' to audio buffers`);
+                const newName = fileName.split("/").pop();
+                audioBuffers[newName] = audioBuffer;
+                console.log(`Audio manager: Added '${newName}' to audio buffers`);
                 if(callback) {
                     callback(fileName);
                 }
