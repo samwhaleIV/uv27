@@ -999,8 +999,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
                 const yValues = this.playerInputsYValues[i];
 
-
-                if(!animating && i === this.hoverEffectIndex && (this.playerInputsEnabled || (this.firstInputMask && this.hoverEffectIndex === 0))) {
+                if(i === this.hoverEffectIndex && ((!animating && this.playerInputsEnabled) || (this.firstInputMask && this.hoverEffectIndex === 0))) {
                     context.fillStyle = "rgba(255,255,255,0.7)";
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
@@ -1103,7 +1102,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }
         let hitRegister;
         if(x && y) {
-            hitRegister = this.getHitRegister(x,y)
+            hitRegister = this.getHitRegister(x,y);
         } else {
             hitRegister = this.hoverEffectIndex;
         }

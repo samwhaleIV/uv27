@@ -1,19 +1,26 @@
 const audioContext = new AudioContext();
 const volumeNode = audioContext.createGain();
 volumeNode.connect(audioContext.destination);
+volumeNode.gain.value = 0.6;
+
+const musicVolumeNode = audioContext.createGain();
+musicVolumeNode.connect(audioContext.destination);
+musicVolumeNode.gain.value = 0.1;
 
 const audioBuffers = {};
 
-const playSoundLooping = (name,duration) => {
+const playSoundLooping = (name,isMusic,duration) => {
     console.error("Audio manager: Function not yet implemented");
 }
 
-const playSound = (name,duration) => {
+const playSound = (name,isMusic,duration) => {
     const buffer = audioBuffers[name];
     if(buffer) {
         const bufferSourceNode = audioContext.createBufferSource();
         bufferSourceNode.buffer = audioBuffers[name];
-        bufferSourceNode.connect(volumeNode);
+        bufferSourceNode.connect(
+            isMusic ? musicVolumeNode : volumeNode
+        );
         bufferSourceNode.start();
     } else {
         console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
