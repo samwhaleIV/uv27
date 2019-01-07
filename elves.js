@@ -690,7 +690,7 @@ const elves = [
         },
         setup: sequencer => {
 
-            sequencer.playerBattleObject.subText[0] = `turn ${sequencer.turnNumber + 1}`;
+            sequencer.playerBattleObject.subText = [`turn ${sequencer.turnNumber + 1}`];
 
             sequencer.playerBattleObject.movePreProcess = move => {
                 if(move.name === "protect") {

@@ -219,7 +219,7 @@ function BattleSeqeuencer(renderer) {
     }
 
     this.getTextDuration = text => {
-        return 1000 + (text.split(" ").length * 200);
+        return 1150 + (text.split(" ").length * 300);
     }
 
     this.playerMove = move => {
@@ -344,8 +344,14 @@ function BattleSeqeuencer(renderer) {
         this.elf.setup(this);
     }
 
+    if(!this.elf.playerMoves) {
+        this.elf.playerMoves = [moves["honorous suicide"]];
+        this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
+    }
+    renderer.playerInputs = this.elf.playerMoves;
+
     if(this.elf.startText) {
-        renderer.playerInputs = this.elf.playerMoves;
+        renderer.disablePlayerInputs();
         const endMethod = !this.elf.startSpeech?
             renderer.enablePlayerInputs: 
             () => {
@@ -361,11 +367,9 @@ function BattleSeqeuencer(renderer) {
             endMethod
         );
     } else {
-        const startEnd = () => {
-            renderer.playerInputs = this.elf.playerMoves;
-            renderer.enablePlayerInputs();
-        }
+        const startEnd = renderer.enablePlayerInputs;
         if(this.elf.startSpeech) {
+            renderer.disablePlayerInputs();
             this.showElfSpeech(
                 this.elf.startSpeech,0,
                 500+this.getTextDuration(this.elf.startSpeech),

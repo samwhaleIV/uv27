@@ -99,12 +99,6 @@ const getFader = function() {
                 if(rendererState.fader) {
                     setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
                 }
-                if(rendererState.processMove) {
-                    rendererState.processMove(
-                        lastRelativeX,
-                        lastRelativeY
-                    );
-                }
             } else {
                 console.error("Error: Missing fader transition state");
             }
@@ -798,7 +792,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         this.playerInputEnableStartTime = null;
 
         this.startInputText = this.playerInputs[0].name;
-        this.firstInputMask = "please wait";
+        this.firstInputMask = "skip";
 
         this.playerInputDisableStartTime = performance.now();
         this.playerInputsEnabled = false;
@@ -1002,7 +996,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 const yValues = this.playerInputsYValues[i];
 
 
-                if(this.playerInputsEnabled && !animating && i === this.hoverEffectIndex) {
+                if(!animating && i === this.hoverEffectIndex && (this.playerInputsEnabled || (this.firstInputMask && this.hoverEffectIndex === 0))) {
                     context.fillStyle = "rgba(255,255,255,0.7)";
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
