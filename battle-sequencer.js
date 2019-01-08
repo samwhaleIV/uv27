@@ -21,28 +21,33 @@ function BattleSeqeuencer(renderer) {
 
     this.elf = renderer.elf;
 
+    const endScreenLength = 3750;
+
+    this.everybodyDiedMethod = () => {
+        this.bottomMessage = "everyone is dead";
+        renderer.firstInputMask = "game over";
+        this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,endScreenLength));
+    }
+
     this.playerDiedMethod = () => {
         this.bottomMessage = "you are dead";
         renderer.firstInputMask = "game over";
 
-        let duration = 4000;
+        let duration = endScreenLength;
         if(this.elf.getWinSpeech) {
             const speech = this.elf.getWinSpeech();
             this.showElfSpeech(speech,0,Infinity);
             duration += this.getTextDuration(speech);
         }
         
-        this.skipHandles.push(setSkippableTimeout(() => {
-            renderer.loseCallback();
-        },duration));
+        this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
 
     }
     this.elfDiedMethod = () => {
         this.bottomMessage = `${this.elf.name} ran out of christmas spirit`;
         renderer.firstInputMask = "a job well done";
 
-
-        let duration = 3500;
+        let duration = endScreenLength;
         if(this.elf.getLoseSpeech) {
             const speech = this.elf.getLoseSpeech();
             this.showElfSpeech(speech,0,Infinity);
@@ -302,13 +307,17 @@ function BattleSeqeuencer(renderer) {
     this.returnInput = () => {
         this.skipHandles = [];
         this.turnNumber++;
-        if(this.elfHasDied) {
+        if(this.elfHasDied && this.playerHasDied) {
+            this.everybodyDiedMethod();
+        } else if(this.elfHasDied) {
             this.elfDiedMethod();
         } else if(this.playerHasDied) {
             this.playerDiedMethod();
         } else {
             const endCallback = () => {
-                if(this.elfHasDied) {
+                if(this.elfHasDied && this.playerHasDied) {
+                    this.everybodyDiedMethod();
+                } else if(this.elfHasDied) {
                     this.elfDiedMethod();
                 } else if(this.playerHasDied) {
                     this.playerDiedMethod();
