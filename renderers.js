@@ -23,41 +23,77 @@ const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minSh
     }
 }
 
-const drawText = function(text,x,y,scale,spacing=1,image,doNotDraw=false) {
+const drawTextTest = function(text,scale,spacing=1) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
     const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-    if(doNotDraw) {
-        for(let i = 0;i<text.length;i++) {
-            const character = fontDictionary[text.substr(i,1)];
-            const drawWidth = character.width * scale;
-            xOffset += drawWidth;
-            if(i < lastOffsetIndex) {
-                xOffset += spaceOffset;
-            }
+
+    for(let i = 0;i<text.length;i++) {
+        const character = fontDictionary[text.substr(i,1)];
+        if(!character) {
+            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
         }
-    } else {
-        for(let i = 0;i<text.length;i++) {
-            const character = fontDictionary[text.substr(i,1)];
-            const drawWidth = character.width * scale;
-            context.drawImage(
-                image,
-                character.x,0,character.width,5,
-                x+xOffset,y,
-                drawWidth,drawHeight
-            );
-            xOffset += drawWidth;
-            if(i < lastOffsetIndex) {
-                xOffset += spaceOffset;
-            }
+        const drawWidth = character.width * scale;
+        xOffset += drawWidth;
+        if(i < lastOffsetIndex) {
+            xOffset += spaceOffset;
         }
     }
+
     return {
-        x: x,
-        y: y,
         width: xOffset,
         height: drawHeight
+    }
+}
+
+const drawTextWhite = function(text,x,y,scale,spacing=1) {
+    let xOffset = 0;
+    const drawHeight = 5 * scale;
+    const spaceOffset = spacing * scale;
+    const lastOffsetIndex = text.length-1;
+
+    for(let i = 0;i<text.length;i++) {
+        const character = fontDictionary[text.substr(i,1)];
+        if(!character) {
+            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
+        }
+        const drawWidth = character.width * scale;
+        context.drawImage(
+            imageDictionary["fontspace"],
+            character.x,0,character.width,5,
+            x+xOffset,y,
+            drawWidth,drawHeight
+        );
+        xOffset += drawWidth;
+        if(i < lastOffsetIndex) {
+            xOffset += spaceOffset;
+        }
+    }
+}
+
+const drawTextBlack = function(text,x,y,scale,spacing=1) {
+    let xOffset = 0;
+    const drawHeight = 5 * scale;
+    const spaceOffset = spacing * scale;
+    const lastOffsetIndex = text.length-1;
+
+    for(let i = 0;i<text.length;i++) {
+        const character = fontDictionary[text.substr(i,1)];
+        if(!character) {
+            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
+        }
+        const drawWidth = character.width * scale;
+        context.drawImage(
+            imageDictionary["fontspace-black"],
+            character.x,0,character.width,5,
+            x+xOffset,y,
+            drawWidth,drawHeight
+        );
+        xOffset += drawWidth;
+        if(i < lastOffsetIndex) {
+            xOffset += spaceOffset;
+        }
     }
 }
 
@@ -321,11 +357,11 @@ function EndScreenRenderer(endCallback) {
     this.textMargin = 15;
 
 
-    const topTextTestResult = drawText(
-        this.topText,0,0,this.textScale,1,imageDictionary["fontspace"],true
+    const topTextTestResult = drawTextTest(
+        this.topText,this.textScale
     );
-    const bottomTextTestResult = drawText(
-        this.bottomText,0,0,this.textScale,1,imageDictionary["fontspace"],true
+    const bottomTextTestResult = drawTextTest(
+        this.bottomText,this.textScale
     );
 
     const halfWidth = canvas.width / 2;
@@ -358,15 +394,15 @@ function EndScreenRenderer(endCallback) {
             0,0,width,height
         );
 
-        drawText(
+        drawTextWhite(
             this.topText,
             this.topTextX,this.topTextY,
-            this.textScale,1,imageDictionary["fontspace"]
+            this.textScale,1
         );
-        drawText(
+        drawTextWhite(
             this.bottomText,
             this.bottomTextX,this.bottomTextY,
-            this.textScale,1,imageDictionary["fontspace"]
+            this.textScale,1
         );
 
 
@@ -411,7 +447,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
 
     this.setElf = () => {
         this.elf = elves[this.currentIndex];
-        const testDrawResult = drawText(this.elf.name,0,0,this.textScale,1,null,true);
+        const testDrawResult = drawTextTest(this.elf.name,this.textScale);
         this.text = this.elf.name;
         this.textX = Math.round(this.halfWidth - (testDrawResult.width / 2));
         this.textHeight = testDrawResult.height;
@@ -508,15 +544,15 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
 
     this.buttonTextScale = 4;
 
-    const firstResult = drawText(this.leftText,0,0,this.buttonTextScale,1,null,true);
+    const firstResult = drawTextTest(this.leftText,this.buttonTextScale);
     this.leftButtonTextX = this.leftButtonX + Math.floor(
         halfButtonWidth - (firstResult.width / 2)
     );
     this.centerButtonTextX = this.centerButtonX + Math.floor(
-        halfButtonWidth - (drawText(this.centerText,0,0,this.buttonTextScale,1,null,true).width / 2)
+        halfButtonWidth - (drawTextTest(this.centerText,this.buttonTextScale).width / 2)
     );
     this.rightButtonTextX = this.rightButtonX + Math.floor(
-        halfButtonWidth - (drawText(this.rightText,0,0,this.buttonTextScale,1,null,true).width / 2)
+        halfButtonWidth - (drawTextTest(this.rightText,this.buttonTextScale).width / 2)
     );
 
     this.buttonTextY = Math.floor((this.buttonHeight / 2) - (firstResult.height / 2)) + this.buttonY;
@@ -615,9 +651,9 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             this.elfX,this.elfY,this.elfWidth,this.elfHeight
         );
 
-        drawText(this.text,this.textX,this.textY,this.textScale,1,imageDictionary["fontspace"]);
+        drawTextWhite(this.text,this.textX,this.textY,this.textScale);
 
-        drawText(this.currentIndexText,15,15,3,1,imageDictionary["fontspace"]);
+        drawTextWhite(this.currentIndexText,15,15,3);
 
         if(this.hoverEffectIndex !== null) {
             let hoverEffectX;
@@ -664,23 +700,17 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             this.buttonWidth,this.buttonHeight
         );
 
-        drawText(
+        drawTextBlack(
             this.leftText,this.leftButtonTextX,
-
-            this.buttonTextY,this.buttonTextScale,
-            1,imageDictionary["fontspace-black"]
+            this.buttonTextY,this.buttonTextScale
         );
-        drawText(
+        drawTextBlack(
             this.centerText,this.centerButtonTextX,
-
             this.buttonTextY,this.buttonTextScale,
-            1,imageDictionary["fontspace-black"]
         );
-        drawText(
+        drawTextBlack(
             this.rightText,this.rightButtonTextX,
-
-            this.buttonTextY,this.buttonTextScale,
-            1,imageDictionary["fontspace-black"]
+            this.buttonTextY,this.buttonTextScale
         );
 
         rendererState.fader.process(context,timestamp,width,height);
@@ -790,7 +820,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.bottomMessageTextScale = 4;
 
-    const textDrawTestResult = drawText(" ",0,0,this.bottomMessageTextScale,0,null,true);
+    const textDrawTestResult = drawTextTest("",this.bottomMessageTextScale);
 
     this.bottomMessageTextY = this.bottomMessageY + Math.floor((this.bottomMessageHeight / 2) - (textDrawTestResult.height / 2));
 
@@ -878,7 +908,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             );
         }
 
-        drawText(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize,1,imageDictionary["fontspace"]);
+        drawTextWhite(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize);
     }
 
     this.renderMethod = (context,timestamp,width,height) => {
@@ -927,17 +957,15 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 this.bottomMessageWidth,
                 this.bottomMessageHeight
             );
-            const textResult = drawText(
+            const textResult = drawTextTest(
                 this.battleSequencer.bottomMessage,
-                0,0,this.bottomMessageTextScale,
-                1,imageDictionary["fontspace"],true
+                this.bottomMessageTextScale
             );
-            drawText(
+            drawTextBlack(
                 this.battleSequencer.bottomMessage,
                 Math.floor(this.halfWidth - (textResult.width / 2)),
                 this.bottomMessageTextY,
-                this.bottomMessageTextScale,1,
-                imageDictionary["fontspace-black"],false
+                this.bottomMessageTextScale
             );
         }
 
@@ -950,29 +978,26 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 this.elfTextBubbleHeight
             );
             for(let i = 0;i<this.battleSequencer.elfSpeech.length;i++) {
-                drawText(this.battleSequencer.elfSpeech[i],
-                    this.elfTextBubbleX + 8,this.elfTextBubbleY + 8 + (i * 28),4,1,
-                    imageDictionary["fontspace-black"]
+                drawTextBlack(this.battleSequencer.elfSpeech[i],
+                    this.elfTextBubbleX + 8,this.elfTextBubbleY + 8 + (i * 28),4
                 );
             }
         } else if(this.battleSequencer.elfBattleObject.subText !== null) {
             for(let i = 0;i<this.battleSequencer.elfBattleObject.subText.length;i++) {
-                drawText(
+                drawTextWhite(
                     this.battleSequencer.elfBattleObject.subText[i],
                     this.rightHealthBar.x,
-                    this.subTextY + (i*20),
-                    2.5,1,imageDictionary["fontspace"]
+                    this.subTextY + (i*20),2.5
                 );
             }
         }
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
             for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
-                drawText(
+                drawTextWhite(
                     this.battleSequencer.playerBattleObject.subText[i],
                     this.leftHealthBar.x,
-                    this.subTextY + (i*20),
-                    2.5,1,imageDictionary["fontspace"]
+                    this.subTextY + (i*20),2.5
                 );
             }
         }
@@ -1040,11 +1065,11 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     this.playerInputsWidth,this.playerInputsHeight
                 );   
                 if(inputText) {
-                    drawText(
+                    drawTextWhite(
                         inputText,
                         this.playerInputsTextX + xOffset,
                         yValues.textValue,
-                        this.playerInputTextScale,1,imageDictionary["fontspace"]
+                        this.playerInputTextScale
                     );
                 }
             }
@@ -1196,7 +1221,7 @@ function IntroductionRenderer(endCallback) {
         let runningYOffset = 150;
         for(let i = 0;i<this.messages.length;i++) {
             if(step >= i) {
-                const textArea = drawText(this.messages[i],20,runningYOffset,4,1,imageDictionary["fontspace"]);
+                const textArea = drawTextWhite(this.messages[i],20,runningYOffset,4);
                 if(step === i) {
                     context.fillStyle = `rgba(0,0,0,${1-innerProgress})`;
                     context.fillRect(textArea.x,textArea.y,textArea.width,textArea.height);

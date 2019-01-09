@@ -86,6 +86,7 @@ function BattleSeqeuencer(renderer) {
         name: "you",
         disabledMoves: {},
         lastMove: null,
+        lastMoveFailed: null,
         movePreProcess: null,
         subText: null,
         dropHealth: amount => {
@@ -104,6 +105,7 @@ function BattleSeqeuencer(renderer) {
         name: this.elf.name,
         disabledMoves: {},
         lastMove: null,
+        lastMoveFailed: null,
         movePreProcess: null,
         subText: null,
         dropHealth: amount => {
@@ -190,11 +192,14 @@ function BattleSeqeuencer(renderer) {
             return;
         }
 
-        const text = `${user.name} used ${move.name}`;
+        const moveDisplayName = move.name.split("-")[0].trimEnd();
+
+        const text = `${user.name} used ${moveDisplayName}`;
         this.showText(text,0,this.getTextDuration(text),()=>{
             let moveResult;
             if(!move) {
                 moveResult = {
+                    failed: true,
                     text: "but the developer made a mistake"
                 }
                 console.error("Error: Hey idiot, you probably have a move key wrong");
@@ -213,6 +218,7 @@ function BattleSeqeuencer(renderer) {
                     processedMove = this.globalBattleState.movePreProcess(this,processedMove);
                     if(!move) {
                         moveResult = {
+                            failed: true,
                             text: "but the developer made a mistake"
                         }
                         skip = true;
@@ -223,6 +229,7 @@ function BattleSeqeuencer(renderer) {
                     processedMove = user.movePreProcess(this,processedMove);
                     if(!processedMove) {
                         moveResult = {
+                            failed: true,
                             text: "but the developer made a mistake"
                         }
                         skip = true;
@@ -238,6 +245,7 @@ function BattleSeqeuencer(renderer) {
                         );
                     } else {
                         moveResult = {
+                            failed: true,
                             text: "but the developer made a mistake"
                         }
                         console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
@@ -250,7 +258,15 @@ function BattleSeqeuencer(renderer) {
                     }
                 }
             }
-            user.lastMove = move.name || null;
+            user.lastMove = moveDisplayName || null;
+            if(!moveResult.failed) {
+                if(moveResult.failed !== false) {
+                    moveResult.failed = false; 
+                }
+            } else if(moveResult.failed !== true) {
+                moveResult.failed = true;
+            }
+            user.lastMoveFailed = moveResult.failed;
             if(moveResult.text) {
                 this.showText(
                     moveResult.text,0,

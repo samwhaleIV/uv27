@@ -29,20 +29,22 @@ let images = [
 const imageDictionary = {};
 
 const fontDictionary = {
-    " ":{x:0,width:1},a:{x:0,width:3},b:{x:0,width:3},c:{x:0,width:3},
-    d:{x:0,width:3},e:{x:0,width:3},f:{x:0,width:3},
-    g:{x:0,width:3},h:{x:0,width:3},i:{x:0,width:3},
-    j:{x:0,width:3},k:{x:0,width:3},l:{x:0,width:3},
-    m:{x:0,width:5},n:{x:0,width:3},o:{x:0,width:3},
-    p:{x:0,width:3},q:{x:0,width:3},r:{x:0,width:3},
-    s:{x:0,width:3},t:{x:0,width:3},u:{x:0,width:3},v:{x:0,width:3},
-    w:{x:0,width:5},x:{x:0,width:3},y:{x:0,width:3},
-    z:{x:0,width:3},'0':{x:0,width:3},'1':{x:0,width:1},
-    '2':{x:0,width:3},'3':{x:0,width:3},'4':{x:0,width:3},
-    '5':{x:0,width:3},'6':{x:0,width:3},'7':{x:0,width:3},
-    '8':{x:0,width:3},'9':{x:0,width:3},"*":{x:0,width:5},
-    "'":{x:0,width:1},".":{x:0,width:1},":":{x:0,width:1},
-    "-":{x:0,width:4}
+    " ":{width:1},'a':{width:3},'b':{width:3},
+    'c':{width:3},'d':{width:3},'e':{width:3},
+    'f':{width:3},'g':{width:3},'h':{width:3},
+    'i':{width:3},'j':{width:3},'k':{width:3},
+    'l':{width:3},'m':{width:5},'n':{width:3},
+    'o':{width:3},'p':{width:3},'q':{width:3},
+    'r':{width:3},'s':{width:3},'t':{width:3},
+    'u':{width:3},'v':{width:3},'w':{width:5},
+    'x':{width:3},'y':{width:3},'z':{width:3},
+    '0':{width:3},'1':{width:1},'2':{width:3},
+    '3':{width:3},'4':{width:3},'5':{width:3},
+    '6':{width:3},'7':{width:3},'8':{width:3},
+    '9':{width:3},"*":{width:5},"'":{width:1},
+    ".":{width:1},":":{width:1},"-":{width:4},
+    "!":{width:1},"?":{width:3},"(":{width:2},
+    ")":{width:2},"+":{width:3}
 }
 
 const elfSourceWidth = 11;
@@ -75,7 +77,7 @@ const processElvesMeta = () => {
 
 const adjustFontPositions = () => {
     const innerSpace = 1;
-    let values = " abcdefghijklmnopqrstuvwxyz0123456789*'.:-";
+    const values = " abcdefghijklmnopqrstuvwxyz0123456789*'.:-!?()+";
     let totalWidth = 0;
     for(let i = 0;i<values.length;i++) {
         const value = values.substr(i,1);
