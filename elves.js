@@ -30,7 +30,7 @@ const moves = {
     "nothing": {   
         type: "self",
         name: "nothing",
-        process: (sequencer,user,target) => {
+        process: () => {
             return {
                 text: "nothing happened"
             }
@@ -65,7 +65,7 @@ const moves = {
     "also nothing":{
         type: "target",
         name: "also nothing",
-        process: (sequencer,user,target) => {
+        process: () => {
             return {
                 text: "*crickets*"
             }
@@ -74,7 +74,7 @@ const moves = {
     "cry": {
         type: "self",
         name: "cry",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
 
             let text = !user.state.isCrying ?
                 `${user.name} ${user.isPlayer ? "are" : "is"} now crying`:
@@ -89,7 +89,7 @@ const moves = {
     "honorous suicide": {
         type: "self",
         name: "honorous suicide",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
             sequencer.dropHealth(user,user.maxHealth);
             return {
                 text: `${user.name} made an honor bound choice`
@@ -110,7 +110,13 @@ const moves = {
         type: "target",
         name: "decent punch",
         process: (sequencer,user,target) => {
-            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 30 : 15);
+
+            let damage = 15;
+            if(user.state.atePunchingVitamins) {
+                damage += damage;
+            }
+
+            sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
                     text: `${target.name} might need some ice`
@@ -126,7 +132,13 @@ const moves = {
         type: "target",
         name: "wimpy punch",
         process: (sequencer,user,target) => {
-            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 20 : 10);
+
+            let damage = 10;
+            if(user.state.atePunchingVitamins) {
+                damage += damage;
+            }
+
+            sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
                     text: `${target.name} might cry now`
@@ -146,7 +158,11 @@ const moves = {
                 ()=>`${user.name} look${user.isElf ?"s" : ""} confused`,
                 ()=>`${target.name} think${target.isElf ?"s" : ""} ${user.name} held back`
             ];
-            sequencer.dropHealth(target,user.state.atePunchingVitamins ? 10 : 5);
+            let damage = 5;
+            if(user.state.atePunchingVitamins) {
+                damage += damage;
+            }
+            sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
                     text: responses[Math.floor(Math.random() * responses.length)]()
@@ -177,17 +193,24 @@ const moves = {
     "i love santa": {
         type: "self",
         name: "i love santa",
-        process: (sequencer,user,target) => {
-            sequencer.addHealth(user,user.maxHealth);
-            return {
-                text: `${user.name} had ${user.isPlayer ? "your" : "their"} health restored`
+        process: (sequencer,user) => {
+            if(user.isElf) {
+                sequencer.addHealth(user,user.maxHealth);
+                return {
+                    text: `${user.name} had their health restored`
+                }
+            } else {
+                sequencer.dropHealth(user,user.maxHealth);
+                return {
+                    text: `${user.name} had their health drained`
+                }
             }
         }
     },
     "band aid": {
         type: "self",
         name: "band aid",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
             sequencer.addHealth(user,10);
             return {
                 text: `${user.name} used a band aid`
@@ -234,7 +257,7 @@ const moves = {
     "magic": {
         type: "self",
         name: "magic",
-        process: (sequencer,user,target) => {
+        process: () => {
             return {
                 text: "but there's no such thing"
             }
@@ -243,7 +266,7 @@ const moves = {
     "self punch": {
         type: "self",
         name: "self punch",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
             sequencer.dropHealth(
                 user,user.state.atePunchingVitamins ? 30 : 15
             );
@@ -255,7 +278,12 @@ const moves = {
     "protect": {
         type: "self",
         name: "protect",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
+            if(user.isElf) {
+                return {
+                    text: `but elves don't know how to do this`
+                }
+            }
             user.state.protectTurn = sequencer.turnNumber;
             user.state.isProtected = true;
             return {
@@ -266,7 +294,7 @@ const moves = {
     "punching vitamins": {
         type: "self",
         name: "punching vitamins",
-        process: (sequencer,user,target) => {
+        process: (sequencer,user) => {
             if(user.state.atePunchingVitamins) {
                 sequencer.dropHealth(user,user.maxHealth);
                 return {
@@ -280,6 +308,45 @@ const moves = {
         }
     }
 };
+
+const protectPreProcessPlayer = (sequencer,move) => {
+    if(move.name === "protect") {
+        if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
+            if(sequencer.turnNumber >= sequencer.playerBattleObject.state.protectTurn+2) {
+                return move;
+            } else {
+                return {
+                    name: "player variant protection preprocessor",
+                    process: () => {
+                        return {
+                            failed: true,
+                            text: "but you used it last turn"
+                        }
+                    }
+                }
+            }
+        } else {
+            return move;
+        }
+    }
+    return move;
+}
+
+const protectPressProcessElf = (sequencer,move) => {
+    if(move.type === "target" && sequencer.playerBattleObject.state.isProtected) {
+        sequencer.playerBattleObject.state.isProtected = false;
+        return {
+            process: () => {
+                return {
+                    name: "elf variant protection preprocessor",
+                    failed: true,
+                    text: "but you are protected"
+                }
+            }
+        }
+    }
+    return move;
+}
 
 const elves = [
     /* Full schema:
@@ -633,6 +700,8 @@ const elves = [
         getMove: sequencer => {
             if(sequencer.playerBattleObject.health === 15) {
                 return moves["decent punch"];
+            } else if(sequencer.playerBattleObject.health === 20) {
+                return moves["violent spell"];
             }
             if(sequencer.elfBattleObject.health <= 30 &&
                 sequencer.playerBattleObject.health > sequencer.elfBattleObject.health && sequencer.playerBattleObject.lastMove !== "health swap") {
@@ -695,52 +764,82 @@ const elves = [
             }
         },
         setup: sequencer => {
-
             sequencer.playerBattleObject.subText = [`turn ${sequencer.turnNumber + 1}`];
-
-            sequencer.playerBattleObject.movePreProcess = move => {
-                if(move.name === "protect") {
-                    if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
-                        if(sequencer.turnNumber >= sequencer.playerBattleObject.state.protectTurn+2) {
-                            return move;
-                        } else {
-                            return {
-                                process: () => {
-                                    return {
-                                        failed: true,
-                                        text: "but you used it last turn"
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        return move;
-                    }
-                }
-                return move;
-            }
-
-            sequencer.elfBattleObject.movePreProcess = move => {
-                if(move.type === "target" && sequencer.playerBattleObject.state.isProtected) {
-                    sequencer.playerBattleObject.state.isProtected = false;
-                    return {
-                        process: () => {
-                            return {
-                                failed: true,
-                                text: "but you are protected"
-                            }
-                        }
-                    }
-                }
-                return move;
-            }
+            sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
+            sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;
         }
     },
     {
         name: "golden elfette",
         background: "background-3",
         backgroundColor: "yellow",
-        health: 200
+        health: 200,
+        playerMoves: [
+            {
+                name: "take gold",
+                type: "target",
+                process: (sequencer,user,target) => {
+                    target.state.gold--;
+                    if(target.state.gold < 0) {
+                        target.state.gold = 0;
+                        return {
+                            text: `but ${target.name} ${target.isPlayer ? "have" : "has"} no gold`
+                        }
+                    }
+                    user.state.gold++;
+                    user.subText[0] = `${user.state.gold} gold`;
+                    target.subText[0] = `${target.state.gold} gold`;
+
+                    return {
+                        text: `${user.name} took 1 gold from ${target.name}`
+                    }
+                },
+            },
+            {
+                name: "give gold",
+                type: "target",
+                process: (sequencer,user,target) => {
+                    user.state.gold--;
+                    if(user.state.gold < 0) {
+                        user.state.gold = 0;
+                        return {
+                            text: `but ${user.name} ${user.isPlayer ? "have" : "has"} no gold`
+                        }
+                    }
+                    target.state.gold++;
+                    user.subText[0] = `${user.state.gold} gold`;
+                    target.subText[0] = `${target.state.gold} gold`;
+
+                    return {
+                        text: `${user.name} gave 1 gold to ${target.name}`
+                    }
+                }
+            }
+        ],
+        getMove: sequencer => {
+            if(sequencer.playerBattleObject.lastMove === "take gold") {
+                return moves["nutcracker"];
+            }
+        },
+        getSpeech: sequencer => {
+            if(sequencer.playerBattleObject.lastMove === "take gold") {
+                return "yikes\ni wouldn't do that\nif i were you"
+            }
+        },
+        getWinSpeech: sequencer => {
+            if(sequencer.elfBattleObject.lastMove === "nutcracker" && sequencer.playerBattleObject.lastMove === "take gold") {
+                return "don't say i didn't\nwarn you that this\nwould happen";
+            }
+            return "stay away from my\nlucky charms";
+        },
+        setup: sequencer => {
+            sequencer.playerBattleObject.subText = ["0 gold"];
+            sequencer.elfBattleObject.subText = ["100 gold"];
+
+            sequencer.playerBattleObject.state.gold = 0;
+            sequencer.elfBattleObject.state.gold = 100;
+        },
+        startSpeech: "the only way to\nkill a golden\nelf is to obtain\nall their gold"
     },
     {
         name: "war elf",

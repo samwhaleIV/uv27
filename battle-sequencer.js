@@ -35,9 +35,11 @@ function BattleSeqeuencer(renderer) {
 
         let duration = endScreenLength;
         if(this.elf.getWinSpeech) {
-            const speech = this.elf.getWinSpeech();
-            this.showElfSpeech(speech,0,Infinity);
-            duration += this.getTextDuration(speech);
+            const speech = this.elf.getWinSpeech(this);
+            if(speech) {
+                this.showElfSpeech(speech,0,Infinity);
+                duration += this.getTextDuration(speech);
+            }
         }
         
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
@@ -49,9 +51,11 @@ function BattleSeqeuencer(renderer) {
 
         let duration = endScreenLength;
         if(this.elf.getLoseSpeech) {
-            const speech = this.elf.getLoseSpeech();
-            this.showElfSpeech(speech,0,Infinity);
-            duration += this.getTextDuration(speech);
+            const speech = this.elf.getLoseSpeech(this);
+            if(speech) {
+                this.showElfSpeech(speech,0,Infinity);
+                duration += this.getTextDuration(speech);
+            }
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
@@ -101,6 +105,7 @@ function BattleSeqeuencer(renderer) {
         disabledMoves: {},
         lastMove: null,
         movePreProcess: null,
+        subText: null,
         dropHealth: amount => {
             this.dropHealth(elfBattleObject,amount)
         }
@@ -178,6 +183,13 @@ function BattleSeqeuencer(renderer) {
     }
 
     this.genericMove = (move,user,target,callback) => {
+
+        if(!move || !move.name) {
+            callback();
+            console.error("Error: Missing move");
+            return;
+        }
+
         const text = `${user.name} used ${move.name}`;
         this.showText(text,0,this.getTextDuration(text),()=>{
             let moveResult;
@@ -185,7 +197,7 @@ function BattleSeqeuencer(renderer) {
                 moveResult = {
                     text: "but the developer made a mistake"
                 }
-                console.error("Hey idiot, you probably have a move key wrong");
+                console.error("Error: Hey idiot, you probably have a move key wrong");
             } else if(user.disabledMoves[move.name]) {
                 moveResult = {
                     text: "but it has been disabled"
@@ -195,19 +207,45 @@ function BattleSeqeuencer(renderer) {
                     text: "but their target is already dead"
                 }
             } else {
+                let skip = false;
+                let processedMove = move;
                 if(this.globalBattleState.movePreProcess !== null) {
-                    move = this.globalBattleState.movePreProcess(move);
+                    processedMove = this.globalBattleState.movePreProcess(this,processedMove);
+                    if(!move) {
+                        moveResult = {
+                            text: "but the developer made a mistake"
+                        }
+                        skip = true;
+                        console.error("Error: The global preprocessor didn't return an acceptable value");
+                    }
                 }
-                if(user.movePreProcess !== null) {
-                    move = user.movePreProcess(move);
+                if(!skip && user.movePreProcess !== null) {
+                    processedMove = user.movePreProcess(this,processedMove);
+                    if(!processedMove) {
+                        moveResult = {
+                            text: "but the developer made a mistake"
+                        }
+                        skip = true;
+                        console.error("Error: The move user's move preprocessor didn't return an acceptabe value");
+                    }
                 }
-                moveResult = move.process(
-                    this,
-                    user,
-                    target
-                );
-                if(moveResult.failed === true && !moveResult.text) {
+                if(!skip) {
+                    if(processedMove.process) {
+                        moveResult = processedMove.process(
+                            this,
+                            user,
+                            target
+                        );
+                    } else {
+                        moveResult = {
+                            text: "but the developer made a mistake"
+                        }
+                        console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
+                    }
+                }
+                if(moveResult && moveResult.failed === true && !moveResult.text) {
                     moveResult = {
+                        failed: true,
                         text: "but it failed"
                     }
                 }
@@ -220,7 +258,10 @@ function BattleSeqeuencer(renderer) {
                     callback
                 );
             } else if(callback) {
-                callback(moveResult);
+                callback();
+            } else {
+                this.returnInput();
+                console.error("Error: Missing callback state");
             }
         });
 
@@ -251,6 +292,9 @@ function BattleSeqeuencer(renderer) {
             move = moves["nothing"];
         } else {
             move = this.elf.getMove(this);
+            if(!move) {
+                move = moves["nothing"];
+            }
         }
         this.genericMove(
             move,
@@ -261,6 +305,9 @@ function BattleSeqeuencer(renderer) {
                     let elfSpeech = null;
                     if(this.elf.getSpeech) {
                         elfSpeech = this.elf.getSpeech(this);
+                        if(!elfSpeech) {
+                            elfSpeech = null;
+                        }
                     }
                     if(elfSpeech !== null) {
                         this.showElfSpeech(

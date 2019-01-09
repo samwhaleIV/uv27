@@ -955,6 +955,15 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     imageDictionary["fontspace-black"]
                 );
             }
+        } else if(this.battleSequencer.elfBattleObject.subText !== null) {
+            for(let i = 0;i<this.battleSequencer.elfBattleObject.subText.length;i++) {
+                drawText(
+                    this.battleSequencer.elfBattleObject.subText[i],
+                    this.rightHealthBar.x,
+                    this.subTextY + (i*20),
+                    2.5,1,imageDictionary["fontspace"]
+                );
+            }
         }
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
