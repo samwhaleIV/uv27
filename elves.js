@@ -908,13 +908,16 @@ const elves = [
                             }
                         } else {
                             return {
-                                text: `${user.name} puts their gold into stocks`
+                                text: `${user.name} put their gold into stocks`
                             }
                         }
                     }
                 }
             }
-            if(sequencer.playerBattleObject.lastMove === "take gold") {
+            if(sequencer.playerBattleObject.lastMove === "take gold" && !sequencer.playerBattleObject.state.protectedTheirNuts) {
+                if(sequencer.playerBattleObject.state.squirrels >= 1) {
+                    sequencer.playerBattleObject.state.protectedTheirNuts = true;
+                }
                 return moves["nutcracker"];
             } else {
                 const moves = [
@@ -951,6 +954,9 @@ const elves = [
             }
         },
         getSpeech: sequencer => {
+            if(sequencer.elfBattleObject.health === 0) {
+                return;
+            }
             if(sequencer.playerBattleObject.lastMove === "take gold" ||
                sequencer.playerBattleObject.lastMove === "buy squirrel") {
 
@@ -970,16 +976,18 @@ const elves = [
                             case 6:
                                 sequencer.elfBattleObject.state.ditchGold = true;
                                 return "okay you know what?\ni'm putting an end to this";
+                            default:
+                                return "please. stop. buying.\n\squirrels.";
                         }
                     } else {
                         const responses = [
-                            "i'll take your\nsquirrels",
-                            "i could get squirrels too",
-                            "what sound\ndoes a squirrel\nmake\n\njust tryna make\nconversation",
-                            "*makes nut sounds*",
-                            "*trys to steal squirrels*"
+                            ()=>"i'll take your\nsquirrels",
+                            ()=>"i could get squirrels too",
+                            ()=>"what sound\ndoes a squirrel\nmake\n\njust tryna make\nconversation",
+                            ()=>"*makes nut sounds*",
+                            ()=>`*tries to steal your squirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s":""}*`
                         ];
-                        return responses[Math.floor(Math.random() * responses.length)];
+                        return responses[Math.floor(Math.random() * responses.length)]();
                     }
                 } else {
                     if(sequencer.turnNumber === 0) {
@@ -987,7 +995,7 @@ const elves = [
                     } else {
                         const responses = [
                             "good thing\nyou don't have any\nsquirrels to\nprotect you",
-                            "squirrels are good at\protecting nuts\n\nwell jock straps are\ntoo but elves don't\nneed those",
+                            "squirrels are good at\nprotecting nuts\n\nwell jock straps are\ntoo but elves don't\nneed those",
                             "i am a gold belt\nin nutcracking\n\nbut a black belt in racism",
                             "some people think i'm\ntoo quirky\nto be an elf",
                             "i love gold -stay away !"

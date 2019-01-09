@@ -46,7 +46,7 @@ function BattleSeqeuencer(renderer) {
 
     }
     this.elfDiedMethod = () => {
-        this.bottomMessage = `${this.elf.name} ran out of christmas spirit`;
+        this.bottomMessage = `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
 
         let duration = endScreenLength;

@@ -816,7 +816,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.bottomMessageX = 0;
     this.bottomMessageY = 332;
 
-    this.subTextY = this.leftHealthBar.textY+32;
+    this.subTextScale = 2.5;
+
+    const healthBarTextHeight = drawTextTest("",this.healthBarTextSize).height;
+
+    this.subTextY = (healthBarTextY + healthBarTextHeight + healthBarTextMargin) +
+        Math.floor(Math.round(healthBarTextHeight/2)-(drawTextTest("",this.subTextScale).height/2));
 
     this.bottomMessageTextScale = 4;
 
@@ -987,7 +992,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 drawTextWhite(
                     this.battleSequencer.elfBattleObject.subText[i],
                     this.rightHealthBar.x,
-                    this.subTextY + (i*20),2.5
+                    this.subTextY + (i*20),this.subTextScale
                 );
             }
         }
@@ -997,7 +1002,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 drawTextWhite(
                     this.battleSequencer.playerBattleObject.subText[i],
                     this.leftHealthBar.x,
-                    this.subTextY + (i*20),2.5
+                    this.subTextY + (i*20),this.subTextScale
                 );
             }
         }
