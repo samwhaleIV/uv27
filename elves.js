@@ -17,12 +17,12 @@ BattleObject = {
 /*
 
 Adding health and removing health:
-sequencer.dropHealth(target,amount)
-sequencer.addHealth(target,amount)
+    -sequencer.dropHealth(target,amount)
+    -sequencer.addHealth(target,amount)
 
-sequencer.turnNumber -> <number/int>
-
-sequencer.globalBattleState -> {}
+-sequencer.turnNumber -> <number/int>
+-sequencer.globalBattleState -> {}
+-sequencer.updatePlayerMoves(moves)
 
 */
 
@@ -178,10 +178,10 @@ const moves = {
         type: "target",
         name: "nutcracker",
         process: (sequencer,user,target) => {
-            if(target.state.squirrels >= 0) {
+            if(target.state.squirrels >= 1) {
                 if(target.isPlayer) {
                     return {
-                        text: "but your squirrel protected you"
+                        text: `but your squirrel${target.state.squirrels === 1 ? "" : "s"} protected you`
                     }
                 } else {
                     return {
@@ -623,6 +623,9 @@ const elves = [
                                 text: "but you can't jam more bullets in"
                             }
                         }
+                        if(user.state.freshSpin) {
+                            user.subText[3] = "not spun";
+                        }
                         user.state.freshSpin = false;
                         let newBullets = 0;
                         while(user.state.loadedBullets < 6 && user.state.bullets > 0) {
@@ -648,6 +651,7 @@ const elves = [
                 process: (sequencer,user) => {
                     if(user.state.loadedBullets && user.state.loadedBullets > 0) {
                         user.state.freshSpin = true;
+                        user.subText[3] = "spun";
                         return {
                             text: "you spun your chamber"
                         }
@@ -665,6 +669,7 @@ const elves = [
                     if(user.state.loadedBullets && user.state.loadedBullets > 0) {
                         if(user.state.freshSpin) {
                             user.state.freshSpin = false;
+                            user.subText[3] = "not spun";
                             if(Math.random() <= user.state.loadedBullets / 6) {
                                 user.state.loadedBullets--;
                                 user.subText[2] = `${user.state.loadedBullets} loaded`;
@@ -749,7 +754,11 @@ const elves = [
         startSpeech: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best",
         getSpeech: sequencer => {
             if(sequencer.turnNumber % 4 === 3) {
-                return "i could do this\nall day";
+                if(sequencer.turnNumber % 2 === 0) {
+                    return "water breaks\nare essential\nto an effective\nworkout - or a good\nass kicking"
+                } else {
+                    return "i could do this\nall day";
+                }
             }
             return null;
         },
@@ -872,7 +881,11 @@ const elves = [
                         } else {
                             user.state.squirrels = 1;
                         }
-                        user.subText[1] = `${user.state.squirrels} squirrel${user.state.squirrels !== 1 ? "s" : ""}`
+                        if(!user.state.totalSquirrels) {
+                            user.state.totalSquirrels = 0;
+                        }
+                        user.state.totalSquirrels++;
+                        user.subText[1] = `${user.state.squirrels} squirrel${user.state.squirrels !== 1 ? "s" : ""}`;
                         return {
                             text: `${user.name} purchased 1 squirrel`
                         }
@@ -886,15 +899,17 @@ const elves = [
             }
         ],
         getMove: sequencer => {
-            if(sequencer.elfBattleObject.state.ditchGold) {
+            if(sequencer.elfBattleObject.state.puttingAnEndToThis) {
                 return {
-                    name: "dispose gold",
-                    type: "self",
-                    process: (sequencer,user) => {
-                        user.state.gold-=10;
-                        if(user.state.gold < 0) {
-                            user.state.gold = 0;
+                    name: "unfiscal punch",
+                    type: "target",
+                    process: (sequencer,user,target) => {
+                        let difference = 10;
+                        if(user.state.gold < difference) {
+                            difference = user.state.gold;
                         }
+                        user.state.gold-=difference;
+                        sequencer.dropHealth(target,9);
                         user.subText[0] = `${user.state.gold} gold`;
                         if(user.isElf && user.state.gold === 0 && user.name === "golden elfette") {
                             sequencer.dropHealth(user,user.maxHealth);
@@ -902,13 +917,13 @@ const elves = [
                                 text: "this was essentially suicide"
                             }
                         }
-                        if(user.isPlayer) {
+                        if(target.isPlayer) {
                             return {
-                                text: `${user.name} is trashing their gold`
+                                text: `you punched too hard and dropped ${difference} gold`
                             }
                         } else {
                             return {
-                                text: `${user.name} put their gold into stocks`
+                                text: `${target.name} punched too hard and dropped ${difference} gold`
                             }
                         }
                     }
@@ -920,20 +935,21 @@ const elves = [
                 }
                 return moves["nutcracker"];
             } else {
-                const moves = [
+                const elfMoves = [
                     {
                         name: "worship gold",
                         type: "self",
                         process: (sequencer,user) => {
-                            user.state.gold++;
+                            const goldIncrease = 3;
+                            user.state.gold+=goldIncrease;
                             user.subText[0] = `${user.state.gold} gold`;
                             if(user.isPlayer) {
                                 return {
-                                    text: "you worship your gold (+1 gold)"
+                                    text: `you worship your gold (+${goldIncrease} gold)`
                                 }
                             } else {
                                 return {
-                                    text: `${user.name} worships their gold (+1 gold)`
+                                    text: `${user.name} worships their gold (+${goldIncrease} gold)`
                                 }
                             }
                         }
@@ -942,15 +958,39 @@ const elves = [
                         name: "gold bath",
                         type: "self",
                         process: (sequencer,user) => {
-                            user.state.gold++;
+                            const goldIncrease = 4;
+                            user.state.gold+=goldIncrease;
                             user.subText[0] = `${user.state.gold} gold`;
                             return {
-                                text: `${user.name} bathe${user.isElf ? "s" : ""} in gold (+1 gold)`
+                                text: `${user.name} bathe${user.isElf ? "s" : ""} in gold (+${goldIncrease} gold)`
                             }
                         }
-                    }
+                    },
+                    moves["decent punch"]
                 ];
-                return moves[Math.floor(Math.random() * moves.length)];
+                if(sequencer.playerBattleObject.state.squirrels >= 1) {
+                    if(Math.random() > 0.5) {
+                        elfMoves.push({
+                            name: "free squirrel",
+                            type: "target",
+                            process: (sequencer,user,target) => {
+                                if(target.state.squirrels >= 1) {
+                                    target.state.squirrels--;
+                                    target.subText[1] = `${target.state.squirrels} squirrel${target.state.squirrels !== 1 ? "s" : ""}`;
+                                    return {
+                                        text: `${user.name} freed 1 squirrel from ${target.name}`
+                                    }
+                                } else {
+                                    return {
+                                        failed: true,
+                                        text: `but ${user.isPlayer ? "your" : "their"} is out of squirrels`
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+                return elfMoves[Math.floor(Math.random() * elfMoves.length)];
             }
         },
         getSpeech: sequencer => {
@@ -960,9 +1000,9 @@ const elves = [
             if(sequencer.playerBattleObject.lastMove === "take gold" ||
                sequencer.playerBattleObject.lastMove === "buy squirrel") {
 
-                if(sequencer.playerBattleObject.state.squirrels >= 0) {
+                if(sequencer.playerBattleObject.state.squirrels >= 1) {
                     if(sequencer.playerBattleObject.state.justBoughtSquirrel) {
-                        switch(sequencer.playerBattleObject.state.squirrels) {
+                        switch(sequencer.playerBattleObject.state.totalSquirrels) {
                             case 1:
                                 return "what!\na squirrel?\nhow dare u";
                             case 2:
@@ -974,18 +1014,22 @@ const elves = [
                             case 5:
                                 return "it's about time that\ni call peta";
                             case 6:
-                                sequencer.elfBattleObject.state.ditchGold = true;
+                                sequencer.elfBattleObject.state.puttingAnEndToThis = true;
                                 return "okay you know what?\ni'm putting an end to this";
                             default:
                                 return "please. stop. buying.\n\squirrels.";
                         }
                     } else {
                         const responses = [
-                            ()=>"i'll take your\nsquirrels",
-                            ()=>"i could get squirrels too",
-                            ()=>"what sound\ndoes a squirrel\nmake\n\njust tryna make\nconversation",
+                            ()=>"i'll free your\nsquirrels",
+                            ()=>"i'll take your\nsquirrels away",
+                            ()=>sequencer.playerBattleObject.state.squirrels !== 1 ? "those squirrels\ndon't belong to you" : "that squirrel\ndoesn't belong to you",
+                            ()=>sequencer.playerBattleObject.state.squirrels !== 1 ? "those squirrels\nhave families" : "that squirrel\nhas a family",
+                            ()=>`maybe i could get\n${sequencer.playerBattleObject.state.squirrels === 1 ? "a squirrel" : "squirrels"} too`,
+                            ()=>"what sound\ndoes a squirrel make?",
                             ()=>"*makes nut sounds*",
-                            ()=>`*tries to steal your squirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s":""}*`
+                            ()=>"*makes squirrel noises*",
+                            ()=>`*tries to steal your\nsquirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s":""}*`
                         ];
                         return responses[Math.floor(Math.random() * responses.length)]();
                     }
@@ -994,11 +1038,14 @@ const elves = [
                         return "yikes\ni wouldn't do that\nif i were you";
                     } else {
                         const responses = [
+                            "i am a huge animal\nrights advocate",
+                            "i really love squirrels",
+                            "squirrels are friends\nnot food",
                             "good thing\nyou don't have any\nsquirrels to\nprotect you",
                             "squirrels are good at\nprotecting nuts\n\nwell jock straps are\ntoo but elves don't\nneed those",
                             "i am a gold belt\nin nutcracking\n\nbut a black belt in racism",
                             "some people think i'm\ntoo quirky\nto be an elf",
-                            "i love gold -stay away !"
+                            "i love gold - stay away!"
                         ];
                         return responses[Math.floor(Math.random() * responses.length)];
                     }

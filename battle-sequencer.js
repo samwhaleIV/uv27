@@ -413,6 +413,10 @@ function BattleSeqeuencer(renderer) {
         }
     }
 
+    this.updatePlayerMoves = moves => {
+        renderer.playerInputs = moves;
+    }
+
     this.bottomMessage = null;
 
     if(this.elf.setup) {

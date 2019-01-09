@@ -52,7 +52,6 @@ const drawTextWhite = function(text,x,y,scale,spacing=1) {
     const drawHeight = 5 * scale;
     const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-
     for(let i = 0;i<text.length;i++) {
         const character = fontDictionary[text.substr(i,1)];
         if(!character) {
