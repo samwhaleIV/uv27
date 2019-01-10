@@ -1177,7 +1177,7 @@ const elves = [
     {
         name: "corrupt elf",
         background: "background-6",
-        color: "white",
+        backgroundColor: "white",
         health: 700
     },
     {

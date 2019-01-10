@@ -961,7 +961,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.elfTextBubbleY = 82;
 
     if(isBoss) {
-        this.elfTextBubbleY += 40;
+        this.elfTextBubbleY += 23;
     }
 
     this.disablePlayerInputs = () => {
