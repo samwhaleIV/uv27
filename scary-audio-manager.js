@@ -10,10 +10,60 @@ musicVolumeNode.gain.value = musicNodeGain;
 
 const audioBuffers = {};
 
-let musicNode = null;
+let musicNode = null, musicMuted = false, soundMuted = false;
+
+const toggleMusicMute = () => {
+    if(musicMuted) {
+        unmuteMusic();
+    } else {
+        muteMusic();
+    }
+}
+
+const toggleSoundMute = () => {
+    if(soundMuted) {
+        unmuteSound();
+    } else {
+        muteSound();
+    }
+}
+
+const muteMusic = () => {
+    if(!musicMuted) {
+        musicVolumeNode.disconnect(audioContext.destination);
+        musicMuted = true;
+    } else {
+        console.warn("Audio manager: Music already muted");
+    }
+}
+const muteSound = () => {
+    if(!soundMuted) {
+        volumeNode.disconnect(audioContext.destination);
+        soundMuted = true;
+    } else {
+        console.warn("Audio manager: Sound already muted");
+    }
+}
+
+const unmuteSound = () => {
+    if(soundMuted) {
+        volumeNode.connect(audioContext.destination);
+        soundMuted = false;
+    } else {
+        console.warn("Audio manager: Sound already unmuted");
+    }
+}
+
+const unmuteMusic = () => {
+    if(musicMuted) {
+        musicVolumeNode.connect(audioContext.destination);
+        musicMuted = false;
+    } else {
+        console.warn("Audio manager: Music already unmuted");
+    }
+}
 
 const playMusic = (name,fadeTime=0) => {
-    return;//DEBUG
     if(musicNode) {
         console.error("Error: Music is already playing");
     } else {

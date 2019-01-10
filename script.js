@@ -99,7 +99,7 @@ const loadSounds = callback => {
         "audio/clip.mp3",
         "audio/reverse-clip.mp3",
 
-        //"audio/menu.mp3"
+        "audio/menu.mp3"
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {
