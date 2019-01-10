@@ -593,9 +593,11 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
                 break;
             case 3:
                 toggleMusicMute();
+                playSound("click.mp3");
                 break;
             case 4:
                 toggleSoundMute();
+                playSound("click.mp3");
                 break;
         }
     }
