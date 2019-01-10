@@ -205,10 +205,12 @@ function BattleSeqeuencer(renderer) {
                 console.error("Error: Hey idiot, you probably have a move key wrong");
             } else if(user.disabledMoves[move.name]) {
                 moveResult = {
+                    failed: true,
                     text: "but it has been disabled"
                 }
             } else if(target.isDead && move.type === "target") {
                 moveResult = {
+                    failed: true,
                     text: "but their target is already dead"
                 }
             } else {

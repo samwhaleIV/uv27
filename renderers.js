@@ -1055,13 +1055,21 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
                 const yValues = this.playerInputsYValues[i];
 
-                if(i === this.hoverEffectIndex && ((!animating && this.playerInputsEnabled) || (this.firstInputMask && this.hoverEffectIndex === 0))) {
+
+                if(i === this.hoverEffectIndex && !animating && this.playerInputsEnabled) {
                     context.fillStyle = "rgba(255,255,255,0.7)";
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
                         this.hoverEffectWidth,this.hoverEffectHeight
-                    );            
+                    );
+                } else if(this.firstInputMask && this.hoverEffectIndex !== null && i === 0) {
+                    context.fillStyle = "rgba(255,255,255,0.7)";
+                    context.fillRect(
+                        this.hoverEffectX,yValues.hoverValue,
+                        this.hoverEffectWidth,this.hoverEffectHeight
+                    );
                 }
+                
 
                 context.fillStyle = "rgba(0,0,0,0.8)";
                 context.fillRect(
@@ -1090,6 +1098,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             case "KeyA":
             case "ArrowUp":
             case "ArrowLeft":
+                if(!this.playerInputsEnabled) {
+                    if(this.hoverEffectIndex === null) {
+                        this.hoverEffectIndex = 0;
+                    }
+                    break;
+                }
                 if(this.hoverEffectIndex !== null) {
                     this.hoverEffectIndex--;
                     if(this.hoverEffectIndex < 0) {
@@ -1103,6 +1117,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             case "KeyS":
             case "ArrowDown":
             case "ArrowRight":
+                if(!this.playerInputsEnabled) {
+                    if(this.hoverEffectIndex === null) {
+                        this.hoverEffectIndex = 0;
+                    }
+                    break;
+                }
                 if(this.hoverEffectIndex !== null) {
                     this.hoverEffectIndex++;
                     const max =  this.playerInputs.length-1;
