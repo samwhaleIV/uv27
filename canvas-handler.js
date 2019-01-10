@@ -37,12 +37,7 @@ const processMouseMove = event => {
             rendererState.processMove(
                 relativeEventLocation.x,
                 relativeEventLocation.y
-            );/*
-            if(rendererState.hoverEffectIndex !== null) {
-                canvas.style.cursor = "pointer"
-            } else {
-                canvas.style.cursor = "";
-            }*/   
+            );  
         }
     }
 }
@@ -83,7 +78,6 @@ const stopRenderer = function() {
 }
 
 const startRenderer = function() {
-    //canvas.style.cursor = "";
     paused = false;
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot start.");

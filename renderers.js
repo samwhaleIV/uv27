@@ -1330,7 +1330,6 @@ function IntroductionRenderer(endCallback) {
         "good luck"
     ];
 
-
     const startTimeOffset = 2500;
     this.fadeIn = 2000;
     this.fadeRange = 0.5;
