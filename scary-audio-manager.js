@@ -30,7 +30,7 @@ const toggleSoundMute = () => {
 
 const muteMusic = () => {
     if(!musicMuted) {
-        musicVolumeNode.disconnect(audioContext.destination);
+        musicVolumeNode.gain.value = 0;
         musicMuted = true;
     } else {
         console.warn("Audio manager: Music already muted");
@@ -38,7 +38,7 @@ const muteMusic = () => {
 }
 const muteSound = () => {
     if(!soundMuted) {
-        volumeNode.disconnect(audioContext.destination);
+        volumeNode.gain.value = 0;
         soundMuted = true;
     } else {
         console.warn("Audio manager: Sound already muted");
@@ -47,7 +47,7 @@ const muteSound = () => {
 
 const unmuteSound = () => {
     if(soundMuted) {
-        volumeNode.connect(audioContext.destination);
+        volumeNode.gain.value = 1;
         soundMuted = false;
     } else {
         console.warn("Audio manager: Sound already unmuted");
@@ -56,7 +56,7 @@ const unmuteSound = () => {
 
 const unmuteMusic = () => {
     if(musicMuted) {
-        musicVolumeNode.connect(audioContext.destination);
+        musicVolumeNode.gain.value = musicNodeGain;
         musicMuted = false;
     } else {
         console.warn("Audio manager: Music already unmuted");
