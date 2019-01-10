@@ -40,7 +40,6 @@ const drawTextTest = function(text,scale,spacing=1) {
             xOffset += spaceOffset;
         }
     }
-
     return {
         width: xOffset,
         height: drawHeight
@@ -69,6 +68,10 @@ const drawTextWhite = function(text,x,y,scale,spacing=1) {
             xOffset += spaceOffset;
         }
     }
+    return {
+        width: xOffset,
+        height: drawHeight
+    }
 }
 
 const drawTextBlack = function(text,x,y,scale,spacing=1) {
@@ -93,6 +96,10 @@ const drawTextBlack = function(text,x,y,scale,spacing=1) {
         if(i < lastOffsetIndex) {
             xOffset += spaceOffset;
         }
+    }
+    return {
+        width: xOffset,
+        height: drawHeight
     }
 }
 
@@ -1366,7 +1373,7 @@ function IntroductionRenderer(endCallback) {
                 const textArea = drawTextWhite(this.messages[i],20,runningYOffset,4);
                 if(step === i) {
                     context.fillStyle = `rgba(0,0,0,${1-innerProgress})`;
-                    context.fillRect(textArea.x,textArea.y,textArea.width,textArea.height);
+                    context.fillRect(20,runningYOffset,textArea.width,textArea.height);
                 }
                 runningYOffset += textArea.height + 10;
             }
