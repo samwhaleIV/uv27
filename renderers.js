@@ -428,6 +428,8 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
         this.currentIndex = this.highestElfIndex;
     }
 
+    localStorage.setItem("lastCurrentIndex",this.currentIndex);
+
     this.elfWidth = 160;
     this.elfHeight = Math.floor((elfSourceHeight / elfSourceWidth) * this.elfWidth);
 
@@ -481,6 +483,9 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
     this.buttonY = this.elfY + verticalSpacing + this.elfHeight;
 
     this.goLeft = () => {
+        if(this.transitioning) {
+            return;
+        }
         this.currentIndex--;
         if(this.currentIndex < 0) {
             this.currentIndex = 0;
@@ -488,9 +493,13 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             playSound("click.mp3");
             this.setElf();
         }
+        localStorage.setItem("lastCurrentIndex",this.currentIndex);
     }
 
     this.goRight = () => {
+        if(this.transitioning) {
+            return;
+        }
         this.currentIndex++;
         if(this.currentIndex > this.highestElfIndex) {
             this.currentIndex = this.highestElfIndex;
@@ -498,6 +507,7 @@ function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
             playSound("click.mp3");
             this.setElf();
         }
+        localStorage.setItem("lastCurrentIndex",this.currentIndex);
     }
 
     this.transitioning = false;

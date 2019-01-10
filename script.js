@@ -142,6 +142,13 @@ processMetaTileset();
 adjustFontPositions();
 processElvesMeta();
 
+if(localStorage.getItem("soundMuted") === "true") {
+    muteSound();
+}
+if(localStorage.getItem("musicMuted") === "true") {
+    muteMusic();
+}
+
 const gameLoop = () => {
 
     let elfIndex = 0, highestIndex;
@@ -205,9 +212,15 @@ const gameLoop = () => {
             getSelectScreen
         );
     } else {
+        const lastCurrentIndex = localStorage.getItem("lastCurrentIndex");
+        const parsedIndex = Number(lastCurrentIndex);
+        let currentIndex = elfIndex;
+        if(parsedIndex === 0 || !isNaN(parsedIndex)) {
+            currentIndex = parsedIndex;
+        }
         rendererState = new ElfSelectScreen(
             getBattleScreen,
-            elfIndex,elfIndex
+            elfIndex,currentIndex
         );
         playMusic(rendererState.song);
     }

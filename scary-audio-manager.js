@@ -32,6 +32,7 @@ const muteMusic = () => {
     if(!musicMuted) {
         musicVolumeNode.gain.value = 0;
         musicMuted = true;
+        localStorage.setItem("musicMuted",true);
     } else {
         console.warn("Audio manager: Music already muted");
     }
@@ -40,6 +41,7 @@ const muteSound = () => {
     if(!soundMuted) {
         volumeNode.gain.value = 0;
         soundMuted = true;
+        localStorage.setItem("soundMuted",true);
     } else {
         console.warn("Audio manager: Sound already muted");
     }
@@ -49,6 +51,7 @@ const unmuteSound = () => {
     if(soundMuted) {
         volumeNode.gain.value = 1;
         soundMuted = false;
+        localStorage.setItem("soundMuted",false);
     } else {
         console.warn("Audio manager: Sound already unmuted");
     }
@@ -58,6 +61,7 @@ const unmuteMusic = () => {
     if(musicMuted) {
         musicVolumeNode.gain.value = musicNodeGain;
         musicMuted = false;
+        localStorage.setItem("musicMuted",false);
     } else {
         console.warn("Audio manager: Music already unmuted");
     }
@@ -76,7 +80,9 @@ const playMusic = (name,fadeTime=0) => {
             musicNode.loop = true;
             musicNode.connect(musicVolumeNode);
             musicNode.start();
-            musicVolumeNode.gain.linearRampToValueAtTime(musicNodeGain,audioContext.currentTime + fadeTime);
+            if(!musicMuted) {
+                musicVolumeNode.gain.linearRampToValueAtTime(musicNodeGain,audioContext.currentTime + fadeTime);
+            }
         }
     }
 }
@@ -84,7 +90,9 @@ const stopMusic = (fadeTime=0) => {
     if(musicNode) {
         let oldMusicNode = musicNode;
         musicNode = null;
-        musicVolumeNode.gain.linearRampToValueAtTime(0,audioContext.currentTime + fadeTime);
+        if(!musicMuted) {
+            musicVolumeNode.gain.linearRampToValueAtTime(0,audioContext.currentTime + fadeTime);
+        }
         setTimeout(()=>{
             oldMusicNode.stop();
         },(fadeTime*1000)+50);
