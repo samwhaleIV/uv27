@@ -167,7 +167,7 @@ const gameLoop = () => {
             index = elfIndex;
         }
         rendererState.fader.fadeOut(
-            ElfSelectScreen,
+            ElfSelectScreenRenderer,
             getBattleScreen,
             highestIndex,index
         );
@@ -218,7 +218,7 @@ const gameLoop = () => {
         if(parsedIndex === 0 || !isNaN(parsedIndex)) {
             currentIndex = parsedIndex;
         }
-        rendererState = new ElfSelectScreen(
+        rendererState = new ElfSelectScreenRenderer(
             getBattleScreen,
             elfIndex,currentIndex
         );

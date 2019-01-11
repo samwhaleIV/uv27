@@ -1,4 +1,4 @@
-function ElfSelectScreen(endCallback,highestElfIndex,loadIndex) {
+function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.song = "menu.mp3";
 
