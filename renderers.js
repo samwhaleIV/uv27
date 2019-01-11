@@ -1137,36 +1137,44 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             let oddOffset = 0;
             let animating = false;
 
-            let progress = null;
             if(this.playerInputDisableStartTime !== null) {
 
-                timeDifference =  timestamp - this.playerInputDisableStartTime;
+                const timeDifference =  timestamp - this.playerInputDisableStartTime;
 
-                progress = timeDifference / this.playerInputToggleAnimationTime;
-
-                animating = true;
-
-            } else if(this.playerInputEnableStartTime !== null) {
-
-                timeDifference =  timestamp - this.playerInputEnableStartTime;
-
-                progress = 1 - (timeDifference / this.playerInputToggleAnimationTime);
+                let progress = timeDifference / this.playerInputToggleAnimationTime;
 
                 animating = true;
 
-            }
-            if(progress !== null) {
-                if(progress < 0) {
-                    progress = 0;
-                    animating = false;
-                } else if(progress > 1) {
+                if(progress >= 1) {
                     progress = 1;
                     animating = false;
+                    //this.playerInputDisableStartTime = null;
                 }
+
                 const distance = progress * this.playerInputToggleDistance;
                 evenOffset = -distance;
                 oddOffset = distance;
+
+            } else if(this.playerInputEnableStartTime !== null) {
+
+                const timeDifference =  timestamp - this.playerInputEnableStartTime;
+
+                let progress = 1 - (timeDifference / this.playerInputToggleAnimationTime);
+
+                animating = true;
+
+                if(progress <= 0) {
+                    progress = 0;
+                    animating = false;
+                    //this.playerInputEnableStartTime = null;
+                }
+
+                const distance = progress * this.playerInputToggleDistance;
+                evenOffset = -distance;
+                oddOffset = distance;
+
             }
+
 
             for(let i = 0;i<this.playerInputs.length;i++) {
                 let xOffset = 0, inputText;
@@ -1187,14 +1195,13 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         this.hoverEffectX,yValues.hoverValue,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
-                } else if(this.firstInputMask && this.hoverEffectIndex !== null && i === 0) {
+                } else if(this.firstInputMask && this.hoverEffectIndex !== null && i === 0 && (this.lastEventWasKeyBased || this.hoverEffectIndex === 0)) {
                     context.fillStyle = "rgba(255,255,255,0.7)";
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
                 }
-                
 
                 context.fillStyle = "rgba(0,0,0,0.8)";
                 context.fillRect(
@@ -1217,12 +1224,15 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.battleSequencer = new BattleSeqeuencer(this);
 
+    this.lastEventWasKeyBased = false;
+
     this.processKey = key => {
         switch(key) {
             case "KeyW":
             case "KeyA":
             case "ArrowUp":
             case "ArrowLeft":
+                this.lastEventWasKeyBased = true;
                 if(!this.playerInputsEnabled) {
                     if(this.hoverEffectIndex === null) {
                         this.hoverEffectIndex = 0;
@@ -1242,6 +1252,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             case "KeyS":
             case "ArrowDown":
             case "ArrowRight":
+                this.lastEventWasKeyBased = true;
                 if(!this.playerInputsEnabled) {
                     if(this.hoverEffectIndex === null) {
                         this.hoverEffectIndex = 0;
@@ -1260,6 +1271,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 break;
             case "Enter":
             case "Space":
+                this.lastEventWasKeyBased = true;
                 this.processClick();
                 return;
         }
@@ -1278,6 +1290,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     }
 
     this.processMove = (x,y) => {
+        this.lastEventWasKeyBased = false;
         this.hoverEffectIndex = this.getHitRegister(x,y);
     }
 
@@ -1287,8 +1300,11 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 playSound("click.mp3");
             }
             this.battleSequencer.skipEvent();
-            if(x && y) {
+            if(x > -1 && y > -1) {
                 this.hoverEffectIndex = this.getHitRegister(x,y);
+                this.lastEventWasKeyBased = false;
+            } else {
+                this.lastEventWasKeyBased = true;
             }
             return;
         }
@@ -1302,10 +1318,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             }
         }
         let hitRegister;
-        if(x && y) {
+        if(x > -1&& y > -1) {
             hitRegister = this.getHitRegister(x,y);
+            this.lastEventWasKeyBased = false;
         } else {
             hitRegister = this.hoverEffectIndex;
+            this.lastEventWasKeyBased = true;
         }
         if(hitRegister !== null) {
             playSound("click.mp3");

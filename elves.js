@@ -86,9 +86,9 @@ const moves = {
             }
         }
     },
-    "honorous suicide": {
+    "honorable suicide": {
         type: "self",
-        name: "honorous suicide",
+        name: "honorable suicide",
         process: (sequencer,user) => {
             sequencer.dropHealth(user,user.maxHealth);
             return {
@@ -321,6 +321,27 @@ const moves = {
     }
 };
 
+const getOptionMove = (moveName,questionID,optionID) => {
+    return {
+        name: moveName,
+        type: "option",
+        process: (sequencer,user) => {
+            user.state[questionID] = optionID || moveName;
+            return {
+                failed: false
+            }
+        }
+    }
+}
+
+const getRadioSet = (options,questionID) => {
+    const moves = [];
+    for(let i = 0;i<options.length;i++) {
+        moves[i] = getOptionMove(options[i],questionID,i);
+    }
+    return moves;
+}
+
 const protectPreProcessPlayer = (sequencer,move) => {
     if(move.name === "protect") {
         if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
@@ -371,7 +392,7 @@ const elves = [
         -getMove: function(sequencer)
 
         This is post move text. Win speech is used if the player died from the move.
-        -getSpeech: function(sequencer) -> <string>(\n delimited)
+        -getSpeech: function(sequencer) -> {text:<string>(\n delimited),persist:<boolean>}
 
         -playerMoves: Array<moves> (4 or less)
 
@@ -412,10 +433,12 @@ const elves = [
             } else {
                 elfBattleObject.state.speechIndex = (elfBattleObject.state.speechIndex + 1) % speeches.length;
             }
-            return speeches[elfBattleObject.state.speechIndex] + "\n*crying sounds*";
+            return {
+                text: speeches[elfBattleObject.state.speechIndex] + "\n*crying sounds*"
+            }
         },
         playerMoves: [
-            moves["nothing"],moves["also nothing"],moves["honorous suicide"],moves["senseless murder"]
+            moves["nothing"],moves["also nothing"],moves["honorable suicide"],moves["senseless murder"]
         ],
         health: 100,
 
@@ -452,30 +475,46 @@ const elves = [
                     sequencer.globalBattleState.noticedThatCryingStopped = false;
                     switch(sequencer.globalBattleState.turnsCrying) {
                         case 1:
-                            return "ah what did i say\nabout crying"
+                            return {
+                                text: "ah what did i say\nabout crying"
+                            };
                         case 2:
-                            return "i really don't like this";
+                            return {
+                                text: "i really don't like this"
+                            };
                         case 3:
-                            return "your crying makes me\nuncomfortable";
+                            return {
+                                text: "your crying makes me\nuncomfortable"
+                            };
                         default:
                         case 4:
-                            return "i can't take it\nanymore";
+                            return {
+                                text: "i can't take it\nanymore"
+                            };
                     }
                 } else {
                     sequencer.globalBattleState.noticedThatCryingStopped = false;
-                    return "ugh\nyou stopped\nwhy start again\njust be happy";
+                    return {
+                        text: "ugh\nyou stopped\nwhy start again\njust be happy"
+                    };
                 }
             } else {
                 sequencer.playerBattleObject.state.isCrying = false;
                 if(sequencer.globalBattleState.turnsCrying && sequencer.globalBattleState.turnsCrying > 0) {
                     sequencer.globalBattleState.noticedThatCryingStopped = true;
                     const responses = ["phew\nthanks for stopping","good\nno more crying","this is fine"];
-                    return responses[Math.floor(Math.random() * responses.length)];
+                    return {
+                        text: responses[Math.floor(Math.random() * responses.length)]
+                    };
                 } else {
-                    return "this is fine\njust don't cry"
+                    return {
+                        text: "this is fine\njust don't cry"
+                    };
                 }
             }
-            return null;
+            return {
+                text: null
+            }
         },
         getDefaultGlobalState: () => {
             return {
@@ -492,7 +531,9 @@ const elves = [
                 },
             }
         },
-        startSpeech: "hello i am green elf\nplz be nice\ni come in piece"
+        startSpeech: {
+            text: "hello i am green elf\nplz be nice\ni come in piece"
+        }
     },
     {
         name: "wimpy blue elf",
@@ -500,7 +541,9 @@ const elves = [
         backgroundColor: "blue",
         health: 100,
         startText: "you received an empty revolver",
-        startSpeech: "here is a revolver\nlet's see if you know\nhow to use it",
+        startSpeech: {
+            text: "here is a revolver\nlet's see if you know\nhow to use it"
+        },
         setup: sequencer => {
             sequencer.playerBattleObject.subText = ["0 coins"];
         },
@@ -525,9 +568,13 @@ const elves = [
                 "this is seeming\nlike a bad idea in\nhindsight",
                 (()=>{
                     if(sequencer.playerBattleObject.state.loadedBullets && sequencer.playerBattleObject.state.loadedBullets > 0) {
-                        return "oh jeez\nquick and painless\nplz";
+                        return {
+                            text: "oh jeez\nquick and painless\nplz"
+                        };
                     } else {
-                        return "good thing you haven't\nloaded your revolver"
+                        return {
+                            text: "good thing you haven't\nloaded your revolver"
+                        };
                     }
                 })(),
                 "i really like spinning",
@@ -557,7 +604,9 @@ const elves = [
             } else {
                 responseIndex = sequencer.turnNumber;
             }
-            return responses[responseIndex];
+            return {
+                text: responses[responseIndex]
+            };
         },
         getMove: sequencer => {
             if(sequencer.turnNumber % 2 !== 0) {
@@ -751,16 +800,24 @@ const elves = [
         getLoseSpeech: sequencer => {
             return "this is...\nimpossible"
         },
-        startSpeech: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best",
+        startSpeech: {
+            text: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best"
+        },
         getSpeech: sequencer => {
             if(sequencer.turnNumber % 4 === 3) {
                 if(sequencer.turnNumber % 2 === 0) {
-                    return "water breaks\nare essential\nto an effective\nworkout - or a good\nass kicking"
+                    return {
+                        text: "water breaks\nare essential\nto an effective\nworkout - or a good\nass kicking"
+                    };
                 } else {
-                    return "i could do this\nall day";
+                    return {
+                        text: "i could do this\nall day"
+                    };
                 }
             }
-            return null;
+            return {
+                text: null
+            }
         },
         getMove: sequencer => {
             if(sequencer.turnNumber % 4 === 3) {
@@ -995,7 +1052,9 @@ const elves = [
         },
         getSpeech: sequencer => {
             if(sequencer.elfBattleObject.health === 0) {
-                return;
+                return {
+                    text: null
+                };
             }
             if(sequencer.playerBattleObject.lastMove === "take gold" ||
                sequencer.playerBattleObject.lastMove === "buy squirrel") {
@@ -1004,25 +1063,39 @@ const elves = [
                     if(sequencer.playerBattleObject.state.justBoughtSquirrel) {
                         switch(sequencer.playerBattleObject.state.totalSquirrels) {
                             case 1:
-                                return "what!\na squirrel?\nhow dare u";
+                                return {
+                                    text: "what!\na squirrel?\nhow dare u"
+                                };
                             case 2:
-                                return "what are these\nsquirrels for?";
+                                return {
+                                    text: "what are these\nsquirrels for?"
+                                };
                             case 3:
-                                return "seriously\nplz stop\nthis is concerning";
+                                return {
+                                    text: "seriously\nplz stop\nthis is concerning"
+                                };
                             case 4:
-                                return "who is even selling\nthese squirrels to you?!";
+                                return {
+                                    text: "who is even selling\nthese squirrels to you?!"
+                                };
                             case 5:
-                                return "it's about time that\ni call peta";
+                                return {
+                                    text: "it's about time that\ni call peta"
+                                };
                             case 6:
                                 sequencer.elfBattleObject.state.puttingAnEndToThis = true;
-                                return "okay you know what?\ni'm putting an end to this";
+                                return {
+                                    text: "okay you know what?\ni'm putting an end to this"
+                                };
                             default:
-                                return "please. stop. buying.\n\squirrels.";
+                                return {
+                                    text: "please. stop. buying.\n\squirrels."
+                                };
                         }
                     } else {
                         const responses = [
-                            ()=>"i'll free your\nsquirrels",
-                            ()=>"i'll take your\nsquirrels away",
+                            ()=>`i'll free your\nsquirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s" : ""}`,
+                            ()=>`i'll take your\nsquirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s" : ""} away`,
                             ()=>sequencer.playerBattleObject.state.squirrels !== 1 ? "those squirrels\ndon't belong to you" : "that squirrel\ndoesn't belong to you",
                             ()=>sequencer.playerBattleObject.state.squirrels !== 1 ? "those squirrels\nhave families" : "that squirrel\nhas a family",
                             ()=>`maybe i could get\n${sequencer.playerBattleObject.state.squirrels === 1 ? "a squirrel" : "squirrels"} too`,
@@ -1031,11 +1104,15 @@ const elves = [
                             ()=>"*makes squirrel noises*",
                             ()=>`*tries to steal your\nsquirrel${sequencer.playerBattleObject.state.squirrels !== 1 ? "s":""}*`
                         ];
-                        return responses[Math.floor(Math.random() * responses.length)]();
+                        return {
+                            text: responses[Math.floor(Math.random() * responses.length)]()
+                        };
                     }
                 } else {
                     if(sequencer.turnNumber === 0) {
-                        return "yikes\ni wouldn't do that\nif i were you";
+                        return {
+                            text: "yikes\ni wouldn't do that\nif i were you"
+                        };
                     } else {
                         const responses = [
                             "i am a huge animal\nrights advocate",
@@ -1047,15 +1124,21 @@ const elves = [
                             "some people think i'm\ntoo quirky\nto be an elf",
                             "i love gold - stay away!"
                         ];
-                        return responses[Math.floor(Math.random() * responses.length)];
+                        return {
+                            text: responses[Math.floor(Math.random() * responses.length)]
+                        };
                     }
 
                 }
             } else if(sequencer.playerBattleObject.lastMove === "give gold") {
                 if(sequencer.playerBattleObject.lastMoveFailed) {
-                    return "well - it's the thought\nthat counts";
+                    return {
+                        text: "well - it's the thought\nthat counts"
+                    };
                 } else {
-                    return "gold? for me?\ndo you know how\nthis works?";
+                    return {
+                        text: "gold? for me?\ndo you know how\nthis works?"
+                    };
                 }
             }
         },
@@ -1076,13 +1159,51 @@ const elves = [
                 return move;
             }
         },
-        startSpeech: "the only way to\nkill a golden\nelf is to obtain\nall their gold"
+        startSpeech: {
+            text: "the only way to\nkill a golden\nelf is to obtain\nall their gold"
+        }
     },
     {
         name: "war elf",
         background: "background-4",
         backgroundColor: "white",
-        health: 200
+        health: 200,
+        playerMoves: getRadioSet([
+            "absolutely nothing","doing the dishes","dying honorably","losing children"
+        ],"question1"),
+        startSpeech: {
+            text: "war...\nwhat is it good for?",
+            persist: true
+        },
+        getSpeech: sequencer => {
+            let lines = "";
+            switch(sequencer.turnNumber) {
+                case 0:
+                    switch(sequencer.playerBattleObject.state["question1"]) {
+                        case 0:
+                            lines += "hmm - you seem\nquite clever";
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                            lines += "that's not how the\nsong goes..."
+                            sequencer.dropHealth(sequencer.playerBattleObject,25);
+                            break;
+                    }
+                    lines += "\n\n";
+
+                    lines += "what never changes?"
+
+                    sequencer.updatePlayerMoves(
+                        getRadioSet(["doing the dishes","losing children","war","absolutely nothing"],"question2")
+                    );
+                    break;
+            }
+            return {
+                text: lines,
+                persist: true
+            }
+        }
     },
     {
         name: "boney elf",

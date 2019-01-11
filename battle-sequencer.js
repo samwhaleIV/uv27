@@ -158,7 +158,7 @@ function BattleSeqeuencer(renderer) {
 
     this.processPlayerInput = moveIndex => {
         this.playerMove(
-            this.elf.playerMoves[moveIndex]
+            this.playerMoves[moveIndex]
         );
     }
 
@@ -194,7 +194,7 @@ function BattleSeqeuencer(renderer) {
 
         const moveDisplayName = move.name.split("-")[0].trimEnd();
 
-        const text = `${user.name} used ${moveDisplayName}`;
+        const text = `${user.name} ${move.type === "option" ? "chose" : "used"} ${moveDisplayName}`;
         this.showText(text,0,this.getTextDuration(text),()=>{
             let moveResult;
             if(!move) {
@@ -290,6 +290,10 @@ function BattleSeqeuencer(renderer) {
     }
 
     this.playerMove = move => {
+        renderer.disablePlayerInputs();
+        if(this.showingpersistentSpeech) {
+            this.clearPersistentSpeech();
+        }
         this.genericMove(move,
             this.playerBattleObject,
             this.elfBattleObject,
@@ -301,47 +305,83 @@ function BattleSeqeuencer(renderer) {
                 }
             }
         );
-        renderer.disablePlayerInputs();
     }
 
     this.elfMove = () => {
-        let move;
-        if(!this.elf.getMove) {
-            move = moves["nothing"];
-        } else {
+        let move = null;
+        if(this.elf.getMove) {
             move = this.elf.getMove(this);
             if(!move) {
-                move = moves["nothing"];
+                console.warn("Battle sequencer: elf.getMove() returned no move. Was this intentional?");
             }
+        } else {
+            //console.warn("Battle sequencer: elf object has no getMove() method. Was this intentional?");
         }
-        this.genericMove(
-            move,
-            this.elfBattleObject,
-            this.playerBattleObject,
-            () => {
-                if(!this.playerHasDied) {
-                    let elfSpeech = null;
-                    if(this.elf.getSpeech) {
-                        elfSpeech = this.elf.getSpeech(this);
-                        if(!elfSpeech) {
-                            elfSpeech = null;
+        const callback = () => {
+            if(!this.playerHasDied) {
+                let elfSpeech = null;
+                let speechPersistence = false;
+                if(this.elf.getSpeech) {
+                    let elfSpeechResult = this.elf.getSpeech(this);
+                    if(elfSpeechResult) {
+                        if(elfSpeechResult.text) {
+                            elfSpeech = elfSpeechResult.text;
+                            if(elfSpeechResult.persist === true) {
+                                speechPersistence = true;
+                            } else {
+                                console.warn(`Battle sequencer: got an unexpected value for 'persist' @ ${elfSpeechResult.text}`);
+                            }
                         }
-                    }
-                    if(elfSpeech !== null) {
-                        this.showElfSpeech(
-                            elfSpeech,0,
-                            this.getTextDuration(elfSpeech) * 1.33,
-                            this.returnInput
-                        );
                     } else {
-                        this.returnInput();
+                        console.error("Battle sequencer: elf.getSpeech did not return a proper value");
                     }
+                    if(!elfSpeech) {
+                        elfSpeech = null;
+                    }
+                }
+                if(elfSpeech !== null) {
+                    this.showElfSpeech(
+                        elfSpeech,0,
+                        speechPersistence ? Infinity : this.getTextDuration(elfSpeech) * 1.33,
+                        this.returnInput
+                    );
                 } else {
                     this.returnInput();
                 }
+            } else {
+                this.returnInput();
             }
-        );
+        }
+        if(move !== null) {
+            this.genericMove(
+                move,
+                this.elfBattleObject,
+                this.playerBattleObject,
+                callback
+            );
+        } else {
+            callback();
+        }
     }
+
+    this.showingpersistentSpeech;
+
+    this.clearSpeech = () => {
+        this.elfSpeech = null;
+        renderer.moveElf(80,0.5);
+    }
+
+    this.clearPersistentSpeech = () => {
+        if(!this.showingpersistentSpeech) {
+            console.error("Battle sequencer internal error: We cannot clear a persistent speech because there isn't one");
+            return;
+        }
+
+        this.clearSpeech();
+
+        this.showingpersistentSpeech = false;
+    }
+
     this.elfSpeech = null;
     this.showElfSpeech = (text,delay,duration,callback) => {
         if(!duration) {
@@ -352,12 +392,14 @@ function BattleSeqeuencer(renderer) {
             renderer.moveElf(80,0.25);
             if(duration !== Infinity) {
                 this.skipHandles.push(setSkippableTimeout(()=>{
-                    this.elfSpeech = null;
-                    renderer.moveElf(80,0.5);
+                    this.clearSpeech();
                     if(callback) {
                         callback();
                     }
                 },duration));
+            } else if(callback) {
+                callback();
+                this.showingpersistentSpeech = true;
             }
         }
         if(delay) {
@@ -417,6 +459,7 @@ function BattleSeqeuencer(renderer) {
 
     this.updatePlayerMoves = moves => {
         renderer.playerInputs = moves;
+        this.playerMoves = moves;
     }
 
     this.bottomMessage = null;
@@ -426,19 +469,20 @@ function BattleSeqeuencer(renderer) {
     }
 
     if(!this.elf.playerMoves) {
-        this.elf.playerMoves = [moves["honorous suicide"]];
+        this.elf.playerMoves = [moves["honorable suicide"]];
         this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
     }
     renderer.playerInputs = this.elf.playerMoves;
+    this.playerMoves = this.elf.playerMoves;
 
     if(this.elf.startText) {
         renderer.disablePlayerInputs();
-        const endMethod = !this.elf.startSpeech?
+        const endMethod = !this.elf.startSpeech && this.elf.startSpeech.text?
             renderer.enablePlayerInputs: 
             () => {
                 this.showElfSpeech(
-                    this.elf.startSpeech,
-                    0,this.getTextDuration(this.elf.startSpeech),
+                    this.elf.startSpeech.text,
+                    0,this.elf.startSpeech.persist ? Infinity : this.getTextDuration(this.elf.startSpeech.text),
                     renderer.enablePlayerInputs
                 );
             }
@@ -449,11 +493,11 @@ function BattleSeqeuencer(renderer) {
         );
     } else {
         const startEnd = renderer.enablePlayerInputs;
-        if(this.elf.startSpeech) {
+        if(this.elf.startSpeech && this.elf.startSpeech.text) {
             renderer.disablePlayerInputs();
             this.showElfSpeech(
-                this.elf.startSpeech,0,
-                500+this.getTextDuration(this.elf.startSpeech),
+                this.elf.startSpeech.text,0,
+                this.elf.startSpeech.persist ? Infinity : 500+this.getTextDuration(this.elf.startSpeech.text),
                 startEnd
             );
         } else {

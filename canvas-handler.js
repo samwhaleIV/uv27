@@ -14,7 +14,7 @@ const touchEnabled = event => {
 }
 
 canvas.onpointerup = event => {
-    if(touchEnabled(event) && rendererState.processClick) {
+    if(touchEnabled(event) && event.button === 0 && rendererState.processClick) {
         const relativeEventLocation = getRelativeEventLocation(
             event
         );

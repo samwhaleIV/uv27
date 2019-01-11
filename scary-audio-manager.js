@@ -1,17 +1,18 @@
 const audioContext = new AudioContext();
+
+const soundGain = 1;
+const musicNodeGain = 0.1;
+
 const volumeNode = audioContext.createGain();
 volumeNode.connect(audioContext.destination);
-volumeNode.gain.value = 1;
+volumeNode.gain.setValueAtTime(soundGain,0);
 
-const musicNodeGain = 0.1;
 const musicVolumeNode = audioContext.createGain();
 musicVolumeNode.connect(audioContext.destination);
-musicVolumeNode.gain.value = musicNodeGain;
+musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
 
 const audioBuffers = {};
-
 let musicNode = null, musicMuted = false, soundMuted = false;
-
 const toggleMusicMute = () => {
     if(musicMuted) {
         unmuteMusic();
@@ -30,7 +31,7 @@ const toggleSoundMute = () => {
 
 const muteMusic = () => {
     if(!musicMuted) {
-        musicVolumeNode.gain.value = 0;
+        musicVolumeNode.gain.setValueAtTime(0,0);
         musicMuted = true;
         localStorage.setItem("musicMuted",true);
     } else {
@@ -39,7 +40,7 @@ const muteMusic = () => {
 }
 const muteSound = () => {
     if(!soundMuted) {
-        volumeNode.gain.value = 0;
+        volumeNode.gain.setValueAtTime(0,0);
         soundMuted = true;
         localStorage.setItem("soundMuted",true);
     } else {
@@ -49,7 +50,7 @@ const muteSound = () => {
 
 const unmuteSound = () => {
     if(soundMuted) {
-        volumeNode.gain.value = 1;
+        volumeNode.gain.setValueAtTime(soundGain,0);
         soundMuted = false;
         localStorage.setItem("soundMuted",false);
     } else {
@@ -59,7 +60,7 @@ const unmuteSound = () => {
 
 const unmuteMusic = () => {
     if(musicMuted) {
-        musicVolumeNode.gain.value = musicNodeGain;
+        musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
         musicMuted = false;
         localStorage.setItem("musicMuted",false);
     } else {
