@@ -559,10 +559,11 @@ const elves = [
         health: 100,
         startText: "you received an empty revolver",
         startSpeech: {
-            text: "here is a revolver\nlet's see if you know\nhow to use it"
+            text: "here is a revolver\nlet's see if you know\nhow to use it\n\ninformation can be\nseen at the top left\n(in many battles)"
         },
         setup: sequencer => {
-            sequencer.playerBattleObject.subText = ["0 coins"];
+            sequencer.playerBattleObject.state.money = 5;
+            sequencer.playerBattleObject.subText = ["5 coins"];
         },
         getLoseSpeech: sequencer => {
             return "took you long enough\n*ded*"
@@ -646,7 +647,7 @@ const elves = [
                     type: "target",
                     name: "chit chat",
                     process: (sequencer,user,target) => {
-                        sequencer.dropHealth(target,4);
+                        sequencer.dropHealth(target,6);
                         return {
                             text: "the build up scares and hurts you a little"
                         }
@@ -1310,7 +1311,7 @@ const elves = [
                             break;
                         case 3:
                             lines += "really?\ndo you really think\nthat pi starts with a 4?";
-                            sequencer.dropHealth(sequencer.playerBattleObject,34);
+                            sequencer.dropHealth(sequencer.playerBattleObject,34 );
                             break;
                         case 2:
                             if(Date.now() - sequencer.playerBattleObject.state.startTime < 7500) {
