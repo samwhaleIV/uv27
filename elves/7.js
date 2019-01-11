@@ -120,15 +120,15 @@ elves[6] = {
             case 3:
                 switch(sequencer.playerBattleObject.state["question4"]) {
                     case 0:
-                    case 1:
+                    case 3:
                         lines += "close... but no";
                         sequencer.dropHealth(sequencer.playerBattleObject,34);
                         break;
-                    case 3:
+                    case 2:
                         lines += "really?\ndo you really think\nthat pi starts with a 4?";
                         sequencer.dropHealth(sequencer.playerBattleObject,34 );
                         break;
-                    case 2:
+                    case 1:
                         if(Date.now() - sequencer.playerBattleObject.state.startTime < 7500) {
                             lines += "hmm... you're a nerd";
                         } else {
