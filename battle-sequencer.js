@@ -21,11 +21,15 @@ function BattleSeqeuencer(renderer) {
 
     this.elf = renderer.elf;
 
-    const endScreenLength = 3750;
+    const endScreenLength = 4000;
 
     this.everybodyDiedMethod = () => {
         this.bottomMessage = "everyone is dead";
         renderer.firstInputMask = "game over";
+        let duration = endScreenLength;
+        if(this.showingPersistentSpeech) {
+            duration += this.persistentSpeechDuration;
+        }
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,endScreenLength));
     }
 
@@ -40,6 +44,8 @@ function BattleSeqeuencer(renderer) {
                 this.showElfSpeech(speech,0,Infinity);
                 duration += this.getTextDuration(speech);
             }
+        } else if(this.showingPersistentSpeech) {
+            duration += this.persistentSpeechDuration;
         }
         
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
@@ -56,6 +62,8 @@ function BattleSeqeuencer(renderer) {
                 this.showElfSpeech(speech,0,Infinity);
                 duration += this.getTextDuration(speech);
             }
+        } else if(this.showingPersistentSpeech) {
+            duration += this.persistentSpeechDuration;
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
@@ -290,10 +298,10 @@ function BattleSeqeuencer(renderer) {
     }
 
     this.playerMove = move => {
-        renderer.disablePlayerInputs();
-        if(this.showingpersistentSpeech) {
+        if(this.showingPersistentSpeech) {
             this.clearPersistentSpeech();
         }
+        renderer.disablePlayerInputs();
         this.genericMove(move,
             this.playerBattleObject,
             this.elfBattleObject,
@@ -328,7 +336,7 @@ function BattleSeqeuencer(renderer) {
                             elfSpeech = elfSpeechResult.text;
                             if(elfSpeechResult.persist === true) {
                                 speechPersistence = true;
-                            } else {
+                            } else if(elfSpeectResult !== false){
                                 console.warn(`Battle sequencer: got an unexpected value for 'persist' @ ${elfSpeechResult.text}`);
                             }
                         }
@@ -364,7 +372,8 @@ function BattleSeqeuencer(renderer) {
         }
     }
 
-    this.showingpersistentSpeech;
+    this.showingPersistentSpeech;
+    this.persistentSpeechDuration;
 
     this.clearSpeech = () => {
         this.elfSpeech = null;
@@ -372,14 +381,14 @@ function BattleSeqeuencer(renderer) {
     }
 
     this.clearPersistentSpeech = () => {
-        if(!this.showingpersistentSpeech) {
+        if(!this.showingPersistentSpeech) {
             console.error("Battle sequencer internal error: We cannot clear a persistent speech because there isn't one");
             return;
         }
 
         this.clearSpeech();
 
-        this.showingpersistentSpeech = false;
+        this.showingPersistentSpeech = false;
     }
 
     this.elfSpeech = null;
@@ -397,9 +406,12 @@ function BattleSeqeuencer(renderer) {
                         callback();
                     }
                 },duration));
-            } else if(callback) {
-                callback();
-                this.showingpersistentSpeech = true;
+            } else {
+                this.persistentSpeechDuration = this.getTextDuration(text);
+                this.showingPersistentSpeech = true;
+                if(callback) {
+                    callback();
+                }
             }
         }
         if(delay) {
@@ -469,11 +481,16 @@ function BattleSeqeuencer(renderer) {
     }
 
     if(!this.elf.playerMoves) {
-        this.elf.playerMoves = [moves["honorable suicide"]];
-        this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
+        if(this.elf.getPlayerMoves) {
+            this.updatePlayerMoves(this.elf.getPlayerMoves());
+        } else {
+            this.elf.playerMoves = [moves["honorable suicide"]];
+            this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
+            this.updatePlayerMoves(this.elf.playerMoves);
+        }
+    } else {
+        this.updatePlayerMoves(this.elf.playerMoves);
     }
-    renderer.playerInputs = this.elf.playerMoves;
-    this.playerMoves = this.elf.playerMoves;
 
     if(this.elf.startText) {
         renderer.disablePlayerInputs();
