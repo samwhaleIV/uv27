@@ -31,14 +31,13 @@ function BattleSequencer(renderer) {
         if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(musicNode) {
-            stopMusic(0);
-        }
-        let songDuration = playMusic("lose.ogg",0,false) * 1000;
-        if(songDuration > duration) {
-            duration = songDuration + postSongDelay;
-        } else if (duration < songDuration + postSongDelay) {
-            duration += (postSongDelay + songDuration) - duration;
+        if(!musicMuted) {
+            let songDuration = playMusic("lose.ogg",0,false) * 1000;
+            if(songDuration > duration) {
+                duration = songDuration + postSongDelay;
+            } else if (duration < songDuration + postSongDelay) {
+                duration += (postSongDelay + songDuration) - duration;
+            }
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
@@ -58,14 +57,16 @@ function BattleSequencer(renderer) {
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(musicNode) {
-            stopMusic(0);
-        }
-        let songDuration = playMusic("lose.ogg",0,false) * 1000;
-        if(songDuration > duration) {
-            duration = songDuration + postSongDelay;
-        } else if (duration < songDuration + postSongDelay) {
-            duration += (postSongDelay + songDuration) - duration;
+        if(!musicMuted) {
+            if(musicNode) {
+                stopMusic(0);
+            }
+            let songDuration = playMusic("lose.ogg",0,false) * 1000;
+            if(songDuration > duration) {
+                duration = songDuration + postSongDelay;
+            } else if (duration < songDuration + postSongDelay) {
+                duration += (postSongDelay + songDuration) - duration;
+            }
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
@@ -85,15 +86,16 @@ function BattleSequencer(renderer) {
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(musicNode) {
-            stopMusic(0);
-        }
-
-        let songDuration = playMusic("win.ogg",0,false) * 1000;
-        if(songDuration > duration) {
-            duration = songDuration + postSongDelay;
-        } else if (duration < songDuration + postSongDelay) {
-            duration += (postSongDelay + songDuration) - duration;
+        if(!musicMuted) {
+            if(musicNode) {
+                stopMusic(0);
+            }
+            let songDuration = playMusic("win.ogg",0,false) * 1000;
+            if(songDuration > duration) {
+                duration = songDuration + postSongDelay;
+            } else if (duration < songDuration + postSongDelay) {
+                duration += (postSongDelay + songDuration) - duration;
+            }
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
