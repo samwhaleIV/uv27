@@ -19,6 +19,10 @@ function BattleSequencer(renderer) {
         }
     }
 
+    this.getTextDuration = text => {
+        return 1150 + (text.split(" ").length * 300);
+    }
+
     this.elf = renderer.elf;
 
     const endScreenLength = 4000;
@@ -132,9 +136,8 @@ function BattleSequencer(renderer) {
         lastMoveFailed: null,
         movePreProcess: null,
         subText: null,
-        dropHealth: amount => {
-            this.dropHealth(playerBattleObject,amount)
-        }
+        dropHealth: amount => this.dropHealth(this.playerBattleObject,amount),
+        addHealth: amount => this.addHealth(this.playerBattleObject,amount)
     };
     this.elfBattleObject = {
         isPlayer: false,
@@ -151,9 +154,8 @@ function BattleSequencer(renderer) {
         lastMoveFailed: null,
         movePreProcess: null,
         subText: null,
-        dropHealth: amount => {
-            this.dropHealth(elfBattleObject,amount)
-        }
+        dropHealth: amount => this.dropHealth(this.elfBattleObject,amount),
+        addHealth: amount => this.addHealth(this.elfBattleObject,amount)
     };
     this.dropHealth = (target,amount) => {
         playSound("clip.mp3");
@@ -312,12 +314,43 @@ function BattleSequencer(renderer) {
                 moveResult.failed = true;
             }
             user.lastMoveFailed = moveResult.failed;
+            const processEvent = (event,callback) => {
+                if(event.condition) {
+                    if(!event.condition()) {
+                        callback();
+                        return;
+                    }
+                }
+                if(event.action) {
+                    event.action();
+                }
+                if(event.text) {
+                    this.showText(
+                        event.text,0,
+                        this.getTextDuration(event.text),
+                        callback
+                    );
+                } else {
+                    callback();
+                }
+            }
             if(moveResult.text) {
-                this.showText(
-                    moveResult.text,0,
-                    this.getTextDuration(moveResult.text),
-                    callback
-                );
+                processEvent(moveResult,callback);
+            } else if(moveResult.events) {
+                let eventIndex = 0;
+                const maxEventIndex = moveResult.events.length-1;
+                const processNextEvent = () => {
+                    const event = moveResult.events[
+                        eventIndex
+                    ];
+                    if(eventIndex >= maxEventIndex) {
+                        processEvent(event,callback);
+                    } else {
+                        processEvent(event,processNextEvent);
+                        eventIndex++;
+                    }
+                }
+                processNextEvent();
             } else if(callback) {
                 callback();
             } else {
@@ -326,10 +359,6 @@ function BattleSequencer(renderer) {
             }
         });
 
-    }
-
-    this.getTextDuration = text => {
-        return 1150 + (text.split(" ").length * 300);
     }
 
     this.playerMove = move => {
@@ -480,22 +509,35 @@ function BattleSequencer(renderer) {
             if(this.globalBattleState.postTurnProcess !== null) {
                 const turnProcessResult = this.globalBattleState.postTurnProcess(this);
                 if(turnProcessResult) {
-                    const processText = (event,callback) => {
-                        this.showText(event.text,0,this.getTextDuration(event.text),
-                        ()=>{
-                            if(event.speech) {
-                                this.showElfSpeech(
-                                    event.speech,0,
-                                    this.getTextDuration(event.speech),
-                                    callback
-                                );
-                            } else {
+                    const processEvent = (event,callback) => {
+                        if(event.condition) {
+                            if(!event.condition()) {
                                 callback();
+                                return;
                             }
-                        });                      
+                        }
+                        if(event.action) {
+                            event.action();
+                        }
+                        if(event.text) {
+                            this.showText(event.text,0,this.getTextDuration(event.text),
+                            ()=>{
+                                if(event.speech) {
+                                    this.showElfSpeech(
+                                        event.speech,0,
+                                        this.getTextDuration(event.speech),
+                                        callback
+                                    );
+                                } else {
+                                    callback();
+                                }
+                            });
+                        } else {
+                            callback();
+                        }
                     }
                     if(turnProcessResult.text) {
-                        processText(turnProcessResult,endCallback);
+                        processEvent(turnProcessResult,endCallback);
                     } else if(turnProcessResult.events) {
                         let eventIndex = 0;
                         const maxEventIndex = turnProcessResult.events.length-1;
@@ -504,14 +546,13 @@ function BattleSequencer(renderer) {
                                 eventIndex
                             ];
                             if(eventIndex >= maxEventIndex) {
-                                processText(event,endCallback);
+                                processEvent(event,endCallback);
                             } else {
-                                processText(event,processNextEvent);
+                                processEvent(event,processNextEvent);
                                 eventIndex++;
                             }
                         }
-                       processNextEvent();
-                        
+                        processNextEvent();
                     } else {
                         endCallback();
                     }

@@ -111,14 +111,112 @@ const moves = {
         type: "self",
         name: "cry",
         process: (sequencer,user) => {
-
-            let text = !user.state.isCrying ?
+            if(user.state.isLit) {
+                const wasCrying = user.state.isCrying;
+                user.state.isCrying = true;
+                if(user.state.drunkCries >= 1) {
+                    switch(user.state.drunkCries++) {
+                        case 1:
+                            if(user.state.isSuperLit) {
+                                return {
+                                    events: [
+                                        {
+                                            text: `${user.name} ${user.isPlayer ? "are" : "is"} really hammered`
+                                        },
+                                        {
+                                            text: "the narrator looks intimidated"
+                                        },
+                                        {
+                                            text: `*something slurred too hard to narrate*`
+                                        }
+                                    ]
+                                }
+                            } else {
+                                return {
+                                    events: [
+                                        {
+                                            text: "this might go on for a while"
+                                        },
+                                        {
+                                            text: `*something about an ex-wife is brought up*`
+                                        }
+                                    ]
+                                }                                
+                            }
+                        case 2:
+                            if(user.state.isSuperLit) {
+                                return {
+                                    events: [
+                                        {
+                                            text: "who needs therapy"
+                                        },
+                                        {
+                                            text: "*the angry banter continues*"
+                                        },
+                                        {
+                                            text: `this is cheaper anyways`
+                                        },
+                                        {
+                                            text: `*the sobbing continues*`
+                                        }
+                                    ]
+                                }
+                            } else {
+                                return {
+                                    events: [
+                                        {
+                                            text: "the patheticness continues"
+                                        },
+                                        {
+                                            text: `*childhood issues are ranted about*`
+                                        }
+                                    ]
+                                }
+                            }
+                        default:
+                        case 3:
+                            user.state.isLit = false;
+                            user.state.isSuperLit = false;
+                            user.state.alchoholWarning = false;
+                            return {
+                                events: [
+                                    {
+                                        text: `so much crying washes away the alchohol`
+                                    },
+                                    {
+                                        text: `${user.name} ${user.isPlayer ? "are" : "is"} now sober`
+                                    }
+                                ]
+                            }
+                    }
+                } else {
+                    user.state.drunkCries = 1;
+                    if(user.isPlayer) {
+                        return {
+                            events: [
+                                {
+                                    text: user.wasCrying ? "the crying continues" : "the crying starts"
+                                },
+                                {
+                                    text: `${user.name} ${user.isPlayer ? "have" : "has"} a lot of emotions with booze`
+                                }
+                            ]
+                        }
+                    } else {
+                        return {
+                            text: `${user.name} ${wasCrying ? "cries" : "starts to cry"} with the booze`
+                        }
+                    }
+                }
+            } else {
+                let text = !user.state.isCrying ?
                 `${user.name} ${user.isPlayer ? "are" : "is"} now crying`:
                 `${user.name} continue${user.isElf ? "s" : ""} to cry`;
 
-            user.state.isCrying = true;
-            return {
-                text: text
+                user.state.isCrying = true;
+                return {
+                    text: text
+                }
             }
         }
     },

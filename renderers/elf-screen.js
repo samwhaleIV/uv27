@@ -201,6 +201,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         drawTextWhite(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize);
     }
 
+    this.hoverColor = this.elf.darkHover ? "darkgray" : "rgba(255,255,255,0.7)";
+    this.fillColor = this.elf.darkHover ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.8)";
+
     this.renderMethod = (context,timestamp,width,height) => {
 
         rendererState.background.render(context,timestamp,width,height);
@@ -351,20 +354,20 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
 
                 if(i === this.hoverEffectIndex && !animating && this.playerInputsEnabled) {
-                    context.fillStyle = "rgba(255,255,255,0.7)";
+                    context.fillStyle = this.hoverColor;
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
                 } else if(this.firstInputMask && this.hoverEffectIndex !== null && i === 0 && (this.lastEventWasKeyBased || this.hoverEffectIndex === 0)) {
-                    context.fillStyle = "rgba(255,255,255,0.7)";
+                    context.fillStyle = this.hoverColor;
                     context.fillRect(
                         this.hoverEffectX,yValues.hoverValue,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
                 }
 
-                context.fillStyle = "rgba(0,0,0,0.8)";
+                context.fillStyle = this.fillColor;
                 context.fillRect(
                     this.playerInputsX + xOffset,yValues.value,
                     this.playerInputsWidth,this.playerInputsHeight
