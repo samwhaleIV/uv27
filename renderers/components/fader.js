@@ -17,7 +17,11 @@ const getFader = function() {
             const staticTime = rendererState.fader.time / 1000;
             playSound("swish-2.mp3",staticTime);
             if(rendererState.song) {
-                playMusic(rendererState.song,staticTime);
+                if(rendererState.songIntro) {
+                    playMusicWithIntro(renderererState.song,renderererState.songIntro,staticTime);
+                } else {
+                    playMusic(rendererState.song,staticTime);
+                }
             }
         },
         fadeOut: (rendererGenerator,...parameters) => {

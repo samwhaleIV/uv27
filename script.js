@@ -4,28 +4,6 @@ context.fillText("loading...",20,40);
 
 const backgroundElement = document.getElementById("background");
 
-let images = [
-    "images/boss-layer-top.png",
-    "images/boss-layer-background.png",
-    "images/boss-layer-effect.png",
-
-    "images/backgrounds/background-1.png",
-    "images/backgrounds/background-2.png",
-    "images/backgrounds/background-3.png",
-    "images/backgrounds/background-4.png",
-    "images/backgrounds/background-5.png",
-    "images/backgrounds/background-6.png",
-    "images/backgrounds/background-7.png",
-    "images/backgrounds/background-8.png",
-    "images/backgrounds/background-9.png",
-
-    "images/fontspace.png",
-    "images/fontspace-black.png",
-
-    "images/elves.png",
-
-    "images/end-screen.png"
-], loadedImages = 0;
 const imageDictionary = {};
 
 const fontDictionary = {
@@ -99,7 +77,10 @@ const loadSounds = callback => {
         "audio/clip.mp3",
         "audio/reverse-clip.mp3",
 
-        "audio/music/menu.mp3"
+        "audio/music/menu.mp3",
+
+        "audio/music/test/win.ogg"
+
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {
@@ -115,6 +96,29 @@ const loadSounds = callback => {
 }
 
 const loadImages = callback => {
+    const images = [
+        "images/boss-layer-top.png",
+        "images/boss-layer-background.png",
+        "images/boss-layer-effect.png",
+    
+        "images/backgrounds/background-1.png",
+        "images/backgrounds/background-2.png",
+        "images/backgrounds/background-3.png",
+        "images/backgrounds/background-4.png",
+        "images/backgrounds/background-5.png",
+        "images/backgrounds/background-6.png",
+        "images/backgrounds/background-7.png",
+        "images/backgrounds/background-8.png",
+        "images/backgrounds/background-9.png",
+    
+        "images/fontspace.png",
+        "images/fontspace-black.png",
+    
+        "images/elves.png",
+    
+        "images/end-screen.png"
+    ];
+    let loadedImages = 0;
     for(let i = 0;i<images.length;i++) {
         const image = new Image();
         (image=>{

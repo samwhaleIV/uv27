@@ -22,6 +22,7 @@ function BattleSequencer(renderer) {
     this.elf = renderer.elf;
 
     const endScreenLength = 4000;
+    const postSongDelay = 1000;
 
     this.everybodyDiedMethod = () => {
         this.bottomMessage = "everyone is dead";
@@ -30,7 +31,17 @@ function BattleSequencer(renderer) {
         if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,endScreenLength));
+        if(musicNode) {
+            stopMusic(0);
+        }
+        let songDuration = playMusic("lose.ogg",0,false) * 1000;
+        if(songDuration > duration) {
+            duration = songDuration + postSongDelay;
+        } else if (duration < songDuration + postSongDelay) {
+            duration += (postSongDelay + songDuration) - duration;
+        }
+
+        this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
     }
 
     this.playerDiedMethod = () => {
@@ -47,7 +58,16 @@ function BattleSequencer(renderer) {
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        
+        if(musicNode) {
+            stopMusic(0);
+        }
+        let songDuration = playMusic("lose.ogg",0,false) * 1000;
+        if(songDuration > duration) {
+            duration = songDuration + postSongDelay;
+        } else if (duration < songDuration + postSongDelay) {
+            duration += (postSongDelay + songDuration) - duration;
+        }
+
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
 
     }
@@ -64,6 +84,16 @@ function BattleSequencer(renderer) {
             }
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
+        }
+        if(musicNode) {
+            stopMusic(0);
+        }
+
+        let songDuration = playMusic("win.ogg",0,false) * 1000;
+        if(songDuration > duration) {
+            duration = songDuration + postSongDelay;
+        } else if (duration < songDuration + postSongDelay) {
+            duration += (postSongDelay + songDuration) - duration;
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
