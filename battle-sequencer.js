@@ -371,8 +371,6 @@ function BattleSequencer(renderer) {
                             elfSpeech = elfSpeechResult.text;
                             if(elfSpeechResult.persist === true) {
                                 speechPersistence = true;
-                            } else if(elfSpeechResult !== false){
-                                console.warn(`Battle sequencer: got an unexpected value for 'persist' @ ${elfSpeechResult.text}`);
                             }
                         }
                     } else {

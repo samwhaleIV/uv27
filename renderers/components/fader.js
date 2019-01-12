@@ -18,7 +18,7 @@ const getFader = function() {
             playSound("swish-2.mp3",staticTime);
             if(rendererState.song) {
                 if(rendererState.songIntro) {
-                    playMusicWithIntro(renderererState.song,renderererState.songIntro,staticTime);
+                    playMusicWithIntro(rendererState.song,rendererState.songIntro,staticTime);
                 } else {
                     playMusic(rendererState.song,staticTime);
                 }

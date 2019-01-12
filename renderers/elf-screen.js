@@ -6,6 +6,10 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         this.song = this.elf.song;
     }
 
+    if(this.elf.songIntro) {
+        this.songIntro = this.elf.songIntro;
+    }
+
     this.halfWidth = canvas.width / 2;
 
     this.elfWidth = 180;

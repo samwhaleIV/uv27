@@ -79,7 +79,8 @@ const loadSounds = callback => {
 
         "audio/music/menu.mp3",
 
-        "audio/music/test/win.ogg"
+        //"audio/music/win.ogg",
+        //"audio/music/lose.ogg"
 
     ];
     let loadedSounds = 0;
