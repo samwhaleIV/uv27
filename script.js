@@ -149,56 +149,55 @@ if(localStorage.getItem("musicMuted") === "true") {
     muteMusic();
 }
 
+let elfIndex = 0, highestIndex;
+
+const getWinSelectScreen = () => {
+    if(elfIndex >= highestIndex) {
+        highestIndex++;
+        elfIndex = highestIndex;
+    }
+    getSelectScreen(elfIndex);
+    localStorage.setItem("elfIndex",highestIndex);
+}
+
+const getSelectScreen = index => {
+    if(!index && index !== 0) {
+        index = elfIndex;
+    }
+    rendererState.fader.fadeOut(
+        ElfSelectScreenRenderer,
+        getBattleScreen,
+        highestIndex,index
+    );
+}
+
+const getEndScreen = () => {
+    rendererState.fader.fadeOut(
+        EndScreenRenderer,
+        getSelectScreen
+    );
+}
+
+const getBattleScreen = battleIndex => {
+    elfIndex = battleIndex;
+    if(battleIndex === 26) {
+        rendererState.fader.fadeOut(
+            ElfScreenRenderer,
+            getEndScreen,
+            getSelectScreen,
+            elfIndex,true
+        );
+    } else {
+        rendererState.fader.fadeOut(
+            ElfScreenRenderer,
+            getWinSelectScreen,
+            getSelectScreen,
+            elfIndex,false
+        );
+    }
+}
+
 const gameLoop = () => {
-
-    let elfIndex = 0, highestIndex;
-
-    const getWinSelectScreen = () => {
-        if(elfIndex >= highestIndex) {
-            highestIndex++;
-            elfIndex = highestIndex;
-        }
-        getSelectScreen(elfIndex);
-        localStorage.setItem("elfIndex",highestIndex);
-    }
-
-    const getSelectScreen = index => {
-        if(!index && index !== 0) {
-            index = elfIndex;
-        }
-        rendererState.fader.fadeOut(
-            ElfSelectScreenRenderer,
-            getBattleScreen,
-            highestIndex,index
-        );
-    }
-
-    const getEndScreen = () => {
-        rendererState.fader.fadeOut(
-            EndScreenRenderer,
-            getSelectScreen
-        );
-    }
-
-    const getBattleScreen = battleIndex => {
-        elfIndex = battleIndex;
-        if(battleIndex === 26) {
-            rendererState.fader.fadeOut(
-                ElfScreenRenderer,
-                getEndScreen,
-                getSelectScreen,
-                elfIndex,true
-            );
-        } else {
-            rendererState.fader.fadeOut(
-                ElfScreenRenderer,
-                getWinSelectScreen,
-                getSelectScreen,
-                elfIndex,false
-            );
-        }
-    }
-
     const localStorageResult = localStorage.getItem("elfIndex");
     if(localStorageResult !== null && localStorageResult >= 0) {
         elfIndex = Number(localStorageResult);
@@ -226,7 +225,6 @@ const gameLoop = () => {
     }
     startRenderer();
     if(elfIndex === -1) {
-        rendererState.start();
         elfIndex = 0;
     }
     highestIndex = elfIndex;

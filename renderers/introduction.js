@@ -20,43 +20,43 @@ function IntroductionRenderer(endCallback) {
     this.fader = getFader();
 
     this.start = () => {
-        this.startTime = performance.now() + startTimeOffset;
-        const timeout = (this.messages.length+1)*this.fadeIn + (startTimeOffset*0.75);
-        setTimeout(endCallback,timeout);
+
     }
 
     this.renderMethod = (context,timestamp,width,height) => {
 
+        if(this.startTime === null) {
+            this.startTime = performance.now() + startTimeOffset;
+            const timeout = (this.messages.length+1)*this.fadeIn + (startTimeOffset*0.75);
+            setTimeout(endCallback,timeout);
+
+        }
+
         context.clearRect(0,0,width,height);
 
-        if(this.startTime === null) {
-            return;
-        }
+
 
         const timeDelta = timestamp - this.startTime;
-
         const progress = timeDelta / this.fadeIn;
 
-        if(progress < 0) {
-            return;
-        }
+        if(progress >= 0) {
+            const step = Math.floor(progress);
 
-        const step = Math.floor(progress);
-
-        let innerProgress = (progress - step) / this.fadeRange;
-        if(innerProgress > 1) {
-            innerProgress = 1;
-        }
-
-        let runningYOffset = 150;
-        for(let i = 0;i<this.messages.length;i++) {
-            if(step >= i) {
-                const textArea = drawTextWhite(this.messages[i],20,runningYOffset,4);
-                if(step === i) {
-                    context.fillStyle = `rgba(0,0,0,${1-innerProgress})`;
-                    context.fillRect(20,runningYOffset,textArea.width,textArea.height);
+            let innerProgress = (progress - step) / this.fadeRange;
+            if(innerProgress > 1) {
+                innerProgress = 1;
+            }
+    
+            let runningYOffset = 150;
+            for(let i = 0;i<this.messages.length;i++) {
+                if(step >= i) {
+                    const textArea = drawTextWhite(this.messages[i],20,runningYOffset,4);
+                    if(step === i) {
+                        context.fillStyle = `rgba(0,0,0,${1-innerProgress})`;
+                        context.fillRect(20,runningYOffset,textArea.width,textArea.height);
+                    }
+                    runningYOffset += textArea.height + 10;
                 }
-                runningYOffset += textArea.height + 10;
             }
         }
 

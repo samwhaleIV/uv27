@@ -31,6 +31,8 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.currentIndexText = null;
 
+    this.showReplayButton = false;
+
     this.setElf = () => {
         this.elf = elves[this.currentIndex];
         const testDrawResult = drawTextTest(this.elf.name,this.textScale);
@@ -47,6 +49,14 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             this.leftDisabled = true;
         } else {
             this.leftDisabled = false;
+        }
+        if(this.currentIndex === 0) {
+            this.showReplayButton = true;
+        } else {
+            this.showReplayButton = false;
+            if(this.hoverEffectIndex === 5) {
+                this.hoverEffectIndex = null;
+            }
         }
         this.currentIndexText = `elf ${this.currentIndex+1}`;
     }
@@ -106,6 +116,18 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             this.endCallback(this.currentIndex);
             this.transitioning = true;
         }
+    }
+
+    this.introductionClicked = () => {
+        if(this.transitioning) {
+            return;
+        }
+        playSound("click.mp3");
+        rendererState.fader.fadeOut(
+            IntroductionRenderer,
+            ()=>getSelectScreen(0)
+        );
+        this.transitioning = true;
     }
 
     this.hoverEffectIndex = null;
@@ -171,6 +193,17 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     const muteButton2TextTest = drawTextTest(this.muteButton2Text,this.muteButtonTextScale);
     this.muteButton2TextX = this.muteButton2X + Math.floor(muteButtonHalfWidth - (muteButton2TextTest.width / 2));
     this.muteButton2TextY = this.muteButton2Y + Math.floor(muteButtonHalfHeight - (muteButton2TextTest.height / 2));
+
+    this.replayButtonX = 15;
+    this.replayButtonWidth = this.muteButtonWidth + 50;
+    this.replayButtonHeight = this.muteButtonHeight;
+    this.replayButtonY = this.muteButton1Y;
+
+    const replayButtonTextWidth = drawTextTest("introduction",this.muteButtonTextScale).width;
+
+    this.replayButtonTextX = this.replayButtonX + Math.floor((this.replayButtonWidth / 2) - (replayButtonTextWidth / 2));
+    this.replayButtonTextY = this.muteButton1TextY;
+
     
     this.processClick = (x,y) => {
         if(x && y) {
@@ -194,6 +227,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 toggleSoundMute();
                 playSound("click.mp3");
                 break;
+            case 5:
+                this.introductionClicked();
+                break;
         }
     }
 
@@ -208,6 +244,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                         case 3:
                         case 4:
                             this.hoverEffectIndex = 1;
+                            break;
+                        case 5:
+                            this.hoverEffectIndex = 0;
                             break;
                     }
                 }
@@ -227,6 +266,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                         case 3:
                             this.hoverEffectIndex = 4;
                             break;
+                        case 5:
+                            this.hoverEffectIndex = 3;
+                            break;
                     }
                 }
                 break;
@@ -237,9 +279,17 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 } else {
                     switch(this.hoverEffectIndex) {
                         case 0:
+                            if(this.showReplayButton) {
+                                this.hoverEffectIndex = 5;
+                            } else {
+                                this.hoverEffectIndex = 3;
+                            }
+                            break;
                         case 1:
-                        case 2:
                             this.hoverEffectIndex = 3;
+                            break;
+                        case 2:
+                            this.hoverEffectIndex = 4;
                             break;
                     }
                 }
@@ -258,6 +308,11 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                             break;
                         case 4:
                             this.hoverEffectIndex = 3;
+                            break;
+                        case 3:
+                            if(this.showReplayButton) {
+                                this.hoverEffectIndex = 5;
+                            }
                             break;
                     }
                 }
@@ -294,6 +349,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             } else if(x >= this.muteButton2X && x <= this.muteButton2X + this.muteButtonWidth) {
                 this.hoverEffectIndex = 4;
                 return;
+            } else if(this.showReplayButton && x >= this.replayButtonX && x <= this.replayButtonX + this.replayButtonWidth) {
+                this.hoverEffectIndex = 5;
+                return;
             }
         }
         this.hoverEffectIndex = null;
@@ -316,45 +374,52 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             let hoverEffectX, hoverEffectY, hoverWidth, hoverHeight;
             switch(this.hoverEffectIndex) {
                 case 0:
-                    hoverEffectX = this.leftButtonX - this.hoverEffectSize;
-                    hoverEffectY = this.buttonY - this.hoverEffectSize;
+                    hoverEffectX = this.leftButtonX;
+                    hoverEffectY = this.buttonY;
 
-                    hoverWidth = this.buttonWidth + this.doubleHoverSize;
-                    hoverHeight = this.buttonHeight + this.doubleHoverSize;
+                    hoverWidth = this.buttonWidth;
+                    hoverHeight = this.buttonHeight;
                     break;
                 case 1:
-                    hoverEffectX = this.centerButtonX - this.hoverEffectSize;
-                    hoverEffectY = this.buttonY - this.hoverEffectSize;
+                    hoverEffectX = this.centerButtonX;
+                    hoverEffectY = this.buttonY;
 
-                    hoverWidth = this.buttonWidth + this.doubleHoverSize;
-                    hoverHeight = this.buttonHeight + this.doubleHoverSize;
+                    hoverWidth = this.buttonWidth;
+                    hoverHeight = this.buttonHeight;
                     break;
                 case 2:
-                    hoverEffectX = this.rightButtonX - this.hoverEffectSize;
-                    hoverEffectY = this.buttonY - this.hoverEffectSize;
+                    hoverEffectX = this.rightButtonX;
+                    hoverEffectY = this.buttonY;
 
-                    hoverWidth = this.buttonWidth + this.doubleHoverSize;
-                    hoverHeight = this.buttonHeight + this.doubleHoverSize;
+                    hoverWidth = this.buttonWidth;
+                    hoverHeight = this.buttonHeight;
                     break;
                 case 3:
-                    hoverEffectX = this.muteButton1X - this.hoverEffectSize;
-                    hoverEffectY = this.muteButton1Y - this.hoverEffectSize;
+                    hoverEffectX = this.muteButton1X;
+                    hoverEffectY = this.muteButton1Y;
 
-                    hoverWidth = this.muteButtonWidth + this.doubleHoverSize;
-                    hoverHeight = this.muteButtonHeight + this.doubleHoverSize;
+                    hoverWidth = this.muteButtonWidth;
+                    hoverHeight = this.muteButtonHeight;
                     break;
                 case 4:
-                    hoverEffectX = this.muteButton2X - this.hoverEffectSize;
-                    hoverEffectY = this.muteButton2Y - this.hoverEffectSize;
+                    hoverEffectX = this.muteButton2X
+                    hoverEffectY = this.muteButton2Y;
 
-                    hoverWidth = this.muteButtonWidth + this.doubleHoverSize;
-                    hoverHeight = this.muteButtonHeight + this.doubleHoverSize;
+                    hoverWidth = this.muteButtonWidth;
+                    hoverHeight = this.muteButtonHeight;
+                    break;
+                case 5:
+                    hoverEffectX = this.replayButtonX;
+                    hoverEffectY = this.replayButtonY;
+
+                    hoverWidth = this.replayButtonWidth;
+                    hoverHeight = this.replayButtonHeight;
                     break;
             }
             context.fillStyle = "rgba(255,255,255,0.7)";
             context.fillRect(
-                hoverEffectX,hoverEffectY,
-                hoverWidth,hoverHeight
+                hoverEffectX - this.hoverEffectSize,hoverEffectY - this.hoverEffectSize,
+                hoverWidth + this.doubleHoverSize,hoverHeight + this.doubleHoverSize
             );
         }
 
@@ -411,6 +476,18 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             this.muteButtonWidth,
             this.muteButtonHeight
         );
+
+        if(this.showReplayButton) {
+
+            context.fillRect(
+                this.replayButtonX,
+                this.replayButtonY,
+                this.replayButtonWidth,
+                this.replayButtonHeight
+            );
+
+            drawTextBlack("introduction",this.replayButtonTextX,this.replayButtonTextY,this.muteButtonTextScale);
+        }
 
         drawTextBlack(musicMuted ? "no music" : "music on",this.muteButton1TextX,this.muteButton1TextY,this.muteButtonTextScale);
         drawTextBlack(soundMuted ? "no sound" : "sound on",this.muteButton2TextX,this.muteButton2TextY,this.muteButtonTextScale);
