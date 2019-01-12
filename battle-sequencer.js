@@ -1,4 +1,4 @@
-function BattleSeqeuencer(renderer) {
+function BattleSequencer(renderer) {
 
     this.skipHandles = [];
     this.skipEvent = () => {
@@ -446,20 +446,43 @@ function BattleSeqeuencer(renderer) {
             }
             if(this.globalBattleState.postTurnProcess !== null) {
                 const turnProcessResult = this.globalBattleState.postTurnProcess(this);
-                if(turnProcessResult && turnProcessResult.text) {
-                    this.showText(turnProcessResult.text,0,
-                        this.getTextDuration(turnProcessResult.text),
-                    ()=>{
-                        if(turnProcessResult.speech) {
-                            this.showElfSpeech(
-                                turnProcessResult.speech,0,
-                                getTextDuration(turnProcessResult.speech),
-                                endCallback
-                            );
-                        } else {
-                            endCallback();
+                if(turnProcessResult) {
+                    const processText = (event,callback) => {
+                        this.showText(event.text,0,this.getTextDuration(event.text),
+                        ()=>{
+                            if(event.speech) {
+                                this.showElfSpeech(
+                                    event.speech,0,
+                                    this.getTextDuration(event.speech),
+                                    callback
+                                );
+                            } else {
+                                callback();
+                            }
+                        });                      
+                    }
+                    if(turnProcessResult.text) {
+                        processText(turnProcessResult,endCallback);
+                    } else if(turnProcessResult.events) {
+                        let eventIndex = 0;
+                        const maxEventIndex = turnProcessResult.events.length-1;
+                        const processNextEvent = () => {
+                            const event = turnProcessResult.events[
+                                eventIndex
+                            ];
+                            if(eventIndex >= maxEventIndex) {
+                                processText(event,endCallback);
+                            } else {
+                                processText(event,processNextEvent);
+                                eventIndex++;
+                            }
                         }
-                    });
+                       processNextEvent();
+                        
+                    } else {
+                        endCallback();
+                    }
+
                 } else {
                     endCallback();
                 }

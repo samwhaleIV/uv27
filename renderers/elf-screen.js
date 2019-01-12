@@ -379,7 +379,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         rendererState.fader.process(context,timestamp,width,height);
     }
 
-    this.battleSequencer = new BattleSeqeuencer(this);
+    this.battleSequencer = new BattleSequencer(this);
 
     this.lastEventWasKeyBased = false;
 
