@@ -20,12 +20,16 @@ function BattleSequencer(renderer) {
     }
 
     this.turboTextEnabled = false;
+    this.turboTextVelocity = 80;
 
-    this.enableTurboText = () => this.turboTextEnabled = true;
+    this.enableTurboText = (velocity=80) => {
+        this.turboTextEnabled = true;
+        this.turboTextVelocity = velocity;
+    }
     this.disableTurboText = () => this.turboTextEnabled = false;
 
     this.getTextDuration = text => {
-        return this.turboTextEnabled ? 80 :1500 + (text.split(" ").length * 375);
+        return this.turboTextEnabled ? this.turboTextVelocity:1500 + (text.split(" ").length * 375);
     }
 
     this.elf = renderer.elf;
@@ -303,7 +307,7 @@ function BattleSequencer(renderer) {
                         console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
                     }
                 }
-                if(moveResult && moveResult.failed === true && !moveResult.text) {
+                if(moveResult && moveResult.failed === true && !moveResult.text && !moveResult.events) {
                     moveResult = {
                         failed: true,
                         text: "but it failed"
@@ -319,7 +323,7 @@ function BattleSequencer(renderer) {
                 moveResult.failed = true;
             }
             user.lastMoveFailed = moveResult.failed;
-            if(moveResult.text) {
+            if(moveResult.text || moveResult.speech) {
                 this.processEvent(moveResult,callback);
             } else if(moveResult.events && moveResult.events.length >= 1) {
                 let eventIndex = 0;

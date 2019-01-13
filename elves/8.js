@@ -2,31 +2,23 @@ addMove({
     name: "them bones",
     type: "target",
     process: (sequencer,user,target) => {
-        const updateBoneCountDisplay = () => {
-            sequencer.elfBattleObject.subText[0] = `${
-                sequencer.globalBattleState.bonePileCount
-            } bone pile${
-                sequencer.globalBattleState.bonePileCount !== 1 ? "s" : ""
-            }`;
-        }
-
         if(sequencer.globalBattleState.bonePileCount === 0) {
             sequencer.globalBattleState.bonePileCount++;
-            updateBoneCountDisplay();
+            elves[7].updateBoneCountDisplay(sequencer);
             return {
                 failed: false,
                 text: "bones were scattered everywhere"
             }
         } else if(sequencer.globalBattleState.bonePileCount >= 1){
             sequencer.globalBattleState.bonePileCount++;
-            updateBoneCountDisplay();
+            elves[7].updateBoneCountDisplay(sequencer);
             return {
                 failed: false,
                 text: "even more bones were scattered around"
             }
         } else {
             sequencer.globalBattleState.bonePileCount = 1;
-            updateBoneCountDisplay();
+            elves[7].updateBoneCountDisplay(sequencer);
             return {
                 failed: false,
                 text: "bones are all over the place now"
@@ -160,15 +152,57 @@ addMove({
 });
 addMove({
     name: "big hug",
-    type: "target"
+    type: "target",
+    process: (sequencer,user,target) => {
+        return {
+            events: [
+                {
+                    text: `${user.name} gave ${target.name} a big hug`
+                },
+                {
+                    text: `${target.name} looks uncomfortable`
+                }
+            ]
+        }
+    }
 });
 addMove({
     name: "violence",
-    type: "target"
+    type: "target",
+    process: (sequencer,user,target) => {
+        const events = "hey guess what violence just got a little more random".split(" ").map(word => {return{text:word}});
+        events.push({
+            text: `${target.name} got a little hurt by the violence`,
+            speech: "but really i am mostly\nconfused by what\njust happpened",
+            action: () => {
+                sequencer.disableTurboText();
+                target.dropHealth(20);
+            }
+        })
+        events[0].action = sequencer.enableTurboText;
+        return {
+            events: events
+        }
+    }
 });
 addMove({
     name: "sarcophagus",
-    type: "target"
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(sequencer.globalBattleState.bonePileCount >= 1) {
+            sequencer.globalBattleState.bonePileCount--;
+            elves[7].updateBoneCountDisplay(sequencer);
+            return {
+                failed: false,
+                text: "a bone pile was stored away"
+            }
+        } else {
+            return {
+                failed: true,
+                text: "but there's no bone piles anywhere"
+            }
+        }
+    }
 });
 addMove({
     name: "pass the whiskey",
@@ -176,26 +210,127 @@ addMove({
     process: (sequencer,user,target) => moves["drink alchohol"].process(sequencer,target)
 });
 addMove({
-    name: "slurred words"
+    name: "slurred words",
+    type: "self",
+    process: (sequencer,user) => {
+        return {
+            speech: slurText(elves[7].drunkResponses[Math.floor(Math.random() * elves[7].drunkResponses.length)])
+        }
+    }
 });
 addMove({
-    name: "slrrd werrsds"
+    name: "slrrd werrsds",
+    type: "self",
+    process: (sequencer,user) => {
+        return {
+            speech: superSlurText(elves[7].drunkResponses[Math.floor(Math.random() * elves[7].drunkResponses.length)])
+        }
+    }
 });
 addMove({
-    name: "drunken punch"
+    name: "drunken punch",
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(Math.random() > 0.63) {
+            const events = [{
+                text: "but it failed because..."
+            },..."it's booooooooooooze o' clock!!!".split("").map((item,index,arr)=>{
+                let text;
+                if(index !== 0) {
+                    text = arr[index-1] + item;
+                } else {
+                    text = arr[0];
+                }
+                arr[index] = text;
+                return {text:text}
+            })];
+            events[1].action = () => sequencer.enableTurboText(40);
+            events[events.length-1].action = sequencer.disableTurboText;
+            return {
+                failed: true,
+                events: events
+            }
+        } else {
+            target.dropHealth(10);
+            return {
+                failed: false,
+                text: "it was almost a miss"
+            }
+        }
+    }
 });
 addMove({
-    name: "drunken rant"
+    name: "drunken rant",
+    type: "self",
+    process: sequencer => {
+        const events =
+"okay so my wife tracy broke up with me because she didn't love me anymore and now my heart is sad and broken and shattered into a million little elf pieces except i don't have a heart because i'm a skeleton but later you might notice that my kidneys fail so why would i have kidneys if i don't have a heart".split(" ").map(word => {return{text:word}});
+        events.push({
+            speech: "okay...\ndid you get all that?",
+            action: () => {
+                sequencer.disableTurboText();
+            }
+        })
+        events[0].action = () => sequencer.enableTurboText(60);
+        return {
+            events: events
+        }
+    }
 });
 addMove({
-    name: "bone toss"
+    name: "bone toss",
+    type: "target",
+    process: (sequencer,user,target) => {
+        return {
+            failed: true,
+            text: `but it failed because ${target.name} ${target.isPlayer ? "aren't" : "isn't"} a dog`
+        }
+    }
 });
 addMove({
-    name: "bone salad"
+    name: "bone salad",
+    type: "self",
+    process: (sequencer,user) => {
+        return {
+            failed: false,
+            text: `${user.name} ${user.isPlayer ? "are" : "is"} prepping for a wicked potluck`
+        }
+    }
 });
 addMove({
-    name: "bone o' clock"
+    name: "bone o' clock",
+    type: "target",
+    process: (sequencer,user) => {
+        if(user.isPlayer && sequencer.elf.name === "boney elf") {
+            return {
+                failed: false,
+                text: "boney elf laughs evilly"
+            }
+        } else {
+            return {
+                failed: true,
+                text: `but the bone clock makes no sense`
+            }
+        }
+    }
 });
+
+const slurText = text => {
+    const vowelReplacements = "aeiou";
+    return text.replace(vowelReplacements[Math.floor(vowelReplacements.length*Math.random())],"");
+}
+const superSlurText = text => {
+    [
+        ["am","em"],
+        ["an","am"],
+        ["ck","cc"],
+        ["o","e"],
+        ["i","e"],
+    ].forEach(item => {
+        text = text.replace(item[0],item[1])
+    });
+    return slurText(text);;
+}
 
 elves[7] = {
     name: "boney elf",
@@ -209,25 +344,42 @@ elves[7] = {
         moves["big hug"],
         moves["violence"]
     ],
+    drunkResponses: [
+        "i am a god",
+        "i am an elf",
+        "santa does the suck",
+        "why is snow white",
+        "wait - hold on",
+        "errrr",
+        "*burp sounds*",
+        "*hisses like a cat*"
+    ],
     getMove: sequencer => {
-        if(sequencer.elfBattleObject.isLit) {
-            const litMoves = ["drunken punch","them bones","drunken rant","cry"];
-            if(sequencer.elfBattleObject.isSuperLit) {
-                litMoves.push(moves["slrrd werrsds"]);
+        if(sequencer.elfBattleObject.state.isLit) {
+            const litMoves = ["drunken punch","drunken punch","them bones","drunken rant","cry"];
+            if(sequencer.elfBattleObject.state.isSuperLit) {
+                litMoves.push("slrrd werrsds");
             } else {
-                litMoves.push(moves["slurred words"]);
+                litMoves.push("slurred words");
             }
-            return litMoves[Math.floor(Math.random() * litMoves.length)];
+            return moves[litMoves[Math.floor(Math.random() * litMoves.length)]];
         } else {
             const userPoisonedMoves = ["them bones","bone toss","bone salad","bone o' clock"];
             if(sequencer.playerBattleObject.state.isPoisoned) {
                 return moves[userPoisonedMoves[Math.floor(Math.random()*userPoisonedMoves.length)]];
-            } else if(Math.random() < 0.25) {
+            } else if(Math.random() < 0.27) {
                 return moves["poison"];
             } else {
                 return moves[userPoisonedMoves[Math.floor(Math.random()*userPoisonedMoves.length)]];
             }
         }
+    },
+    updateBoneCountDisplay: sequencer => {
+        sequencer.elfBattleObject.subText[0] = `${
+            sequencer.globalBattleState.bonePileCount
+        } bone pile${
+            sequencer.globalBattleState.bonePileCount !== 1 ? "s" : ""
+        }`;
     },
     getDefaultGlobalState: () => {
         return {
@@ -308,6 +460,7 @@ elves[7] = {
     },
     setup: sequencer => {
         sequencer.elfBattleObject.subText = [""];
+        elves[7].updateBoneCountDisplay(sequencer);
         sequencer.playerBattleObject.movePreProcess = (sequencer,move) => {
             let chance = 1 - (0.05 * sequencer.globalBattleState.bonePileCount);
             if(Math.random() > chance) {
