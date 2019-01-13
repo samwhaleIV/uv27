@@ -89,6 +89,7 @@ addMove({
             }
         } else if(user.state.alchoholWarning) {
             sequencer.dropHealth(user,user.maxHealth);
+            user.state.alchoholOD = true;
             if(user.isPlayer) {
                 return {
                     text: "your kidneys have failed"
@@ -197,9 +198,16 @@ addMove({
                 text: "a bone pile was stored away"
             }
         } else {
-            return {
-                failed: true,
-                text: "but there's no bone piles anywhere"
+            if(sequencer.elf.name === "boney elf" && user.isPlayer) {
+                return {
+                    failed: true,
+                    text: "but there's no bone piles anywhere"
+                }
+            } else {
+                return {
+                    failed: true,
+                    text: "but boney elf won't get in"
+                }
             }
         }
     }
@@ -271,7 +279,7 @@ addMove({
                 sequencer.disableTurboText();
             }
         })
-        events[0].action = () => sequencer.enableTurboText(60);
+        events[0].action = sequencer.enableTurboText;
         return {
             events: events
         }
@@ -456,6 +464,20 @@ elves[7] = {
                     }
                 }
             }
+        }
+    },
+    getLoseSpeech: sequencer => {
+        if(sequencer.playerBattleObject.state.alchoholOD) {
+            return "rip\nshouldn't drink so much"
+        } else {
+            return "looks like you've been...\nb o n e d"
+        }
+    },
+    getWinSpeech: sequencer => {
+        if(sequencer.elfBattleObject.state.alchoholOD) {
+            return "errrr\nderrr...\nblurbbb..\n\n*ded*"
+        } else {
+            return "damn...\ni've been... boned"
         }
     },
     setup: sequencer => {
