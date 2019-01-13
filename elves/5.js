@@ -44,7 +44,7 @@ elves[4] = {
     },
     getMove: sequencer => {
         if(sequencer.turnNumber % 4 === 3) {
-            moves["water break"];
+            return moves["water break"];
         } else {
             return moves["decent punch"];
         }
