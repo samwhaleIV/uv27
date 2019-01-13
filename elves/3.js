@@ -155,7 +155,7 @@ addMove({
     type: "target",
     name: "chit chat",
     process: (sequencer,user,target) => {
-        sequencer.dropHealth(target,6);
+        sequencer.dropHealth(target,8);
         return {
             text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} voice grates ${target.isPlayer ? "your" : `${user.name}'${user.name.endsWith("s") ? "" : "s"}`} ears`
         }
@@ -182,6 +182,9 @@ elves[2] = {
         return "well that's the\nlast time i give\nsomeone a gun"
     },
     getSpeech: sequencer => {
+        if(sequencer.elfBattleObject.lastMove !== "chit chat") {
+            return;
+        }
         const responses = [
             "hi\ni love talking",
             "do you like talking",
@@ -196,13 +199,9 @@ elves[2] = {
             "this is seeming\nlike a bad idea in\nhindsight",
             (()=>{
                 if(sequencer.playerBattleObject.state.loadedBullets && sequencer.playerBattleObject.state.loadedBullets > 0) {
-                    return {
-                        text: "oh jeez\nquick and painless\nplz"
-                    };
+                    return "oh jeez\nquick and painless\nplz"
                 } else {
-                    return {
-                        text: "good thing you haven't\nloaded your revolver"
-                    };
+                    return "good thing you haven't\nloaded your revolver"
                 }
             })(),
             "i really like spinning",
@@ -238,7 +237,7 @@ elves[2] = {
     },
     getMove: sequencer => {
         if(sequencer.playerBattleObject.lastMove === "panhandle") {
-            return moves["charity"];
+            return sequencer.turnNumber % 2 === 1 ? moves["charity"] : moves["chit chat"];
         } else {
             return moves["chit chat"];
         }
@@ -248,8 +247,8 @@ elves[2] = {
             postTurnProcess: sequencer => {
                 if(sequencer.playerBattleObject.state.money < 5) {
                     sequencer.updatePlayerMoves([
-                        moves["panhandle"],
                         elves[2].playerMoves[1],
+                        moves["panhandle"],
                         elves[2].playerMoves[2],
                         elves[2].playerMoves[3]
                     ]);
