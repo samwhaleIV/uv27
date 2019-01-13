@@ -138,7 +138,7 @@ const moves = {
                                             text: "this might go on for a while"
                                         },
                                         {
-                                            text: `*something about an ex-wife is brought up*`
+                                            text: `*something about ${user.isPlayer ? "an ex-wife" : "santa"} is brought up*`
                                         }
                                     ]
                                 }                                
@@ -168,7 +168,7 @@ const moves = {
                                             text: "the patheticness continues"
                                         },
                                         {
-                                            text: `*childhood issues are ranted about*`
+                                            text: `*${user.isPlayer ? "childhood" : "elf labor"} issues are ranted about*`
                                         }
                                     ]
                                 }
@@ -178,6 +178,7 @@ const moves = {
                             user.state.isLit = false;
                             user.state.isSuperLit = false;
                             user.state.alchoholWarning = false;
+                            user.state.drunkCries = 0;
                             return {
                                 events: [
                                     {

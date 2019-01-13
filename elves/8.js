@@ -211,7 +211,7 @@ elves[7] = {
     ],
     getMove: sequencer => {
         if(sequencer.elfBattleObject.isLit) {
-            const litMoves = ["drunken punch","them bones","drunken rant"];
+            const litMoves = ["drunken punch","them bones","drunken rant","cry"];
             if(sequencer.elfBattleObject.isSuperLit) {
                 litMoves.push(moves["slrrd werrsds"]);
             } else {

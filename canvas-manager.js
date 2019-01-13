@@ -45,12 +45,97 @@ const processMouseMove = event => {
 canvas.onpointerdown = processMouseMove;
 canvas.onpointermove = processMouseMove;
 window.onkeydown = event => {
+    if(event.code === "KeyP") {
+        cycleSizeMode();
+        return;
+    }
     if(paused || !rendererState) {
         return;
     }
     if(rendererState.processKey) {
         rendererState.processKey(event.code);
     }
+}
+
+const pictureModeElement = document.getElementById("picture-mode-element");
+
+const canvasHeightToWidth = canvas.height / canvas.width;
+const canvasWidthToHeight = canvas.width / canvas.height;
+
+const defaultSizeMode = "fit";
+
+let canvasSizeMode = localStorage.getItem("canvasSizeMode") || defaultSizeMode;
+
+const applySizeMode = () => {
+    switch(canvasSizeMode) {
+        default:
+        case "fit":
+            if(window.innerWidth / window.innerHeight > canvasWidthToHeight) {
+                const newWidth = window.innerHeight * canvasWidthToHeight;
+
+                canvas.style.height = window.innerHeight + "px";
+                canvas.style.width = newWidth + "px";
+
+                canvas.style.top = "0px";
+                canvas.style.left = (window.innerWidth / 2) - (newWidth / 2) + "px";
+            } else {
+                const newHeight = window.innerWidth * canvasHeightToWidth;
+
+                canvas.style.width = window.innerWidth + "px";
+                canvas.style.height = newHeight + "px";
+
+                canvas.style.top = ((window.innerHeight / 2) - (newHeight / 2)) + "px";
+                canvas.style.left = "0px";
+            }
+            break;
+        case "stretch":
+            canvas.style.width = window.innerWidth + "px";
+            canvas.style.height = window.innerHeight + "px";
+            canvas.style.left = "0px";
+            canvas.style.top = "0px";
+            break;
+        case "center":
+            canvas.style.width = canvas.width + "px";
+            canvas.style.height = canvas.height + "px";
+            canvas.style.left = ((window.innerWidth / 2) - (canvas.width / 2)) + "px";
+            canvas.style.top = "4vh";
+            break;
+    }
+}
+window.onresize = applySizeMode;
+applySizeMode();
+let pictureModeElementTimeout = null;
+const cycleSizeMode = () => {
+    let newMode = defaultSizeMode;
+    switch(canvasSizeMode) {
+        default:
+        case "fit":
+            newMode = "center";
+            break;
+        case "stretch":
+            newMode = "fit";
+            break;
+        case "center":
+            newMode = "stretch";
+            break;
+    }
+    if(pictureModeElementTimeout) {
+        clearTimeout(pictureModeElementTimeout);
+    }
+    pictureModeElement.textContent = sizeModeDisplayNames[newMode];
+    pictureModeElementTimeout = setTimeout(()=>{
+        pictureModeElement.textContent = "";
+        pictureModeElementTimeout = null;
+    },600);
+    canvasSizeMode = newMode;
+    applySizeMode();
+    localStorage.setItem("canvasSizeMode",newMode);
+    console.log(`Canvas handler: Set size mode to '${newMode}'`);
+}
+const sizeModeDisplayNames = {
+    "fit":"fill",
+    "stretch":"stretch",
+    "center":"1:1 scale"
 }
 
 const context = canvas.getContext("2d");

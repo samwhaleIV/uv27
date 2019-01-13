@@ -20,7 +20,7 @@ function BattleSequencer(renderer) {
     }
 
     this.getTextDuration = text => {
-        return 1150 + (text.split(" ").length * 300);
+        return 1500 + (text.split(" ").length * 375);
     }
 
     this.elf = renderer.elf;
