@@ -1,28 +1,4 @@
-addMove({
-    type: "target",
-    name: "charity",
-    process: (sequencer,user,target) => {
-        if(!target.state.money) {
-            target.state.money = 0;
-        }
-        target.state.money += 4;
-        target.subText[0] = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
-        return {
-            text: `${user.name} gave you 4 coins for your pain`
-        }
-    }
-});
-addMove({
-    type: "target",
-    name: "chit chat",
-    process: (sequencer,user,target) => {
-        sequencer.dropHealth(target,6);
-        return {
-            text: "the build up scares and hurts you a little"
-        }
-    }
-});
-elves[1] =     {
+elves[1] = {
     name: "wimpy green elf",
     background: "background-1",
     backgroundColor: "green",

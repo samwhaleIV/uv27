@@ -109,6 +109,58 @@ addMove({
         }
     }
 });
+addMove({
+    type: "self",
+    name: "panhandle",
+    process: (sequencer,user) => {
+        return {
+            text: `${user.name} ${user.isPlayer ? "are" : "is"} like a filthy hobo`
+        }
+    }
+});
+addMove({
+    type: "target",
+    name: "charity",
+    process: (sequencer,user,target) => {
+        if(!target.state.money) {
+            target.state.money = 0;
+        }
+        target.state.money += 4;
+        target.subText[0] = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
+        const responses = [
+            "awe - your poor thing",
+            "what even are you?",
+            "are humans wimps too?",
+            "you're so cute",
+            "you're my hobo",
+            "don't touch me plz",
+            "just take my money",
+            "stay away from my\nlucky charms!",
+            "a hobo with a gun?",
+            "why do you need coins?"
+        ];
+        return {
+            events: [
+                {
+                    speech: responses[Math.floor(responses.length*Math.random())]
+                },
+                {
+                    text: `${user.name} gave you 4 coins for your pain`
+                }
+            ]
+        }
+    }
+});
+addMove({
+    type: "target",
+    name: "chit chat",
+    process: (sequencer,user,target) => {
+        sequencer.dropHealth(target,6);
+        return {
+            text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} voice grates ${target.isPlayer ? "your" : `${user.name}'${user.name.endsWith("s") ? "" : "s"}`} ears`
+        }
+    }
+});
 elves[2] = {
     name: "wimpy blue elf",
     background: "background-1",
@@ -116,6 +168,7 @@ elves[2] = {
     health: 100,
     startText: "you received an empty revolver",
     startSpeech: {
+        failed: false,
         text: "here is a revolver\nlet's see if you know\nhow to use it\n\ninformation can be\nseen at the top left\n(in many battles)"
     },
     setup: sequencer => {
@@ -184,14 +237,30 @@ elves[2] = {
         };
     },
     getMove: sequencer => {
-        if(sequencer.turnNumber % 2 !== 0) {
-            moves["charity"];
+        if(sequencer.playerBattleObject.lastMove === "panhandle") {
+            return moves["charity"];
         } else {
-            moves["chit chat"];
+            return moves["chit chat"];
+        }
+    },
+    getDefaultGlobalState: () => {
+        return {
+            postTurnProcess: sequencer => {
+                if(sequencer.playerBattleObject.state.money < 5) {
+                    sequencer.updatePlayerMoves([
+                        moves["panhandle"],
+                        elves[2].playerMoves[1],
+                        elves[2].playerMoves[2],
+                        elves[2].playerMoves[3]
+                    ]);
+                } else {
+                    sequencer.updatePlayerMoves(elves[2].playerMoves);
+                }
+            }
         }
     },
     playerMoves: [
-        moves["buy bullet"],
+        moves["buy bullet - 5 coins"],
         moves["load chamber"],
         moves["spin chamber"],
         moves["boom"]

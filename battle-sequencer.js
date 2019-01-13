@@ -314,29 +314,9 @@ function BattleSequencer(renderer) {
                 moveResult.failed = true;
             }
             user.lastMoveFailed = moveResult.failed;
-            const processEvent = (event,callback) => {
-                if(event.condition) {
-                    if(!event.condition()) {
-                        callback();
-                        return;
-                    }
-                }
-                if(event.action) {
-                    event.action();
-                }
-                if(event.text) {
-                    this.showText(
-                        event.text,0,
-                        this.getTextDuration(event.text),
-                        callback
-                    );
-                } else {
-                    callback();
-                }
-            }
             if(moveResult.text) {
-                processEvent(moveResult,callback);
-            } else if(moveResult.events) {
+                this.processEvent(moveResult,callback);
+            } else if(moveResult.events && moveResult.events.length >= 1) {
                 let eventIndex = 0;
                 const maxEventIndex = moveResult.events.length-1;
                 const processNextEvent = () => {
@@ -344,9 +324,9 @@ function BattleSequencer(renderer) {
                         eventIndex
                     ];
                     if(eventIndex >= maxEventIndex) {
-                        processEvent(event,callback);
+                        this.processEvent(event,callback);
                     } else {
-                        processEvent(event,processNextEvent);
+                        this.processEvent(event,processNextEvent);
                         eventIndex++;
                     }
                 }
@@ -434,6 +414,40 @@ function BattleSequencer(renderer) {
         }
     }
 
+    this.processEvent = (event,callback) => {
+        if(event.condition) {
+            if(!event.condition()) {
+                callback();
+                return;
+            }
+        }
+        if(event.action) {
+            event.action();
+        }
+        if(event.text) {
+            this.showText(event.text,0,this.getTextDuration(event.text),
+            ()=>{
+                if(event.speech) {
+                    this.showElfSpeech(
+                        event.speech,0,
+                        this.getTextDuration(event.speech),
+                        callback
+                    );
+                } else {
+                    callback();
+                }
+            });
+        } else if(event.speech) {
+            this.showElfSpeech(
+                event.speech,0,
+                this.getTextDuration(event.speech),
+                callback
+            );               
+        } else {
+            callback();
+        }
+    }
+
     this.showingPersistentSpeech;
     this.persistentSpeechDuration;
 
@@ -509,36 +523,9 @@ function BattleSequencer(renderer) {
             if(this.globalBattleState.postTurnProcess !== null) {
                 const turnProcessResult = this.globalBattleState.postTurnProcess(this);
                 if(turnProcessResult) {
-                    const processEvent = (event,callback) => {
-                        if(event.condition) {
-                            if(!event.condition()) {
-                                callback();
-                                return;
-                            }
-                        }
-                        if(event.action) {
-                            event.action();
-                        }
-                        if(event.text) {
-                            this.showText(event.text,0,this.getTextDuration(event.text),
-                            ()=>{
-                                if(event.speech) {
-                                    this.showElfSpeech(
-                                        event.speech,0,
-                                        this.getTextDuration(event.speech),
-                                        callback
-                                    );
-                                } else {
-                                    callback();
-                                }
-                            });
-                        } else {
-                            callback();
-                        }
-                    }
                     if(turnProcessResult.text) {
-                        processEvent(turnProcessResult,endCallback);
-                    } else if(turnProcessResult.events) {
+                        this.processEvent(turnProcessResult,endCallback);
+                    } else if(turnProcessResult.events && turnProcessResult.events.length >= 1) {
                         let eventIndex = 0;
                         const maxEventIndex = turnProcessResult.events.length-1;
                         const processNextEvent = () => {
@@ -546,9 +533,9 @@ function BattleSequencer(renderer) {
                                 eventIndex
                             ];
                             if(eventIndex >= maxEventIndex) {
-                                processEvent(event,endCallback);
+                                this.processEvent(event,endCallback);
                             } else {
-                                processEvent(event,processNextEvent);
+                                this.processEvent(event,processNextEvent);
                                 eventIndex++;
                             }
                         }
