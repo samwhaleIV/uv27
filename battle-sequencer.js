@@ -19,8 +19,13 @@ function BattleSequencer(renderer) {
         }
     }
 
+    this.turboTextEnabled = false;
+
+    this.enableTurboText = () => this.turboTextEnabled = true;
+    this.disableTurboText = () => this.turboTextEnabled = false;
+
     this.getTextDuration = text => {
-        return 1500 + (text.split(" ").length * 375);
+        return this.turboTextEnabled ? 80 :1500 + (text.split(" ").length * 375);
     }
 
     this.elf = renderer.elf;

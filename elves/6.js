@@ -165,7 +165,7 @@ elves[5] = {
         moves["take gold"],
         moves["give gold"],
         moves["band aid"],
-        moves["buy squirrel"]
+        moves["buy squirrel - 3 gold"]
     ],
     getMove: sequencer => {
         if(sequencer.elfBattleObject.state.puttingAnEndToThis) {

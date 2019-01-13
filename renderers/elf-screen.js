@@ -201,8 +201,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         drawTextWhite(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize);
     }
 
-    this.hoverColor = this.elf.darkHover ? "darkgray" : "rgba(255,255,255,0.7)";
-    this.fillColor = this.elf.darkHover ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.8)";
+    this.hoverColor = this.elf.darkHover ? "red" : "rgba(255,255,255,0.7)";
+    this.fillColor = this.elf.darkHover ? "rgba(30,30,30,0.95)" : "rgba(0,0,0,0.8)";
 
     this.renderMethod = (context,timestamp,width,height) => {
 
