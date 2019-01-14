@@ -10,6 +10,27 @@ const shuffleWithMask = items => {
     return shuffledItems;
 }
 
+const turboTextIncremental = (sequencer,introText,text,isFailure=false) => {
+    const events = [{
+        text: introText
+    },...text.split("").map((item,index,arr)=>{
+        let text;
+        if(index !== 0) {
+            text = arr[index-1] + item;
+        } else {
+            text = arr[0];
+        }
+        arr[index] = text;
+        return {text:text}
+    })];
+    events[1].action = () => sequencer.enableTurboText(40);
+    events[events.length-1].action = sequencer.disableTurboText;
+    return {
+        failed: isFailure,
+        events: events
+    }
+}
+
 const getStaticRadioSet = (options,questionID) => getRadioSet(options,questionID,false);
 const getRadioSet = (options,questionID,randomize=true) => {
     const moves = [];
@@ -18,6 +39,9 @@ const getRadioSet = (options,questionID,randomize=true) => {
     }
     return randomize ? shuffleWithMask(moves) : moves;
 }
+
+const overb = object => object.isPlayer ? "are" : "is";
+const oposv = object => object.isPlayer ? "your" : "their";
 
 const getOptionMove = (moveName,questionID,optionID) => {
     return {
@@ -58,6 +82,10 @@ const protectPressProcessElf = (sequencer,move) => {
 }
 
 const addMove = move => {
+    if(moves[move.name]) {
+        console.error(`Error: Duplicated move name @ '${move.name}'!`);
+        return;
+    }
     moves[move.name] = move;
 }
 

@@ -314,6 +314,16 @@ function BattleSequencer(renderer) {
                     }
                 }
             }
+            if(!moveResult) {
+                if(moveResult === null) {
+                    moveResult = {};
+                } else {
+                    moveResult = {
+                        failed: true,
+                        text: "but the developer made a mistake"
+                    };
+                }
+            }
             user.lastMove = moveDisplayName || null;
             if(!moveResult.failed) {
                 if(moveResult.failed !== false) {
@@ -575,7 +585,7 @@ function BattleSequencer(renderer) {
 
     if(!this.elf.playerMoves) {
         if(this.elf.getPlayerMoves) {
-            this.updatePlayerMoves(this.elf.getPlayerMoves());
+            this.updatePlayerMoves(this.elf.getPlayerMoves(this));
         } else {
             this.elf.playerMoves = [moves["honorable suicide"]];
             this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";

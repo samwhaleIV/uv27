@@ -221,8 +221,20 @@ addMove({
     name: "slurred words",
     type: "self",
     process: (sequencer,user) => {
+        const responses = [
+            "i am a goat",
+            "i erm ahn erf",
+            "sanda does der suck",
+            "y is the schmo woot",
+            "wert - held en!",
+            "errrr",
+            "*burp sounds*",
+            "*blurp sounds*",
+            "*hisses like a cat*"
+        ];
+        const text = responses[Math.floor(Math.random()*responses.length)];
         return {
-            speech: slurText(elves[7].drunkResponses[Math.floor(Math.random() * elves[7].drunkResponses.length)])
+            speech: text
         }
     }
 });
@@ -230,8 +242,21 @@ addMove({
     name: "slrrd werrsds",
     type: "self",
     process: (sequencer,user) => {
+        const responses = [
+            "erm a geet",
+            "erm an erf",
+            "sandy erm derf",
+            "gimizzle schmo woot",
+            "fledal ledeel yeet",
+            "yoot yoot murrr",
+            "mauray chrast mast",
+            "wet u thlink u r",
+            "helden horp eorsfod",
+            "*????????*"
+        ];
+        const text = responses[Math.floor(Math.random()*responses.length)];
         return {
-            speech: superSlurText(elves[7].drunkResponses[Math.floor(Math.random() * elves[7].drunkResponses.length)])
+            speech: text
         }
     }
 });
@@ -240,24 +265,12 @@ addMove({
     type: "target",
     process: (sequencer,user,target) => {
         if(Math.random() > 0.63) {
-            const events = [{
-                text: "but it failed because..."
-            },..."it's booooooooooooze o' clock!!!".split("").map((item,index,arr)=>{
-                let text;
-                if(index !== 0) {
-                    text = arr[index-1] + item;
-                } else {
-                    text = arr[0];
-                }
-                arr[index] = text;
-                return {text:text}
-            })];
-            events[1].action = () => sequencer.enableTurboText(40);
-            events[events.length-1].action = sequencer.disableTurboText;
-            return {
-                failed: true,
-                events: events
-            }
+            return turboTextIncremental(
+                sequencer,
+                "but it failed because...",
+                "it's booooooooooooze o' clock!!!",
+                true
+            );
         } else {
             target.dropHealth(10);
             return {
@@ -322,24 +335,6 @@ addMove({
         }
     }
 });
-
-const slurText = text => {
-    const vowelReplacements = "aeiou";
-    return text.replace(vowelReplacements[Math.floor(vowelReplacements.length*Math.random())],"");
-}
-const superSlurText = text => {
-    [
-        ["am","em"],
-        ["an","am"],
-        ["ck","cc"],
-        ["o","e"],
-        ["i","e"],
-    ].forEach(item => {
-        text = text.replace(item[0],item[1])
-    });
-    return slurText(text);;
-}
-
 elves[7] = {
     name: "boney elf",
     background: "background-8",
@@ -351,16 +346,6 @@ elves[7] = {
         moves["sarcophagus"],
         moves["big hug"],
         moves["violence"]
-    ],
-    drunkResponses: [
-        "i am a god",
-        "i am an elf",
-        "santa does the suck",
-        "why is snow white",
-        "wait - hold on",
-        "errrr",
-        "*burp sounds*",
-        "*hisses like a cat*"
     ],
     getMove: sequencer => {
         if(sequencer.elfBattleObject.state.isLit) {
@@ -466,14 +451,14 @@ elves[7] = {
             }
         }
     },
-    getLoseSpeech: sequencer => {
+    getWinSpeech: sequencer => {
         if(sequencer.playerBattleObject.state.alchoholOD) {
             return "rip\nshouldn't drink so much"
         } else {
             return "looks like you've been...\nb o n e d"
         }
     },
-    getWinSpeech: sequencer => {
+    getLoseSpeech: sequencer => {
         if(sequencer.elfBattleObject.state.alchoholOD) {
             return "errrr\nderrr...\nblurbbb..\n\n*ded*"
         } else {
