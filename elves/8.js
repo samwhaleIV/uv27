@@ -265,16 +265,17 @@ addMove({
     type: "target",
     process: (sequencer,user,target) => {
         if(Math.random() > 0.63) {
-            return turboTextIncremental(
-                sequencer,
-                "but it failed because...",
-                "it's booooooooooooze o' clock!!!",
-                true
-            );
+            return {
+                events: turboTextIncremental(
+                    sequencer,
+                    "but it failed because...",
+                    "it's booooooooooooze o' clock!!!",
+                ),
+                failed: true,
+            }
         } else {
             target.dropHealth(10);
             return {
-                failed: false,
                 text: "it was almost a miss"
             }
         }
@@ -284,17 +285,11 @@ addMove({
     name: "drunken rant",
     type: "self",
     process: sequencer => {
-        const events =
-"okay so my wife tracy broke up with me because she didn't love me anymore and now my heart is sad and broken and shattered into a million little elf pieces except i don't have a heart because i'm a skeleton but later you might notice that my kidneys fail so why would i have kidneys if i don't have a heart".split(" ").map(word => {return{text:word}});
-        events.push({
-            speech: "okay...\ndid you get all that?",
-            action: () => {
-                sequencer.disableTurboText();
-            }
-        })
-        events[0].action = sequencer.enableTurboText;
         return {
-            events: events
+            events: turboTextWordByWord(
+                "okay so my wife tracy broke up with me because she didn't love me anymore and now my heart is sad and broken and shattered into a million little elf pieces except i don't have a heart because i'm a skeleton but later you might notice that my kidneys fail so why would i have kidneys if i don't have a heart",
+                "okay...\ndid you get all that?"
+            )
         }
     }
 });

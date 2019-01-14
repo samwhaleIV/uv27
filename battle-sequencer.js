@@ -22,14 +22,24 @@ function BattleSequencer(renderer) {
     this.turboTextEnabled = false;
     this.turboTextVelocity = 80;
 
-    this.enableTurboText = (velocity=80) => {
+    this.enableTurboText = velocity => {
         this.turboTextEnabled = true;
-        this.turboTextVelocity = velocity;
+        if(velocity) {
+            this.turboTextVelocity = velocity;
+        }
     }
     this.disableTurboText = () => this.turboTextEnabled = false;
 
+    this.debugInfinity = false;
+
     this.getTextDuration = text => {
-        return this.turboTextEnabled ? this.turboTextVelocity:1500 + (text.split(" ").length * 375);
+        if(this.turboTextEnabled) {
+            return this.turboTextVelocity;
+        } else if(this.debugInfinity) {
+            return Infinity;
+        } else {
+            return 10000;
+        }
     }
 
     this.elf = renderer.elf;
@@ -342,11 +352,10 @@ function BattleSequencer(renderer) {
                     const event = moveResult.events[
                         eventIndex
                     ];
-                    if(eventIndex >= maxEventIndex) {
+                    if(eventIndex++ >= maxEventIndex) {
                         this.processEvent(event,callback);
                     } else {
                         this.processEvent(event,processNextEvent);
-                        eventIndex++;
                     }
                 }
                 processNextEvent();
@@ -551,11 +560,10 @@ function BattleSequencer(renderer) {
                             const event = turnProcessResult.events[
                                 eventIndex
                             ];
-                            if(eventIndex >= maxEventIndex) {
+                            if(eventIndex++ >= maxEventIndex) {
                                 this.processEvent(event,endCallback);
                             } else {
                                 this.processEvent(event,processNextEvent);
-                                eventIndex++;
                             }
                         }
                         processNextEvent();

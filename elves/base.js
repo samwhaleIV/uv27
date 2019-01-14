@@ -10,7 +10,20 @@ const shuffleWithMask = items => {
     return shuffledItems;
 }
 
-const turboTextIncremental = (sequencer,introText,text,isFailure=false) => {
+const turboTextWordByWord = (sequencer,text,postText=null,postSpeech=null) => {
+    const events = text.split(" ").map(word => {return{text:word}});
+    events.push({
+        text: postSpeech,
+        speech: postText,
+        action: () => {
+            sequencer.disableTurboText();
+        }
+    });
+    events[0].action = sequencer.enableTurboText;
+    return events;
+}
+
+const turboTextIncremental = (sequencer,introText,text) => {
     const events = [{
         text: introText
     },...text.split("").map((item,index,arr)=>{
@@ -25,10 +38,7 @@ const turboTextIncremental = (sequencer,introText,text,isFailure=false) => {
     })];
     events[1].action = () => sequencer.enableTurboText(40);
     events[events.length-1].action = sequencer.disableTurboText;
-    return {
-        failed: isFailure,
-        events: events
-    }
+    return events;
 }
 
 const getStaticRadioSet = (options,questionID) => getRadioSet(options,questionID,false);

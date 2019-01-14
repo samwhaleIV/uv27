@@ -70,7 +70,6 @@ const getFader = function() {
                         return;
                     }
                 }
-
                 noiseBlackOut(
                     fadeIntensity,
                     context,width,height,
