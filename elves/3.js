@@ -155,7 +155,7 @@ addMove({
     type: "target",
     name: "chit chat",
     process: (sequencer,user,target) => {
-        sequencer.dropHealth(target,8);
+        sequencer.dropHealth(target,6);
         return {
             text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} voice grates ${target.isPlayer ? "your" : `${user.name}'${user.name.endsWith("s") ? "" : "s"}`} ears`
         }
@@ -184,7 +184,7 @@ elves[2] = {
     },
     getSpeech: sequencer => {
         if(sequencer.elfBattleObject.lastMove !== "chit chat") {
-            return;
+            return null;
         }
         const responses = [
             "hi\ni love talking",
