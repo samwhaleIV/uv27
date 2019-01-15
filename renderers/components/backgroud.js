@@ -15,7 +15,6 @@ function Background(name,color,cycleTime) {
             horizontalOffset,0
         );
 
-
         context.drawImage(
             imageDictionary[this.name],
             (width + horizontalOffset),0

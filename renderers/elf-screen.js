@@ -2,6 +2,14 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.elf = elves[elfID];
 
+    let backgroundCycleTime;
+
+    if(this.elf.backgroundCycleTime) {
+        backgroundCycleTime = this.elf.backgroundCycleTime;
+    } else {
+        backgroundCycleTime = isBoss ? 10000 : 20000;
+    }
+
     if(this.elf.song) {
         this.song = this.elf.song;
     }
@@ -16,7 +24,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.elfHeight = 372;
     this.elfCenterX = Math.floor(this.halfWidth - (this.elfWidth / 2));
     this.fader = getFader();
-    this.background = !isBoss ? new Background(this.elf.background,this.elf.backgroundColor) : new BossBackground();
+    this.background = !isBoss ? new Background(this.elf.background,this.elf.backgroundColor,backgroundCycleTime) : new BossBackground(backgroundCycleTime);
     this.elfX = this.elfCenterX;
 
     this.elfMoveStart = null;

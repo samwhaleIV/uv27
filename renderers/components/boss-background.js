@@ -1,6 +1,10 @@
-function BossBackground() {
+function BossBackground(cycleTime) {
 
-    this.background = new Background("background-2","rgb(20,20,20)",10000);
+    if(!cycleTime) {
+        cycleTime = 10000;
+    }
+
+    this.background = new Background("background-2","rgb(20,20,20)",cycleTime);
 
     this.fragmentPoints = [
         {   //Left most

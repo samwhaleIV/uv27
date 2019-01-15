@@ -1,6 +1,7 @@
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.song = "menu.mp3";
+    const backgroundCycleTime = 20000;
 
     this.halfWidth = canvas.width / 2;
 
@@ -24,7 +25,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.textX = null;
     this.textHeight = null;
 
-    this.background = new Background("background-1","rgb(30,30,30)");
+    this.background = new Background("background-1","rgb(30,30,30)",backgroundCycleTime);
 
     this.leftDisabled = null;
     this.rightDisabled = null;
