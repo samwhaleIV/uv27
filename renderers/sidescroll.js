@@ -10,13 +10,11 @@ function SidescrollRenderer(image,endCallback) {
         x: 0,y:0
     }
 
-    const framesPerSecond = 10;
+    const framesPerSecond = 5.5;
 
     const frameCount = 7;
 
     const frameDuration = 1000 / framesPerSecond;
-
-    const highestFrameIndex = frameCount - 1;
 
     this.rightSprites = [];
     this.leftSprites = [];
@@ -32,6 +30,8 @@ function SidescrollRenderer(image,endCallback) {
         }
     }
 
+    const highestFrameIndex = this.leftSprites.length;
+
     this.elfScale = 20;
 
     this.animationStartTime = performance.now();
@@ -43,7 +43,7 @@ function SidescrollRenderer(image,endCallback) {
         x:spriteWidth,y:spriteHeight
     }
     this.standingRight = {
-        x:this.rightSprites[this.rightSprites.length-1],y:0
+        x:this.rightSprites[this.rightSprites.length-1].x,y:0
     }
 
     this.renderMethod = (context,timestamp,width,height) => {
@@ -79,12 +79,15 @@ function SidescrollRenderer(image,endCallback) {
         const elfWidth = this.elfScale * spriteWidth;
         const elfHeight = this.elfScale * spriteHeight;
 
-        context.drawImage(
-            image,
-            position.x,position.y,spriteWidth,spriteHeight,
-            (width/2)-(elfWidth/2),(height/2)-(elfHeight/2),elfWidth,elfHeight
-        );
-
+        if(position) {
+            context.drawImage(
+                image,
+                position.x,position.y,spriteWidth,spriteHeight,
+                (width/2)-(elfWidth/2),(height/2)-(elfHeight/2),elfWidth,elfHeight
+            );
+        } else {
+            console.warn("Invalid position on loading screen");
+        }
 
         if(imageDictionary["fontspace"]) {
             drawTextWhite("loading...",15,15,4);
