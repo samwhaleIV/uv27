@@ -367,8 +367,9 @@ function BattleSequencer(renderer) {
         if(move.type !== "interface") {
             const moveDisplayName = move.name.split("-")[0].trimEnd();
             const text = `${user.name} ${move.type === "option" ? "chose" : "used"} ${moveDisplayName}`;
-            this.showText(text,0,this.getTextDuration(text),
-                this.processTheMoveAndStuff(move,user,target,callback,moveDisplayName)
+                this.showText(
+                    text,0,this.getTextDuration(text)
+                    ,()=>this.processTheMoveAndStuff(move,user,target,callback,moveDisplayName)
             );
         } else {
             this.processTheMoveAndStuff(move,user,target,callback,move.name);
