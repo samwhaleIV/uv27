@@ -1,6 +1,19 @@
-context.fillStyle = "#ffffff";
-context.font = "20px Arial";
-context.fillText("loading...",20,40);
+const drawDefaultLoadingText = function() {
+    context.fillStyle = "white";
+    context.font = "20px Arial";
+    context.fillText("loading...",15,15);
+}
+drawDefaultLoadingText();
+
+const loadingImage = new Image();
+loadingImage.onload = () => {
+    console.log(loadingImage);
+    rendererState = new SidescrollRenderer(loadingImage);
+    startRenderer();
+    loadImages(gameLoop);
+    loadSounds(gameLoop);
+}
+loadingImage.src = "images/loading-animations.png";
 
 const backgroundElement = document.getElementById("background");
 
@@ -100,6 +113,9 @@ const loadSounds = callback => {
 
 const loadImages = callback => {
     const images = [
+        "images/fontspace.png",
+        "images/fontspace-black.png",
+
         "images/boss-layer-top.png",
         "images/boss-layer-background.png",
         "images/boss-layer-effect.png",
@@ -114,11 +130,7 @@ const loadImages = callback => {
         "images/backgrounds/background-8.png",
         "images/backgrounds/background-9.png",
     
-        "images/fontspace.png",
-        "images/fontspace-black.png",
-    
         "images/elves.png",
-    
         "images/end-screen.png"
     ];
     let loadedImages = 0;
@@ -230,7 +242,6 @@ const gameLoop = () => {
         );
         playMusic(rendererState.song);
     }
-    startRenderer();
     if(elfIndex === -1) {
         elfIndex = 0;
     }
@@ -250,10 +261,4 @@ const debug_scroll_speed = seconds => {
         rendererState.background.cycleTime = seconds * 1000;
     }
 }
-
-loadImages(gameLoop);
-loadSounds(gameLoop);
-
-
-
 

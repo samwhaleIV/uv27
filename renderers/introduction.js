@@ -19,10 +19,6 @@ function IntroductionRenderer(endCallback) {
 
     this.fader = getFader();
 
-    this.start = () => {
-
-    }
-
     this.renderMethod = (context,timestamp,width,height) => {
 
         if(this.startTime === null) {
