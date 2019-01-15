@@ -24,8 +24,40 @@ addMove({
         return null;
     }
 });
+
+const getSelectionMove = (name,...options) => {
+    const optionMoves = [...options].map(optionMove => {
+        return {
+            move: {
+                name: optionMove.name,
+                type: "option",
+                process: (sequencer,user) => {
+                    user.state.option = optionMove.name;
+                    sequencer.globalBattleState.endSelection = true;
+                    return null;
+                }
+            },
+            events: optionMove.events
+        }
+    });
+    return {
+        move: {
+            name: name,
+            type: "interface",
+            process: (sequencer,user) => {
+                
+                return null;
+            }
+        },
+        optionMoves: {
+        
+        }
+    }
+}
+
 const selectionScreen1 = [moves["offer fruit"]];
 const fruitOptions = [moves["apple"],moves["banana"]];
+
 const getDoubleSpeech = (speech1,speech2) => `head one:\n${speech1}\n\nhead two:\n${speech2}`;
 elves[9] = {
     name: "two headed elf",

@@ -15,7 +15,7 @@ const getFader = function() {
                 rendererState.fader.inMethod = exitMethod;
             }
             const staticTime = rendererState.fader.time / 1000;
-            playSound("swish-2.mp3",staticTime);
+            playSound("swish-2",staticTime);
             if(rendererState.song) {
                 if(rendererState.songIntro) {
                     playMusicWithIntro(rendererState.song,rendererState.songIntro,staticTime);
@@ -30,7 +30,7 @@ const getFader = function() {
             rendererState.fader.transitionRenderer = rendererGenerator;
             rendererState.fader.transitionParameters = parameters;
             const staticTime = rendererState.fader.time / 1000;
-            playSound("swish-1.mp3",staticTime);
+            playSound("swish-1",staticTime);
             if(musicNode) {
                 stopMusic(staticTime);
             }

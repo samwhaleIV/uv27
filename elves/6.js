@@ -151,6 +151,7 @@ elves[5] = {
     name: "golden elfette",
     background: "background-3",
     backgroundColor: "yellow",
+    song: "05 - Greed",
     health: 200,
     getLoseSpeech: () => {
         return "a golden elf\nwithout gold\nis not an elf at all\n\nit's not worth living\n*ded*"

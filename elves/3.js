@@ -163,6 +163,7 @@ addMove({
 });
 elves[2] = {
     name: "wimpy blue elf",
+    song: "Wimpy Wimpy",
     background: "background-1",
     backgroundColor: "blue",
     health: 100,

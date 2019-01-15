@@ -2,6 +2,9 @@ elves[1] = {
     name: "wimpy green elf",
     background: "background-1",
     backgroundColor: "green",
+
+    song: "Wimpy Wimpy",
+
     health: 100,
     startText: "this battle will be harder so no crying",
     playerMoves: [

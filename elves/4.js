@@ -34,6 +34,7 @@ elves[3] = {
     name: "wizard elf",
     background: "background-1",
     backgroundColor: "purple",
+    song: "Magic",
     health: 125,
     playerMoves: [
         moves["decent punch"],

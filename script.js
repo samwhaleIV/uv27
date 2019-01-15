@@ -7,7 +7,6 @@ drawDefaultLoadingText();
 
 const loadingImage = new Image();
 loadingImage.onload = () => {
-    console.log(loadingImage);
     rendererState = new SidescrollRenderer(loadingImage);
     startRenderer();
     loadImages(gameLoop);
@@ -92,7 +91,12 @@ const loadSounds = callback => {
         "audio/clip.mp3",
         "audio/reverse-clip.mp3",
 
-        "audio/music/menu.mp3",
+        "audio/music/Menu Music.ogg",
+        "audio/music/Wimpy Wimpy.ogg",
+
+        "audio/music/Greed.ogg",
+        "audio/music/Professional Boxer.ogg",
+        "audio/music/Magic.ogg"
 
         //"audio/music/win.ogg",
         //"audio/music/lose.ogg"
@@ -139,9 +143,9 @@ const loadImages = callback => {
         (image=>{
             image.onload = () => {
 
-                let sourcePath = image.src.split("/");
-                let fileName = sourcePath[sourcePath.length-1].split(".");
-                let name = fileName[fileName.length-2];
+                const sourcePath = image.src.split("/");
+                const fileName = sourcePath[sourcePath.length-1].split(".");
+                const name = fileName[fileName.length-2];
 
                 imageDictionary[name] = image;
                 if(++loadedImages === images.length) {

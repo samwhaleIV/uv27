@@ -2,6 +2,9 @@ elves[0] = {
     name: "wimpy red elf",
     background: "background-1",
     backgroundColor: "red",
+
+    song: "Wimpy Wimpy",
+
     getMove: sequencer => {
         return moves["cry"];
     },

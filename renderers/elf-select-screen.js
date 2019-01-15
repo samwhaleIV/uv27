@@ -1,6 +1,6 @@
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
-    this.song = "menu.mp3";
+    this.song = "Menu Music";
     const backgroundCycleTime = 20000;
 
     this.halfWidth = canvas.width / 2;
@@ -86,7 +86,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex < 0) {
             this.currentIndex = 0;
         } else {
-            playSound("click.mp3");
+            playSound("click");
             this.setElf();
         }
         localStorage.setItem("lastCurrentIndex",this.currentIndex);
@@ -100,7 +100,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex > this.highestElfIndex) {
             this.currentIndex = this.highestElfIndex;
         } else {
-            playSound("click.mp3");
+            playSound("click");
             this.setElf();
         }
         localStorage.setItem("lastCurrentIndex",this.currentIndex);
@@ -113,7 +113,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             return;
         }
         if(this.currentIndex <= highestElfIndex) {
-            playSound("click.mp3");
+            playSound("click");
             this.endCallback(this.currentIndex);
             this.transitioning = true;
         }
@@ -123,7 +123,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         if(this.transitioning) {
             return;
         }
-        playSound("click.mp3");
+        playSound("click");
         rendererState.fader.fadeOut(
             IntroductionRenderer,
             ()=>getSelectScreen(0)
@@ -222,11 +222,11 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 break;
             case 3:
                 toggleMusicMute();
-                playSound("click.mp3");
+                playSound("click");
                 break;
             case 4:
                 toggleSoundMute();
-                playSound("click.mp3");
+                playSound("click");
                 break;
             case 5:
                 this.introductionClicked();

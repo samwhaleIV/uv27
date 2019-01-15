@@ -34,7 +34,7 @@ function SidescrollRenderer(image,endCallback) {
 
     this.elfScale = 20;
 
-    this.animationStartTime = performance.now();
+    this.animationStartTime = 0;
     this.animationState = "walking-right";
 
     this.fader = getFader();

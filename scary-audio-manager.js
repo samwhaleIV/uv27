@@ -1,15 +1,24 @@
 const audioContext = new AudioContext();
 
 const soundGain = 1;
-const musicNodeGain = 0.1;
+const musicNodeGain = 0.2;
 
 const volumeNode = audioContext.createGain();
 volumeNode.connect(audioContext.destination);
 volumeNode.gain.setValueAtTime(soundGain,0);
 
+const musicCompressor = audioContext.createDynamicsCompressor();
+musicCompressor.threshold.value = -50;
+musicCompressor.knee.value = 40;
+musicCompressor.ratio.value = 12;
+musicCompressor.attack.value = 0;
+musicCompressor.release.value = 0.25;
+
 const musicVolumeNode = audioContext.createGain();
-musicVolumeNode.connect(audioContext.destination);
 musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
+
+musicVolumeNode.connect(audioContext.destination);
+musicCompressor.connect(musicVolumeNode);
 
 const audioBuffers = {};
 let musicNode = null, musicMuted = false, soundMuted = false;
@@ -84,10 +93,10 @@ const playMusicWithIntro = (loopName,introName,fadeTime=0) => {
                 musicNode = audioContext.createBufferSource();
                 musicNode.buffer = loopBuffer;
                 musicNode.loop = true;
-                musicNode.connect(musicVolumeNode);
+                musicNode.connect(musicCompressor);
                 musicNode.start();
             }
-            musicNode.connect(musicVolumeNode);
+            musicNode.connect(musicCompressor);
             musicNode.start();
             if(!musicMuted) {
                 if(fadeTime > 0) {
@@ -168,7 +177,10 @@ const addBufferSource = (fileName,callback,errorCallback) => {
         audioContext.decodeAudioData(
             audioData,
             audioBuffer => {
-                const newName = fileName.split("/").pop();
+                let newName = fileName.split("/").pop();
+                const newNameSplit = newName.split(".");
+                newName = newNameSplit[newNameSplit.length-2];
+
                 audioBuffers[newName] = audioBuffer;
                 console.log(`Audio manager: Added '${newName}' to audio buffers`);
                 if(callback) {

@@ -472,7 +472,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.processClick = (x,y) => {
         if(!this.playerInputsEnabled) {
             if(this.battleSequencer.skipHandles.length > 0) {
-                playSound("click.mp3");
+                playSound("click");
             }
             this.battleSequencer.skipEvent();
             if(x > -1 && y > -1) {
@@ -501,7 +501,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             this.lastEventWasKeyBased = true;
         }
         if(hitRegister !== null) {
-            playSound("click.mp3");
+            playSound("click");
             this.battleSequencer.processPlayerInput(
                 hitRegister
             );

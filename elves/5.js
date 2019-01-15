@@ -10,6 +10,7 @@ addMove({
 elves[4] = {
     name: "red elfette",
     background: "background-1",
+    song: "Professional Boxer",
     backgroundColor: "red",
     health: 150,
     playerMoves: [
