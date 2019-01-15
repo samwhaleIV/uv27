@@ -364,7 +364,7 @@ function BattleSequencer(renderer) {
             }
             return;
         }
-        if(!move.type === "interface") {
+        if(move.type !== "interface") {
             const moveDisplayName = move.name.split("-")[0].trimEnd();
             const text = `${user.name} ${move.type === "option" ? "chose" : "used"} ${moveDisplayName}`;
             this.showText(text,0,this.getTextDuration(text),
