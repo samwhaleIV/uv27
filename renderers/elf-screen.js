@@ -148,6 +148,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             this.startInputText = null;
             this.playerInputEnableStartTime = performance.now();
         }
+        if(this.hoverEffectIndex > this.playerInputs.length-1 && this.lastEventWasKeyBased) {
+            this.hoverEffectIndex = 0;
+        }
         this.playerInputsEnabled = true;
     }
 

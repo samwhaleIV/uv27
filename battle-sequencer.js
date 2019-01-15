@@ -248,125 +248,131 @@ function BattleSequencer(renderer) {
         }
     }
 
-    this.genericMove = (move,user,target,callback) => {
-
-        if(!move || !move.name) {
-            callback();
-            console.error("Error: Missing move");
-            return;
-        }
-
-        const moveDisplayName = move.name.split("-")[0].trimEnd();
-
-        const text = `${user.name} ${move.type === "option" ? "chose" : "used"} ${moveDisplayName}`;
-        this.showText(text,0,this.getTextDuration(text),()=>{
-            let moveResult;
-            if(!move) {
-                moveResult = {
-                    failed: true,
-                    text: "but the developer made a mistake"
-                }
-                console.error("Error: Hey idiot, you probably have a move key wrong");
-            } else if(user.disabledMoves[move.name]) {
-                moveResult = {
-                    failed: true,
-                    text: "but it has been disabled"
-                }
-            } else if(target.isDead && move.type === "target") {
-                moveResult = {
-                    failed: true,
-                    text: "but their target is already dead"
-                }
-            } else {
-                let skip = false;
-                let processedMove = move;
-                if(this.globalBattleState.movePreProcess !== null) {
-                    processedMove = this.globalBattleState.movePreProcess(this,processedMove);
-                    if(!move) {
-                        moveResult = {
-                            failed: true,
-                            text: "but the developer made a mistake"
-                        }
-                        skip = true;
-                        console.error("Error: The global preprocessor didn't return an acceptable value");
-                    }
-                }
-                if(!skip && user.movePreProcess !== null) {
-                    processedMove = user.movePreProcess(this,processedMove);
-                    if(!processedMove) {
-                        moveResult = {
-                            failed: true,
-                            text: "but the developer made a mistake"
-                        }
-                        skip = true;
-                        console.error("Error: The move user's move preprocessor didn't return an acceptabe value");
-                    }
-                }
-                if(!skip) {
-                    if(processedMove.process) {
-                        moveResult = processedMove.process(
-                            this,
-                            user,
-                            target
-                        );
-                    } else {
-                        moveResult = {
-                            failed: true,
-                            text: "but the developer made a mistake"
-                        }
-                        console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
-                    }
-                }
-                if(moveResult && moveResult.failed === true && !moveResult.text && !moveResult.events) {
+    this.processTheMoveAndStuff = (move,user,target,callback,moveDisplayName) => {
+        let moveResult;
+        if(!move) {
+            moveResult = {
+                failed: true,
+                text: "but the developer made a mistake"
+            }
+            console.error("Error: Hey idiot, you probably have a move key wrong");
+        } else if(user.disabledMoves[move.name]) {
+            moveResult = {
+                failed: true,
+                text: "but it has been disabled"
+            }
+        } else if(target.isDead && move.type === "target") {
+            moveResult = {
+                failed: true,
+                text: "but their target is already dead"
+            }
+        } else {
+            let skip = false;
+            let processedMove = move;
+            if(this.globalBattleState.movePreProcess !== null) {
+                processedMove = this.globalBattleState.movePreProcess(this,processedMove);
+                if(!move) {
                     moveResult = {
                         failed: true,
-                        text: "but it failed"
+                        text: "but the developer made a mistake"
                     }
+                    skip = true;
+                    console.error("Error: The global preprocessor didn't return an acceptable value");
                 }
             }
-            if(!moveResult) {
-                if(moveResult === null) {
-                    moveResult = {};
+            if(!skip && user.movePreProcess !== null) {
+                processedMove = user.movePreProcess(this,processedMove);
+                if(!processedMove) {
+                    moveResult = {
+                        failed: true,
+                        text: "but the developer made a mistake"
+                    }
+                    skip = true;
+                    console.error("Error: The move user's move preprocessor didn't return an acceptabe value");
+                }
+            }
+            if(!skip) {
+                if(processedMove.process) {
+                    moveResult = processedMove.process(
+                        this,
+                        user,
+                        target
+                    );
                 } else {
                     moveResult = {
                         failed: true,
                         text: "but the developer made a mistake"
-                    };
-                }
-            }
-            user.lastMove = moveDisplayName || null;
-            if(!moveResult.failed) {
-                if(moveResult.failed !== false) {
-                    moveResult.failed = false; 
-                }
-            } else if(moveResult.failed !== true) {
-                moveResult.failed = true;
-            }
-            user.lastMoveFailed = moveResult.failed;
-            if(moveResult.text || moveResult.speech) {
-                this.processEvent(moveResult,callback);
-            } else if(moveResult.events && moveResult.events.length >= 1) {
-                let eventIndex = 0;
-                const maxEventIndex = moveResult.events.length-1;
-                const processNextEvent = () => {
-                    const event = moveResult.events[
-                        eventIndex
-                    ];
-                    if(eventIndex++ >= maxEventIndex) {
-                        this.processEvent(event,callback);
-                    } else {
-                        this.processEvent(event,processNextEvent);
                     }
+                    console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
                 }
-                processNextEvent();
-            } else if(callback) {
-                callback();
-            } else {
-                this.returnInput();
-                console.error("Error: Missing callback state");
             }
-        });
+            if(moveResult && moveResult.failed === true && !moveResult.text && !moveResult.events) {
+                moveResult = {
+                    failed: true,
+                    text: "but it failed"
+                }
+            }
+        }
+        if(!moveResult) {
+            if(moveResult === null) {
+                moveResult = {};
+            } else {
+                moveResult = {
+                    failed: true,
+                    text: "but the developer made a mistake"
+                };
+            }
+        }
+        user.lastMove = moveDisplayName || null;
+        if(!moveResult.failed) {
+            if(moveResult.failed !== false) {
+                moveResult.failed = false; 
+            }
+        } else if(moveResult.failed !== true) {
+            moveResult.failed = true;
+        }
+        user.lastMoveFailed = moveResult.failed;
+        if(moveResult.text || moveResult.speech) {
+            this.processEvent(moveResult,callback);
+        } else if(moveResult.events && moveResult.events.length >= 1) {
+            let eventIndex = 0;
+            const maxEventIndex = moveResult.events.length-1;
+            const processNextEvent = () => {
+                const event = moveResult.events[
+                    eventIndex
+                ];
+                if(eventIndex++ >= maxEventIndex) {
+                    this.processEvent(event,callback);
+                } else {
+                    this.processEvent(event,processNextEvent);
+                }
+            }
+            processNextEvent();
+        } else if(callback) {
+            callback();
+        } else {
+            this.returnInput();
+            console.error("Error: Missing callback state");
+        }
+    }
 
+    this.genericMove = (move,user,target,callback) => {
+        if(!move || !move.name) {
+            callback();
+            if(move !== null) {
+                console.error("Error: Missing move");
+            }
+            return;
+        }
+        if(!move.type === "interface") {
+            const moveDisplayName = move.name.split("-")[0].trimEnd();
+            const text = `${user.name} ${move.type === "option" ? "chose" : "used"} ${moveDisplayName}`;
+            this.showText(text,0,this.getTextDuration(text),
+                this.processTheMoveAndStuff(move,user,target,callback,moveDisplayName)
+            );
+        } else {
+            this.processTheMoveAndStuff(move,user,target,callback,move.name);
+        }
     }
 
     this.playerMove = move => {
@@ -410,7 +416,7 @@ function BattleSequencer(renderer) {
                                 speechPersistence = true;
                             }
                         }
-                    } else {
+                    } else if(elfSpeechResult !== null) {
                         console.error("Battle sequencer: elf.getSpeech did not return a proper value");
                     }
                     if(!elfSpeech) {

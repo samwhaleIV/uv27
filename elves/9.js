@@ -423,7 +423,7 @@ addMove({
         return {
             events: [
                 {
-                    text: `${user.name} broke their ankle`
+                    text: `${user.name} broke ${user.isPlayer ? "your" : "their"} ankle`
                 },
                 {
                     text: `${user.isPlayer ? "your" : "their"} racing days are over`
@@ -483,13 +483,13 @@ addMove({
     name: "sportsmanship",
     type: "target",
     process: (sequencer,user,target) => {
-        if(user.trashTalked) {
+        if(user.state.trashTalked) {
             return {
-                text: "but with what was said earlier it's too late"
+                text: "but the trash talking can't be forgotten"
             }
         } else {
             return {
-                text: `${user.name} exchanges kind words with ${target.name}`
+                text: `${user.name} exchange${user.isElf ?"s":""} kind words with ${target.name}`
             }
         }
     }
@@ -879,10 +879,15 @@ elves[8] = {
     },
     getPlayerMoves: sequencer => getRaceMoveSet(sequencer,0),
     setup: sequencer => {
+
         sequencer.playerBattleObject.state.raceProgress = 0;
         sequencer.elfBattleObject.state.raceProgress = 0;
+
         sequencer.playerBattleObject.subText = [getRaceProgressSubText(0)];
         sequencer.elfBattleObject.subText = [getRaceProgressSubText(0)];
+
+        sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
+        sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;
     },
     startText: "no drugs. no exceptions.",
     startSpeech: {
