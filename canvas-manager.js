@@ -175,7 +175,7 @@ const startRenderer = function() {
 const pauseRenderer = function() {
     paused = true;
     window.cancelAnimationFrame(animationFrame);
-    console.log("Canvas handler: Pasued renderer");
+    console.log("Canvas handler: Paused renderer");
 }
 
 const forceRender = function() {

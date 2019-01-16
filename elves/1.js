@@ -4,6 +4,7 @@ elves[0] = {
     backgroundColor: "red",
 
     song: "Wimpy Wimpy",
+    backgroundCycleTime: 35000,
 
     getMove: sequencer => {
         return moves["cry"];

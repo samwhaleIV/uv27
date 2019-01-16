@@ -4,6 +4,7 @@ elves[1] = {
     backgroundColor: "green",
 
     song: "Wimpy Wimpy",
+    backgroundCycleTime: 35000,
 
     health: 100,
     startText: "this battle will be harder so no crying",

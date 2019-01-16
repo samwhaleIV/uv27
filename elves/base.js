@@ -67,6 +67,62 @@ const getOptionMove = (moveName,questionID,optionID) => {
     }
 }
 
+const getSelectionMove = (name,...options) => {
+    const optionMovesDictionary = {};
+    const justMoves = [];
+    const optionMoves = options.forEach(optionMove => {
+        const newObject = {
+            move: {
+                name: optionMove.name,
+                type: "option",
+                process: (sequencer,user) => {
+                    user.state.option = optionMove.name;
+                    sequencer.globalBattleState.endSelection = true;
+                    return null;
+                }
+            },
+            events: optionMove.events
+        }
+        optionMovesDictionary[optionMove.name] = newObject;
+        justMoves.push(newObject.move);
+    });
+    return {
+        move: {
+            name: name,
+            type: "interface",
+            process: (sequencer,user) => {
+                sequencer.globalBattleState.options = optionMovesDictionary;
+                sequencer.updatePlayerMoves(justMoves);
+                return null;
+            }
+        },
+        optionMoves: optionMoves
+    }
+}
+
+const selectionPostProcessor = sequencer => {
+    if(sequencer.globalBattleState.endSelection) {
+        const optionObject = sequencer.globalBattleState.options[
+            sequencer.playerBattleObject.state.option
+        ];
+        let result = null;
+        if(optionObject) {
+            if(optionObject.events) {
+                result = {
+                    events: optionObject.events
+                }
+            } else {
+                result = optionObject
+            }
+        }
+        sequencer.playerBattleObject.state.option = null;
+        sequencer.globalBattleState.endSelection = false;
+        if(result !== null) {
+            return result;
+        }
+    }
+    return null;
+}
 
 const protectPreProcessPlayer = (sequencer,move) => {
     if(move.name === "protect") {

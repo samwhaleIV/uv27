@@ -12,6 +12,7 @@ elves[4] = {
     background: "background-1",
     song: "Professional Boxer",
     backgroundColor: "red",
+    backgroundCycleTime: 45000,
     health: 150,
     playerMoves: [
         moves["protect"],

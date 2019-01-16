@@ -77,7 +77,7 @@ const unmuteMusic = () => {
     }
 }
 
-const playMusicWithIntro = (loopName,introName,fadeTime=0) => {
+const playMusicWithIntro = (loopName,introName,fadeTime=0,withLoop=true) => {
     if(musicNode) {
         console.error("Error: Music is already playing");
     } else {
@@ -92,7 +92,7 @@ const playMusicWithIntro = (loopName,introName,fadeTime=0) => {
             musicNode.onended = event => {
                 musicNode = audioContext.createBufferSource();
                 musicNode.buffer = loopBuffer;
-                musicNode.loop = true;
+                musicNode.loop = withLoop;
                 musicNode.connect(musicCompressor);
                 musicNode.start();
             }

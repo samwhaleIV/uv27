@@ -331,21 +331,22 @@ function BattleSequencer(renderer) {
         } else if(moveResult.failed !== true) {
             moveResult.failed = true;
         }
-        user.lastMoveFailed = moveResult.failed;
-        if(moveResult.text || moveResult.speech) {
-            this.processEvent(moveResult,callback);
-        } else if(moveResult.events && moveResult.events.length >= 1) {
+        if(moveResult.text || moveResult.speech || moveResult.action) {
+            moveResult.events = [{
+                text:moveResult.text,
+                speech:moveResult.speech,
+                action:moveResult.action}
+            ];
+        }
+        if(moveResult.events && moveResult.events.length >= 1) {
             let eventIndex = 0;
-            const maxEventIndex = moveResult.events.length-1;
             const processNextEvent = () => {
                 const event = moveResult.events[
                     eventIndex
                 ];
-                if(eventIndex++ >= maxEventIndex) {
-                    this.processEvent(event,callback);
-                } else {
-                    this.processEvent(event,processNextEvent);
-                }
+                const callingIndex = eventIndex;
+                eventIndex++;
+                this.processEvent(event,moveResult.events,processNextEvent,callback,callingIndex);
             }
             processNextEvent();
         } else if(callback) {
@@ -398,11 +399,9 @@ function BattleSequencer(renderer) {
         let move = null;
         if(this.elf.getMove) {
             move = this.elf.getMove(this);
-            if(!move) {
-                console.warn("Battle sequencer: elf.getMove() returned no move. Was this intentional?");
+            if(!move && move !== null) {
+                console.warn("Battle sequencer: elf.getMove() returned no valid move. Was this intentional?");
             }
-        } else {
-            //console.warn("Battle sequencer: elf object has no getMove() method. Was this intentional?");
         }
         const callback = () => {
             if(!this.playerHasDied) {
@@ -449,16 +448,37 @@ function BattleSequencer(renderer) {
         }
     }
 
-    this.processEvent = (event,callback) => {
+    this.processEvent = (event,eventsList,recursiveCallback,endCallback,index) => {
+        let callback;
         if(event.condition) {
-            if(!event.condition()) {
+            if(!event.condition(this)) {
+                callback = index >= eventsList.length-1 ? endCallback : recursiveCallback;
                 callback();
                 return;
             }
         }
         if(event.action) {
-            event.action();
+            const actionResult = event.action(this);
+            if(actionResult) {
+                if(actionResult.text || actionResult.speech || actionResult.action) {
+                    eventsList.push({
+                        text:actionResult.text,
+                        speech:actionResult.speech,
+                        action:actionResult.action
+                    });
+                } else if(actionResult.events) {
+                    for(let i = 0;i<actionResult.events.length;i++) {
+                        const actionResultEvent = actionResult.events[i];
+                        eventsList.push({
+                            text:actionResultEvent.text,
+                            speech:actionResultEvent.speech,
+                            action:actionResultEvent.action
+                        });
+                    }
+                }
+            }
         }
+        callback = index >= eventsList.length-1 ? endCallback : recursiveCallback;
         if(event.text) {
             this.showText(event.text,0,this.getTextDuration(event.text),
             ()=>{
@@ -558,20 +578,22 @@ function BattleSequencer(renderer) {
             if(this.globalBattleState.postTurnProcess !== null) {
                 const turnProcessResult = this.globalBattleState.postTurnProcess(this);
                 if(turnProcessResult) {
-                    if(turnProcessResult.text) {
-                        this.processEvent(turnProcessResult,endCallback);
-                    } else if(turnProcessResult.events && turnProcessResult.events.length >= 1) {
+                    if(turnProcessResult.text || turnProcessResult.speech || turnProcessResult.action) {
+                        turnProcessResult.events = [{
+                            text:turnProcessResult.text,
+                            speech:turnProcessResult.speech,
+                            action:turnProcessResult.action}
+                        ];
+                    }
+                    if(turnProcessResult.events && turnProcessResult.events.length >= 1) {
                         let eventIndex = 0;
-                        const maxEventIndex = turnProcessResult.events.length-1;
                         const processNextEvent = () => {
                             const event = turnProcessResult.events[
                                 eventIndex
                             ];
-                            if(eventIndex++ >= maxEventIndex) {
-                                this.processEvent(event,endCallback);
-                            } else {
-                                this.processEvent(event,processNextEvent);
-                            }
+                            const callingIndex = eventIndex;
+                            eventIndex++;
+                            this.processEvent(event,turnProcessResult.events,processNextEvent,endCallback,callingIndex);
                         }
                         processNextEvent();
                     } else {

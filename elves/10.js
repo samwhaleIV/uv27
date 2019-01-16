@@ -1,119 +1,448 @@
-addMove({
-    name: "offer fruit",
-    type: "interface",
-    process: (sequencer,user,target) => {
-        sequencer.globalBattleState.moveStage = "fruit selection";
-        return null;
-    }
-});
-addMove({
-    name: "apple",
-    type: "option",
-    process: (sequencer,user,target) => {
-        user.state.option = "apple";
-        sequencer.globalBattleState.endSelection = true;
-        return null;
-    }
-});
-addMove({
-    name: "banana",
-    type: "option",
-    process: (sequencer,user,target) => {
-        user.state.option = "banana";
-        sequencer.globalBattleState.endSelection = true;
-        return null;
-    }
-});
+const getDoubleSpeech = (speech1,speech2) => `head one:\n${speech1}\n\nhead two:\n${speech2}`;
 
-const getSelectionMove = (name,...options) => {
-    const optionMoves = [...options].map(optionMove => {
-        return {
-            move: {
-                name: optionMove.name,
-                type: "option",
-                process: (sequencer,user) => {
-                    user.state.option = optionMove.name;
-                    sequencer.globalBattleState.endSelection = true;
-                    return null;
-                }
-            },
-            events: optionMove.events
+const advanceSelectionScreen = sequencer => {
+    sequencer.updatePlayerMoves(
+        selectionSetMoves[
+            ++sequencer.globalBattleState.selectionSetIndex
+        ]
+    );
+    sequencer.globalBattleState.totalSelections++;
+}
+
+const increaseHead1Disposition = sequencer => {
+    sequencer.elfBattleObject.state.head1Disposition++;
+    advanceSelectionScreen(sequencer);
+}
+
+const increaseHead2Disposition = sequencer => {
+    sequencer.elfBattleObject.state.head2Disposition++;
+    advanceSelectionScreen(sequencer);
+}
+
+
+const getEndEvents = sequencer => {
+    const disposition1 = sequencer.elfBattleObject.state.head1Disposition;
+    const disposition2 = sequencer.elfBattleObject.state.head2Disposition;
+
+    const dispositionSpread = disposition1 + disposition2;
+
+    const updateMoves = sequencer => {
+        const newMoves = [moves["decent punch"],moves["protect"],moves["band aid"]];
+        if(sequencer.playerBattleObject.state.canUsePunchingVitamins) {
+            newMoves.push(moves["punching vitamins"]);
         }
-    });
+        sequencer.updatePlayerMoves(newMoves);
+    }
+
+    const endEvents = [];
+    if(disposition1 > disposition2) {
+        endEvents.push({
+            speech: getDoubleSpeech("ah - i guess...\nwe just differ too much","i hate you! you're\nnothing like me!"),
+            action: sequencer => updateMoves(sequencer)
+        },{
+            text: "time to settle this the old way"
+        });
+    } else if(disposition2 > disposition1) {
+        endEvents.push({
+            speech: getDoubleSpeech("i felt indifferent\nanyways - nothing new","what! but we've always\nbeen so close!"),
+            action: sequencer => updateMoves(sequencer)
+        },{
+            text: "time to settle this the old way"
+        });
+    } else {
+        if(disposition1 === 0) {
+            endEvents.push({
+                speech: getDoubleSpeech("ha! loser human","we are inseparable")
+            },{
+                text: "two headed elf used companionship"
+            },{
+                text: "two headed elf used double punch",
+                action: sequencer => sequencer.playerBattleObject.dropHealth(sequencer.playerBattleObject.maxHealth)
+            },{
+                text: "a one hit knockout"
+            },{
+                speech: "see ya around kiddo"
+            });
+        } else {
+            endEvents.push({
+                speech: getDoubleSpeech("huh - so i guess we just\nhate each other equally","yep. i hate you too"),
+            },{
+                speech: getDoubleSpeech("you're finna die","ha - you and what army?"),
+            },{
+                text: "two headed elf used self punch",
+                action: sequencer => twentyFivePercentElfHealthDrop(sequencer)
+            },{
+                speech: getDoubleSpeech("take that!","you idiot!\nyou'll kill us both!")
+            },{
+                text: "two headed elf used self punch",
+                action: sequencer => twentyFivePercentElfHealthDrop(sequencer)                
+            },{
+                speech: getDoubleSpeech("what! you can punch me\nbut i can't?","yeah. i hate u")               
+            },{
+                text: "two headed elf used self punch",
+                action: sequencer => twentyFivePercentElfHealthDrop(sequencer)                    
+            },{
+                speech: getDoubleSpeech("ouch! we should just\nmake up","ha - not a chance!")
+            },{
+                text: "two headed elf is planning a punch"
+            },{
+                speech: getDoubleSpeech("brother - plz don't","it's what the human\nwants anyways!")
+            },{
+                speech: getDoubleSpeech("what do you mean?","if we don't kill ourselves\nthe human will just\nfind their own way")
+            },{
+                text: "you stare innocently"
+            },{
+                speech: getDoubleSpeech("hmm...","see. look at them")
+            },{
+                speech: getDoubleSpeech("allow me the honors...","be my guest")
+            },{
+                text: "two headed elf used self punch",
+                action: sequencer => sequencer.elfBattleObject.dropHealth(sequencer.elfBattleObject.maxHealth)
+            });
+        }
+    }
+    sequencer.globalBattleState.ranEndEvents = true;
     return {
-        move: {
-            name: name,
-            type: "interface",
-            process: (sequencer,user) => {
-                
-                return null;
+        events: endEvents
+    }
+}
+
+const fruitSelector = getSelectionMove(
+    "offer fruit",{
+        name: "apple",
+        events: [{
+            speech: getDoubleSpeech("ew - apples suck","mmmm - my favorite"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "banana",
+        events: [{
+            speech: getDoubleSpeech("thank you for\nthis great fruit","this fruit is cursed"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    },{
+        name: "elf berries",
+        events: [{
+            speech: getDoubleSpeech("yeah those are good","i think so too"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    }
+);
+
+const sportSelector = getSelectionMove(
+    "play sport",{
+        name: "chess",
+        events: [{
+            speech: getDoubleSpeech("chess! my favorite","i never\nlearned to play..."),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    },{
+        name: "elfball",
+        events: [{
+            speech: getDoubleSpeech("ew - i hate elf ball\nthere's balls everywhere","yessss!\ngive me the balls"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "elf hockey",
+        events: [{
+            speech: getDoubleSpeech("okay - but do we need to\nput elf in front of it?","at least this is\nsomething we both like"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    }
+);
+
+const colorSelector = getSelectionMove(
+    "talk about a color",{
+        name: "red",
+        events: [{
+            speech: getDoubleSpeech("you like red?\nwhoaaa - me too!","(does he realize that\nwe are red?)"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "blue",
+        events: [{
+            speech: getDoubleSpeech("ohhh yeah\nblue gets me going","ugh that color is so\ndready"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    },{
+        name: "orange",
+        events: [{
+            speech: getDoubleSpeech("meh.\norange? isn't that a fruit?","yes - it's also my\nfavorite color"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "black",
+        events: [{
+            speech: getDoubleSpeech("black...now we're talking!","lol you're such emos"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    }
+);
+const animalSelector = getSelectionMove(
+    "talk about an animal",{
+        name: "squirrels",
+        events: [{
+            speech: getDoubleSpeech("ew - rodents with nuts","squirrels remind me of\ngolden elfette..\ni haven't seen her in a bit"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "bears",
+        events: [{
+            speech: getDoubleSpeech("ha! bears. fun times.","yeah remember those\nbears in the racing\ntrails?"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "elves",
+        events: [{
+            speech: getDoubleSpeech("elves?? elves!?","yikes - here's uh...\nvery insecure")
+        },{
+            speech: getDoubleSpeech("t r i g g e r e d","just let it go dude")
+        },{
+            speech: getDoubleSpeech("no! who does this human\nthink he is?","it's not worth it bro")
+        },{
+            speech: getDoubleSpeech("i'm gonna kick their\nf***ing a**!","remember what the\ndoctor said?")
+        },{
+            speech: getDoubleSpeech("i. don't. care!","this is bad for your\nblood pressure")
+        },{
+            speech: getDoubleSpeech("*clutches their chest*","head one! no!!"),
+            action: sequencer => sequencer.elfBattleObject.dropHealth(Math.floor(sequencer.elfBattleObject.health/2))
+        },{
+            speech: getDoubleSpeech("*ded*","great - now he's dead")
+        },{
+            speech: getDoubleSpeech("*still ded*","this is all your fault!")
+        },{
+            speech: getDoubleSpeech("*still ded*","now i'm stuck forever\n*sigh*"),
+        },{
+            action: sequencer => sequencer.updatePlayerMoves([moves["honorable suicide"],moves["senseless murder"]])
+        }
+    ]
+    },{
+        name: "ferret",
+        events: [{
+            speech: getDoubleSpeech("ferrts are weird like me\nthey cry when i cry","ferrets perturb my soul"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    }
+);
+const politicsSelector = getSelectionMove(
+    "talk politics",{
+        name: "santa",
+        events: [{
+            speech: getDoubleSpeech("what a fatty","hey - bro - this is 2019\nyou can't just say santa is\na fatty"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "elf labor abuse",
+        events: [{
+            speech: getDoubleSpeech("yes - elf labor rights\nare a huge issue","why do you think we\nkill humans?"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "elf genocide",
+        events: [{
+            speech: getDoubleSpeech("genocide on elves?\nor genocide by elves?","either way - count me in"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "the naughty list",
+        events: [{
+            speech: getDoubleSpeech("i like the naugthy list :)","that's classified\ni refuse to discuss this"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    }
+);
+const nameSelector = getSelectionMove(
+    "tell them your name",{
+        name: "names are overrated",
+        events: [{
+            speech: getDoubleSpeech("finally someone gets it","yeah - we didn't even\nget our own names"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "human",
+        events: [{
+            speech: getDoubleSpeech("heh. your parents named you\nhuman? cute","i  l o v e  elves\n...but i hate humans"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    },{
+        name: "bob",
+        events: [{
+            speech: getDoubleSpeech("bob... the builder?","bob... that's got a\ngreat ring to it!"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "apostle of darkness",
+        events: [{
+            speech: getDoubleSpeech("hello there.\nnice to meet you","oh. interesting.. freak"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    }
+);
+const presentSelector = getSelectionMove(
+    "christmas wishlist",{
+        name: "a new puppy",
+        events: [{
+            speech: getDoubleSpeech("puppies are too needy","aweeeeeee\ncute doggos!"),
+            action: sequencer => sequencer.elfBattleObject.state.head1Disposition++
+        },{
+            action: sequencer => getEndEvents(sequencer)
+        }]
+    },{
+        name: "punching vitamins",
+        events: [{
+            speech: getDoubleSpeech("ask and you shall receive","are you sure about that\nhead one??")
+        },{
+            text: "you received punching vitamins",
+            action: sequencer => sequencer.playerBattleObject.state.canUsePunchingVitamins = true
+        },{
+            action: sequencer => getEndEvents(sequencer)
+        }]
+    },{
+        name: "a new bike",
+        events: [{
+            speech: getDoubleSpeech("that is very elf racist","i concur with head one")
+        },{
+            speech: getDoubleSpeech("just because we are elves-","-you think we care\nabout toys? smh")
+        },{
+            action: sequencer => getEndEvents(sequencer)
+        }]
+    },{
+        name: "an exit strategy",
+        events: [{
+            speech: getDoubleSpeech("there's no way out","we are trapped here too")
+        },{
+            speech: getDoubleSpeech("and trust us-","-we tried everything")
+        },{
+            action: sequencer => getEndEvents(sequencer)
+        }]
+    }
+);
+
+const twentyFivePercentElfHealthDrop = sequencer => {
+    sequencer.elfBattleObject.dropHealth(
+        Math.ceil(sequencer.elfBattleObject.health / 4)
+    );
+}
+
+const selectionSets = [
+    [fruitSelector],
+    [sportSelector,animalSelector],
+    [fruitSelector,sportSelector],
+    [politicsSelector],
+    [animalSelector,colorSelector],
+    [nameSelector,fruitSelector],
+    [politicsSelector,sportSelector],
+    [presentSelector]
+];
+
+const selectionSetMoves = [];
+selectionSets.forEach(
+    selectionSet => selectionSetMoves.push(
+        selectionSet.map(item => item.move)
+    )
+);
+
+const updateDispositionSubtexts = sequencer => {
+    if(sequencer.elfBattleObject.state.head1Disposition === sequencer.elfBattleObject.state.head2Disposition) {
+        if(sequencer.elfBattleObject.state.head1Disposition === 0) {
+            sequencer.elfBattleObject.subText[0] = "no disposition";
+            sequencer.elfBattleObject.subText[1] = "no disposition";
+        } else {
+            sequencer.elfBattleObject.subText[0] = "equal disposition";
+            sequencer.elfBattleObject.subText[1] = "equal disposition";
+        }
+    } else {
+        if(sequencer.elfBattleObject.state.head1Disposition > sequencer.elfBattleObject.state.head2Disposition) {
+            const difference = sequencer.elfBattleObject.state.head1Disposition - sequencer.elfBattleObject.state.head2Disposition;
+            let dispositionText;
+            switch(difference) {
+                case NaN:
+                    dispositionText = "broken disposition";
+                    break;
+                case 1:
+                    dispositionText = "low disposition";
+                    break;
+                case 2:
+                    dispositionText = "medium disposition";
+                    break;
+                default:
+                case 3:
+                    dispositionText = "high disposition";
+                    break;
             }
-        },
-        optionMoves: {
-        
+            sequencer.elfBattleObject.subText[0] = dispositionText;
+            sequencer.elfBattleObject.subText[1] = sequencer.elfBattleObject.state.head2Disposition === 0 ? "no disposition" : "less disposition";
+        } else {
+            const difference = sequencer.elfBattleObject.state.head2Disposition - sequencer.elfBattleObject.state.head1Disposition;
+            let dispositionText;
+            switch(difference) {
+                case NaN:
+                    dispositionText = "broken disposition";
+                    break;
+                case 1:
+                    dispositionText = "low disposition";
+                    break;
+                case 2:
+                    dispositionText = "medium disposition";
+                    break;
+                default:
+                case 3:
+                    dispositionText = "high disposition";
+                    break;
+            }
+            sequencer.elfBattleObject.subText[1] = dispositionText;
+            sequencer.elfBattleObject.subText[0] = sequencer.elfBattleObject.state.head1Disposition === 0 ? "no disposition" : "less disposition";
         }
     }
 }
 
-const selectionScreen1 = [moves["offer fruit"]];
-const fruitOptions = [moves["apple"],moves["banana"]];
-
-const getDoubleSpeech = (speech1,speech2) => `head one:\n${speech1}\n\nhead two:\n${speech2}`;
 elves[9] = {
     name: "two headed elf",
     background: "background-3",
     backgroundColor: "red",
-    health: 300,
+    health: 250,
     getPlayerMoves: sequencer => {
-        return selectionScreen1
-    },
-    setup: sequencer => {
-        //Todo
+        return selectionSetMoves[0];
     },
     startSpeech: {
-        text: "head 1:\ni'm very conceited :(\n\nhead 2:\nbut i'm more outgoing! :)"
+        text: getDoubleSpeech("i'm very conceited :(","but i'm more outgoing! :)")
     },
-    getSpeech: sequencer => {
-        if(sequencer.globalBattleState.endSelection) {
-            switch(sequencer.globalBattleState.moveStage) {
-                case "fruit selection":
-                    switch(sequencer.playerBattleObject.state.option) {
-                        case "apple":
-                            return {
-                                text: getDoubleSpeech("i hate apple!","mmmm my favorite")
-                            }
-                        case "banana":
-                            return {
-                                text: getDoubleSpeech("banana - that's hot","eh...\nnot really my thing")
-                            }
-                    }
-                    break;
-            }
+    getMove: sequencer => {
+        if(sequencer.globalBattleState.ranEndEvents) {
+            const moveChoices = ["decent punch","decent punch","cry","wimpy punch","wimpier punch"];
+            return moves[moveChoices[sequencer.turnNumber % moveChoices.length]];
+        } else {
+            return null;
         }
-        return null;
+    },
+    setup: sequencer => {
+        sequencer.elfBattleObject.state.head1Disposition = 0;
+        sequencer.elfBattleObject.state.head2Disposition = 0;
+
+        sequencer.elfBattleObject.subText = ["no disposition","no disposition"];
+
+        sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
+        sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;
     },
     getDefaultGlobalState: () => {
         return {
-            moveStage: "selection screen 1",
+            selectionSetIndex: 0,
+            totalSelections: 0,
             postTurnProcess: sequencer => {
-                if(sequencer.globalBattleState.endSelection) {
-                    switch(sequencer.globalBattleState.moveStage) {
-                        case "fruit selection":
-                            sequencer.globalBattleState.moveStage = "selection screen 1";
-                            break;
+                let returnResult = null;
+                if(!sequencer.globalBattleState.ranEndEvents) {
+                    returnResult = selectionPostProcessor(sequencer);
+                }
+                if(returnResult !== null) {
+                    if(returnResult.events) {
+                        returnResult.events.push({
+                            action: sequencer => updateDispositionSubtexts(sequencer)
+                        });
+                    } else {
+                        returnResult.action = sequencer => updateDispositionSubtexts(sequencer)
                     }
-                    sequencer.playerBattleObject.option = null;
-                    sequencer.globalBattleState.endSelection = false;
                 }
-                switch(sequencer.globalBattleState.moveStage) {
-                    case "selection screen 1":
-                        sequencer.updatePlayerMoves(selectionScreen1);
-                        break;
-                    case "fruit selection":
-                        sequencer.updatePlayerMoves(fruitOptions);
-                        break;
-                }
-
+                return returnResult;
             }
         }
     }

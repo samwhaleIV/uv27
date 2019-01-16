@@ -1,7 +1,7 @@
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.song = "Menu Music";
-    const backgroundCycleTime = 20000;
+    const backgroundCycleTime = 40000;
 
     this.halfWidth = canvas.width / 2;
 

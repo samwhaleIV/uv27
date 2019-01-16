@@ -36,6 +36,7 @@ elves[3] = {
     backgroundColor: "purple",
     song: "Magic",
     health: 125,
+    backgroundCycleTime: 45000,
     playerMoves: [
         moves["decent punch"],
         moves["self punch"],

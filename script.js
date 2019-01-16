@@ -244,7 +244,13 @@ const gameLoop = () => {
             getBattleScreen,
             elfIndex,currentIndex
         );
-        playMusic(rendererState.song);
+        if(rendererState.song) {
+            if(rendererState.songIntro) {
+                playMusicWithIntro(rendererState.song,rendererState.songIntro);
+            } else {
+                playMusic(rendererState.song);
+            }
+        }
     }
     if(elfIndex === -1) {
         elfIndex = 0;
