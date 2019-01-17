@@ -261,6 +261,27 @@ const politicsSelector = getSelectionMove(
         }]
     }
 );
+const shoppingSelector = getSelection(
+    "let's go shopping",{
+        name: "elf mall",
+        events: [{
+            speech: getDoubleSpeech("ahh - too many people","yeah! great idea"),
+            action: sequencer => increaseHead1Disposition(sequencer)
+        }]
+    },{
+        name: "elfmart",
+        events: [{
+            speech: getDoubleSpeech("okay i guess","everyone loves elfmart"),
+            action: sequencer => advanceSelectionScreen(sequencer)
+        }]
+    },{
+        name: "card shop",
+        events: [{
+            speech: getDoubleSpeech("ooh - i love cards","... of course you do"),
+            action: sequencer => increaseHead2Disposition(sequencer)
+        }]
+    }
+)
 const nameSelector = getSelectionMove(
     "tell them your name",{
         name: "names are overrated",
@@ -337,11 +358,11 @@ const twentyFivePercentElfHealthDrop = sequencer => {
 const selectionSets = [
     [fruitSelector],
     [sportSelector,animalSelector],
-    [fruitSelector,sportSelector],
-    [politicsSelector],
-    [animalSelector,colorSelector],
-    [nameSelector,fruitSelector],
-    [politicsSelector,sportSelector],
+    [shoppingSelector,politicsSelector],
+    [animalSelector,colorSelector,nameSelector],
+    [fruitSelector,sportSelector,animalSelector],
+    [nameSelector,politicsSelector,colorSelector],
+    [fruitSelector,sportSelector,sportSelector],
     [presentSelector]
 ];
 
