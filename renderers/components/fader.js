@@ -25,6 +25,7 @@ const getFader = function() {
             }
         },
         fadeOut: (rendererGenerator,...parameters) => {
+            rendererState.transitioning = true;
             rendererState.fader.delta = 1;
             rendererState.fader.start = performance.now();
             rendererState.fader.transitionRenderer = rendererGenerator;
