@@ -4,12 +4,12 @@ function BattleSequencer(renderer) {
     this.murderSequencerGracefully = () => {
         this.sequencerPersisting = false;
         while(this.skipHandles.length > 0) {
-            this.skipEvent();
+            this.skipEvent(true);
         }
     }
 
     this.skipHandles = [];
-    this.skipEvent = () => {
+    this.skipEvent = suppress => {
         if(this.skipHandles.length > 0) {
             if(this.skipHandles.length > 100) {
                 console.warn("Warning: The skip handle count is very high");
@@ -22,7 +22,7 @@ function BattleSequencer(renderer) {
                 this.skipHandles.length > 0);//If we run out of handles, we break the loop
 
             if(timeouts[skipHandle]) {
-                clearSkippableTimeout(skipHandle);
+                clearSkippableTimeout(skipHandle,suppress);
             }
         }
     }
@@ -69,7 +69,7 @@ function BattleSequencer(renderer) {
             if(musicNode) {
                 stopMusic(0);
             }
-            let songDuration = playMusic("lose.ogg",0,false) * 1000;
+            let songDuration = playMusic("lose",0,false) * 1000;
             if(songDuration > duration) {
                 duration = songDuration + postSongDelay;
             } else if (duration < songDuration + postSongDelay) {
@@ -101,7 +101,7 @@ function BattleSequencer(renderer) {
             if(musicNode) {
                 stopMusic(0);
             }
-            let songDuration = playMusic("lose.ogg",0,false) * 1000;
+            let songDuration = playMusic("lose",0,false) * 1000;
             if(songDuration > duration) {
                 duration = songDuration + postSongDelay;
             } else if (duration < songDuration + postSongDelay) {
@@ -255,14 +255,16 @@ function BattleSequencer(renderer) {
             duration = 1000;
         }
         const innerMethod = () => {
-            this.bottomMessage = text;
-            if(duration !== Infinity && this.sequencerPersisting) {
-                this.skipHandles.push(setSkippableTimeout(()=>{
-                    this.bottomMessage = null;
-                    if(callback) {
-                        callback();
-                    }
-                },duration));
+            if(this.sequencerPersisting) {
+                this.bottomMessage = text;
+                if(duration !== Infinity ) {
+                    this.skipHandles.push(setSkippableTimeout(()=>{
+                        this.bottomMessage = null;
+                        if(callback) {
+                            callback();
+                        }
+                    },duration));
+                }
             }
         }
         if(delay) {
@@ -538,8 +540,8 @@ function BattleSequencer(renderer) {
     this.persistentSpeechDuration;
 
     this.clearSpeech = () => {
-        this.elfSpeech = null;
         if(this.sequencerPersisting) {
+            this.elfSpeech = null;
             renderer.moveElf(80,0.5);
         }
     }
@@ -561,11 +563,9 @@ function BattleSequencer(renderer) {
             duration = 1000;
         }
         const innerMethod = () => {
-            this.elfSpeech = text.split("\n");
             if(this.sequencerPersisting) {
+                this.elfSpeech = text.split("\n");
                 renderer.moveElf(80,0.25);
-            }
-            if(this.sequencerPersisting) {
                 if(duration !== Infinity) {
                     this.skipHandles.push(setSkippableTimeout(()=>{
                         this.clearSpeech();
@@ -727,14 +727,16 @@ const setSkippableTimeout = (handler,timeout,...args) => {
     return handle;
 }
 
-const clearSkippableTimeout = handle => {
+const clearSkippableTimeout = (handle,suppress) => {
     clearTimeout(handle);
 
     const timeout = timeouts[handle];
 
-    timeout.handler.apply(
-        this,timeout.args
-    );
+    if(!suppress) {
+        timeout.handler.apply(
+            this,timeout.args
+        );
+    }
 
     delete timeouts[handle];
 }
