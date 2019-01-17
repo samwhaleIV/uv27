@@ -36,8 +36,11 @@ const getFader = function() {
             }
         },
         oninEnd: () => {
-            if(rendererState.fader.inMethod) {
-                rendererState.fader.inMethod();
+            if(rendererState.fader) {
+                if(rendererState.fader.inMethod) {
+                    rendererState.fader.inMethod();
+                }
+                rendererState.transitioning = false;
             }
             console.log("Transition complete");
         },
@@ -48,6 +51,7 @@ const getFader = function() {
                     ...rendererState.fader.transitionParameters
                 );
                 if(rendererState.fader) {
+                    rendererState.transitioning = true;
                     setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
                 }
             } else {

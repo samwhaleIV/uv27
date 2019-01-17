@@ -27,16 +27,22 @@ function EndScreenRenderer(endCallback) {
     this.bottomTextY = canvas.height - this.textMargin - bottomTextTestResult.height;
     this.topTextY = this.textMargin;
 
+    this.transitioning = false;
+
     this.processClick = () => {
-        playSound("click.mp3");
-        this.endCallback();
+        if(!transitioning) {
+            playSound("click.mp3");
+            this.endCallback();
+        }
     }
 
     this.processKey = key => {
         switch(key) {
             case "Enter":
             case "Space":
-                this.endCallback();
+                if(!transitioning) {
+                    this.endCallback();
+                }
                 break;
         }
     }
@@ -59,7 +65,6 @@ function EndScreenRenderer(endCallback) {
             this.bottomTextX,this.bottomTextY,
             this.textScale,1
         );
-
 
 
         rendererState.fader.process(context,timestamp,width,height);

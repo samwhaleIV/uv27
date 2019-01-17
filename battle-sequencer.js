@@ -1,5 +1,13 @@
 function BattleSequencer(renderer) {
 
+    this.sequencerPersisting = true;
+    this.murderSequencerGracefully = () => {
+        this.sequencerPersisting = false;
+        while(this.skipHandles.length > 0) {
+            this.skipEvent();
+        }
+    }
+
     this.skipHandles = [];
     this.skipEvent = () => {
         if(this.skipHandles.length > 0) {
@@ -48,6 +56,9 @@ function BattleSequencer(renderer) {
     const postSongDelay = 1000;
 
     this.everybodyDiedMethod = () => {
+        if(!this.sequencerPersisting) {
+            return;
+        }
         this.bottomMessage = "everyone is dead";
         renderer.firstInputMask = "game over";
         let duration = endScreenLength;
@@ -70,6 +81,9 @@ function BattleSequencer(renderer) {
     }
 
     this.playerDiedMethod = () => {
+        if(!this.sequencerPersisting) {
+            return;
+        }
         this.bottomMessage = "you are dead";
         renderer.firstInputMask = "game over";
 
@@ -99,6 +113,9 @@ function BattleSequencer(renderer) {
 
     }
     this.elfDiedMethod = () => {
+        if(!this.sequencerPersisting) {
+            return;
+        }
         this.bottomMessage = `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
 
@@ -123,7 +140,7 @@ function BattleSequencer(renderer) {
                 duration += (postSongDelay + songDuration) - duration;
             }
         }
-
+        rendererState.atWinState = true;
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
     }
 
@@ -177,7 +194,9 @@ function BattleSequencer(renderer) {
         addHealth: amount => this.addHealth(this.elfBattleObject,amount)
     };
     this.dropHealth = (target,amount) => {
-        playSound("clip");
+        if(this.sequencerPersisting) {
+            playSound("clip");
+        }
         target.health -= amount;
         target.jitterHealthBar = true;
         if(target.health <= 0) {
@@ -199,7 +218,9 @@ function BattleSequencer(renderer) {
     },
     this.addHealth = (target,amount) => {
         target.health += amount;
-        playSound("reverse-clip");
+        if(this.sequencerPersisting) {
+            playSound("reverse-clip");
+        }
         target.healthBarDrop = true;
         if(target.health > target.maxHealth) {
             target.health = target.maxHealth;
@@ -221,6 +242,9 @@ function BattleSequencer(renderer) {
     }
 
     this.processPlayerInput = moveIndex => {
+        if(!this.sequencerPersisting) {
+            return;
+        }
         this.playerMove(
             this.playerMoves[moveIndex]
         );
@@ -232,7 +256,7 @@ function BattleSequencer(renderer) {
         }
         const innerMethod = () => {
             this.bottomMessage = text;
-            if(duration !== Infinity) {
+            if(duration !== Infinity && this.sequencerPersisting) {
                 this.skipHandles.push(setSkippableTimeout(()=>{
                     this.bottomMessage = null;
                     if(callback) {
@@ -242,7 +266,9 @@ function BattleSequencer(renderer) {
             }
         }
         if(delay) {
-            this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
+            if(this.sequencerPersisting) {
+                this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
+            }
         } else {
             innerMethod();
         }
@@ -381,7 +407,9 @@ function BattleSequencer(renderer) {
         if(this.showingPersistentSpeech) {
             this.clearPersistentSpeech();
         }
-        renderer.disablePlayerInputs();
+        if(this.sequencerPersisting) {
+            renderer.disablePlayerInputs();
+        }
         this.genericMove(move,
             this.playerBattleObject,
             this.elfBattleObject,
@@ -508,7 +536,9 @@ function BattleSequencer(renderer) {
 
     this.clearSpeech = () => {
         this.elfSpeech = null;
-        renderer.moveElf(80,0.5);
+        if(this.sequencerPersisting) {
+            renderer.moveElf(80,0.5);
+        }
     }
 
     this.clearPersistentSpeech = () => {
@@ -529,24 +559,30 @@ function BattleSequencer(renderer) {
         }
         const innerMethod = () => {
             this.elfSpeech = text.split("\n");
-            renderer.moveElf(80,0.25);
-            if(duration !== Infinity) {
-                this.skipHandles.push(setSkippableTimeout(()=>{
-                    this.clearSpeech();
+            if(this.sequencerPersisting) {
+                renderer.moveElf(80,0.25);
+            }
+            if(this.sequencerPersisting) {
+                if(duration !== Infinity) {
+                    this.skipHandles.push(setSkippableTimeout(()=>{
+                        this.clearSpeech();
+                        if(callback) {
+                            callback();
+                        }
+                    },duration));
+                } else {
+                    this.persistentSpeechDuration = this.getTextDuration(text);
+                    this.showingPersistentSpeech = true;
                     if(callback) {
                         callback();
                     }
-                },duration));
-            } else {
-                this.persistentSpeechDuration = this.getTextDuration(text);
-                this.showingPersistentSpeech = true;
-                if(callback) {
-                    callback();
                 }
             }
         }
         if(delay) {
-            this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
+            if(this.sequencerPersisting) {
+                this.skipHandles.push(setSkippableTimeout(innerMethod,delay));
+            }
         } else {
             innerMethod();
         }
@@ -572,7 +608,9 @@ function BattleSequencer(renderer) {
                 } else if(this.playerHasDied) {
                     this.playerDiedMethod();
                 } else {
-                    renderer.enablePlayerInputs();
+                    if(this.sequencerPersisting) {
+                        renderer.enablePlayerInputs();
+                    }
                 }
             }
             if(this.globalBattleState.postTurnProcess !== null) {
@@ -610,7 +648,9 @@ function BattleSequencer(renderer) {
     }
 
     this.updatePlayerMoves = moves => {
-        renderer.playerInputs = moves;
+        if(this.sequencerPersisting) {
+            renderer.playerInputs = moves;
+        }
         this.playerMoves = moves;
     }
 
@@ -633,7 +673,9 @@ function BattleSequencer(renderer) {
     }
 
     if(this.elf.startText) {
-        renderer.disablePlayerInputs();
+        if(this.sequencerPersisting) {
+            renderer.disablePlayerInputs();
+        }
         const endMethod = !this.elf.startSpeech && this.elf.startSpeech.text?
             renderer.enablePlayerInputs: 
             () => {
@@ -651,7 +693,9 @@ function BattleSequencer(renderer) {
     } else {
         const startEnd = renderer.enablePlayerInputs;
         if(this.elf.startSpeech && this.elf.startSpeech.text) {
-            renderer.disablePlayerInputs();
+            if(this.sequencerPersisting) {
+                renderer.disablePlayerInputs();
+            }
             this.showElfSpeech(
                 this.elf.startSpeech.text,0,
                 this.elf.startSpeech.persist ? Infinity : 500+this.getTextDuration(this.elf.startSpeech.text),

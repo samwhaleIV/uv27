@@ -115,7 +115,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         if(this.currentIndex <= highestElfIndex) {
             playSound("click");
             this.endCallback(this.currentIndex);
-            this.transitioning = true;
         }
     }
 
@@ -128,7 +127,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             IntroductionRenderer,
             ()=>getSelectScreen(0)
         );
-        this.transitioning = true;
     }
 
     this.hoverEffectIndex = null;

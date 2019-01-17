@@ -72,9 +72,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.hoverEffectSize = 3;
     this.hoverEffectX = this.playerInputsX - this.hoverEffectSize;
-    const doubleHoverSize = this.hoverEffectSize * 2;
-    this.hoverEffectHeight = this.playerInputsHeight + doubleHoverSize;
-    this.hoverEffectWidth = this.playerInputsWidth + doubleHoverSize;
+    this.doubleHoverSize = this.hoverEffectSize + this.hoverEffectSize;
+    this.hoverEffectHeight = this.playerInputsHeight + this.doubleHoverSize;
+    this.hoverEffectWidth = this.playerInputsWidth + this.doubleHoverSize;
 
     const healthBarMargin = 15;
 
@@ -394,6 +394,49 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             }
         }
 
+        if(this.inEscapeMenu) {
+            context.fillColor = "rgba(0,0,0,0.8)";
+            context.fillRect(0,0,width,height);
+            switch(this.escapeMenuIndex) {
+                case 0:
+                    context.fillStyle = this.hoverColor;
+                    context.fillRect(
+                        this.escapeMenuYesButton.x-this.hoverEffectSize,
+                        this.escapeMenuYesButton.y-this.hoverEffectSize,
+                        this.escapeMenuYesButton.width+this.doubleHoverSize,
+                        this.escapeMenuYesButton.height+this.doubleHoverSize
+                    );
+                    break;
+                case 1:
+                    context.fillStyle = this.hoverColor;
+                    context.fillRect(
+                        this.escapeMenuNoButton.x-this.hoverEffectSize,
+                        this.escapeMenuNoButton.y-this.hoverEffectSize,
+                        this.escapeMenuNoButton.width+this.doubleHoverSize,
+                        this.escapeMenuNoButton.height+this.doubleHoverSize
+                    );
+                    break;
+            }
+            context.fillStyle = this.fillColor;
+            context.fillRect(
+                this.escapeMenuYesButton.x,
+                this.escapeMenuYesButton.y,
+                this.escapeMenuYesButton.width,
+                this.escapeMenuYesButton.height
+            );
+            context.fillStyle = this.fillColor;
+            context.fillRect(
+                this.escapeMenuNoButton.x,
+                this.escapeMenuNoButton.y,
+                this.escapeMenuNoButton.width,
+                this.escapeMenuNoButton.height
+            );
+            drawTextWhite(this.escapeMenuText,this.escapeMenuTextX,this.escapeMenuTextY,this.escapeMenuTextScale);
+
+            drawTextWhite(this.yesButtonText.text,this.yesButtonText.x,this.yesButtonText.y,this.yesButtonText.scale);
+            drawTextWhite(this.noButtonText.text,this.noButtonText.x,this.noButtonText.y,this.noButtonText.scale);
+        }
+
         rendererState.fader.process(context,timestamp,width,height);
     }
 
@@ -401,8 +444,108 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.lastEventWasKeyBased = false;
 
+    this.inEscapeMenu = false;
+    this.escapeMenuIndex = null;
+
+    this.escapeMenuText = "are you sure you want to quit?"
+    this.escapeMenuTextScale = 4;
+
+    const escapeMenuTextTest = drawTextTest(this.escapeMenuText,this.escapeMenuTextScale);
+
+    this.escapeMenuTextX = Math.round(this.halfWidth - (escapeMenuTextTest.width/2));
+
+    const escapeStuffYOffset = -50;
+
+    this.halfHeight = canvas.height / 2;
+
+    const verticalEscapeMenuMargin = 20;
+    this.escapeMenuTextY = Math.ceil(this.halfHeight - escapeMenuTextTest.height - verticalEscapeMenuMargin) + escapeStuffYOffset;
+    
+    const escapeMenuButtonWidth = 300;
+    const escapeMenuButtonHeight = 100;
+    const escapeMenuButtonY = Math.floor(this.halfHeight + verticalEscapeMenuMargin) + escapeStuffYOffset;
+
+    this.escapeMenuYesButton = {
+        width: escapeMenuButtonWidth,
+        height: escapeMenuButtonHeight,
+        x: Math.ceil(this.halfWidth - escapeMenuButtonWidth - 5),
+        y: escapeMenuButtonY
+    };
+    this.escapeMenuNoButton = {
+        width: escapeMenuButtonWidth,
+        height: escapeMenuButtonHeight,
+        x: Math.ceil(this.halfWidth + 5),
+        y: escapeMenuButtonY
+    };
+
+    const yesText = "yes";
+    const noText = "no";
+
+    const yesButtonTextTest = drawTextTest(yesText,this.playerInputTextScale);
+    const noButtonTextTest = drawTextTest(noText,this.playerInputTextScale);
+
+    const halfEscapeMenuWidth = this.escapeMenuYesButton.width / 2;
+    const halfEscapeMenuHeight = this.escapeMenuYesButton.height / 2;
+
+    this.yesButtonText = {
+        text: yesText,
+        x: this.escapeMenuYesButton.x + Math.round(halfEscapeMenuWidth - (yesButtonTextTest.width / 2)),
+        y: this.escapeMenuYesButton.y + Math.round(halfEscapeMenuHeight - (yesButtonTextTest.height / 2)),
+        scale: this.playerInputTextScale
+    };
+    this.noButtonText = {
+        text: noText,
+        x: this.escapeMenuNoButton.x + Math.round(halfEscapeMenuWidth - (noButtonTextTest.width / 2)),
+        y: this.escapeMenuNoButton.y + Math.round(halfEscapeMenuHeight - (noButtonTextTest.height / 2)),
+        scale: this.playerInputTextScale
+    };
+
     this.processKey = key => {
+        if(this.inEscapeMenu) {
+            switch(key) {
+                case "Escape":
+                    this.lastEventWasKeyBased = true;
+                    if(!this.transitioning) {
+                        this.inEscapeMenu = false;
+                        this.escapeMenuIndex = null;
+                    }
+                    break;
+                case "KeyW":
+                case "KeyA":
+                case "ArrowUp":
+                case "ArrowLeft":
+                    this.lastEventWasKeyBased = true;
+                    if(this.escapeMenuIndex === null || this.escapeMenuIndex !== 0) {
+                        this.escapeMenuIndex = 0;
+                    }
+                    break;
+                case "KeyD":
+                case "KeyS":
+                case "ArrowDown":
+                case "ArrowRight":
+                    this.lastEventWasKeyBased = true;
+                    if(this.escapeMenuIndex === null) {
+                        this.escapeMenuIndex = 0;
+                    } else if(this.escapeMenuIndex !== 1) {
+                        this.escapeMenuIndex = 1;
+                    }
+                    break;
+                case "Enter":
+                case "Space":
+                    this.lastEventWasKeyBased = true;
+                    this.processClick();
+                    return;
+            }
+            return;
+        }
         switch(key) {
+            case "Escape":
+                this.lastEventWasKeyBased = true;
+                if(!this.transitioning) {
+                    this.inEscapeMenu = true;
+                    this.escapeMenuIndex = 0;
+                }
+                break;
             case "KeyW":
             case "KeyA":
             case "ArrowUp":
@@ -463,13 +606,55 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }
         return null;
     }
+    this.getHitRegisterEscapeMenu = (x,y) => {
+        if(y >= this.escapeMenuYesButton.y && y <= this.escapeMenuYesButton.y + this.escapeMenuYesButton.height) {
+            if(x >= this.escapeMenuYesButton.x && x <= this.escapeMenuYesButton.x + this.escapeMenuYesButton.width) {
+                return 0;
+            } else if(x >= this.escapeMenuNoButton.x && x <= this.escapeMenuNoButton.x + this.escapeMenuNoButton.width) {
+                return 1;
+            }
+        }
+        return null;
+    }
 
     this.processMove = (x,y) => {
         this.lastEventWasKeyBased = false;
-        this.hoverEffectIndex = this.getHitRegister(x,y);
+        if(!this.inEscapeMenu) {
+            this.hoverEffectIndex = this.getHitRegister(x,y);
+        } else {
+            this.escapeMenuIndex = this.getHitRegisterEscapeMenu(x,y);
+        }
     }
 
+    this.transitioning = false;
+
+    this.atWinState = false;
+
     this.processClick = (x,y) => {
+        if(this.inEscapeMenu) {
+            if(x > -1 && y > -1) {
+                this.escapeMenuIndex = this.getHitRegisterEscapeMenu(x,y);
+                this.lastEventWasKeyBased = false;
+            } else {
+                this.lastEventWasKeyBased;
+            }
+            if(this.escapeMenuIndex !== null && !this.transitioning) {
+                if(this.escapeMenuIndex === 0) {
+                    playSound("click");
+                    this.battleSequencer.murderSequencerGracefully();
+                    if(this.atWinState) {
+                        this.winCallback();
+                    } else {
+                        this.loseCallback();
+                    }
+                } else {
+                    playSound("click");
+                    this.inEscapeMenu = false;
+                    this.escapeMenuIndex = null;
+                }
+            }
+            return;
+        }
         if(!this.playerInputsEnabled) {
             if(this.battleSequencer.skipHandles.length > 0) {
                 playSound("click");
@@ -493,7 +678,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             }
         }
         let hitRegister;
-        if(x > -1&& y > -1) {
+        if(x > -1 && y > -1) {
             hitRegister = this.getHitRegister(x,y);
             this.lastEventWasKeyBased = false;
         } else {
