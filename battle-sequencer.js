@@ -477,6 +477,9 @@ function BattleSequencer(renderer) {
     }
 
     this.processEvent = (event,eventsList,recursiveCallback,endCallback,index) => {
+        if(!this.sequencerPersisting) {
+            return;
+        }
         let callback;
         if(event.condition) {
             if(!event.condition(this)) {
