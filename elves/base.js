@@ -140,7 +140,9 @@ const protectPreProcessPlayer = (sequencer,move) => {
 }
 
 const protectPressProcessElf = (sequencer,move) => {
-    if(move.type === "target" && sequencer.playerBattleObject.state.isProtected) {
+    if(move.type === "target" && sequencer.playerBattleObject.state.isProtected &&
+        sequencer.turnNumber == sequencer.playerBattleObject.state.protectTurn) {
+
         sequencer.playerBattleObject.state.isProtected = false;
         return moves['elf variant protection preprocessor'];
     }
@@ -384,7 +386,7 @@ const moves = {
         name: "wimpier punch",
         process: (sequencer,user,target) => {
             const responses = [
-                ()=>`${user.name} look${user.isElf ?"s" : ""} confused`,
+                ()=>`${target.name} look${target.isElf ?"s" : ""} confused`,
                 ()=>`${target.name} think${target.isElf ?"s" : ""} ${user.name} held back`
             ];
             let damage = 5;

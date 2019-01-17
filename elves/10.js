@@ -24,30 +24,40 @@ const getEndEvents = sequencer => {
     const disposition1 = sequencer.elfBattleObject.state.head1Disposition;
     const disposition2 = sequencer.elfBattleObject.state.head2Disposition;
 
-    const dispositionSpread = disposition1 + disposition2;
-
     const updateMoves = sequencer => {
-        const newMoves = [moves["decent punch"],moves["protect"],moves["band aid"]];
+        const newMoves = [moves["wimpier punch"],moves["protect"],moves["band aid"]];
         if(sequencer.playerBattleObject.state.canUsePunchingVitamins) {
             newMoves.push(moves["punching vitamins"]);
         }
         sequencer.updatePlayerMoves(newMoves);
     }
 
-    const endEvents = [];
+    const endEvents = [{
+        text: "looks like there's nothing else to say"
+    },{
+        text: "the elves learned more about themselves"
+    }];
     if(disposition1 > disposition2) {
         endEvents.push({
-            speech: getDoubleSpeech("ah - i guess...\nwe just differ too much","i hate you! you're\nnothing like me!"),
-            action: sequencer => updateMoves(sequencer)
+            speech: getDoubleSpeech("we just differ too much\ntime to get rekt","i hate you! you're\nnothing like me! :("),
         },{
-            text: "time to settle this the old way"
+            text: "time to settle this the old way",
+            action: sequencer => {
+                updateMoves(sequencer);
+                sequencer.globalBattleState.endBattleType = "head 1";
+                sequencer.globalBattleState.turnOffset = sequencer.turnNumber;
+            }
         });
     } else if(disposition2 > disposition1) {
         endEvents.push({
-            speech: getDoubleSpeech("i felt indifferent\nanyways - nothing new","what! but we've always\nbeen so close!"),
-            action: sequencer => updateMoves(sequencer)
+            speech: getDoubleSpeech("i always felt indifferent","what! but we've always\nbeen so close!\nyou're all going down!")
         },{
-            text: "time to settle this the old way"
+            text: "time to settle this the old way",
+            action: sequencer => {
+                updateMoves(sequencer)
+                sequencer.globalBattleState.endBattleType = "head 2";
+                sequencer.globalBattleState.turnOffset = sequencer.turnNumber;
+            }
         });
     } else {
         if(disposition1 === 0) {
@@ -194,7 +204,7 @@ const animalSelector = getSelectionMove(
     },{
         name: "elves",
         events: [{
-            speech: getDoubleSpeech("elves?? elves!?","yikes - here's uh...\nvery insecure")
+            speech: getDoubleSpeech("elves?? elves!?","yikes - he's uh...\nvery insecure")
         },{
             speech: getDoubleSpeech("t r i g g e r e d","just let it go dude")
         },{
@@ -396,6 +406,27 @@ const updateDispositionSubtexts = sequencer => {
     }
 }
 
+addMove({
+    name: "disposition - 1",
+    type: "self",
+    process: () => {
+        const speeches = ["you were my only friend!","you betray me","you think differently\ntherefore i hate you","get out of my life!"];
+        return {
+            speech: `head one:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
+        }
+    }
+});
+addMove({
+    name: "disposition - 2",
+    type: "self",
+    process: () => {
+        const speeches = ["you were my best friend!","i don't even know you\nanymore","i just wanted to get along!","stay away from me!"];
+        return {
+            speech: `head two:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
+        }
+    }
+});
+
 elves[9] = {
     name: "two headed elf",
     background: "background-3",
@@ -409,8 +440,13 @@ elves[9] = {
     },
     getMove: sequencer => {
         if(sequencer.globalBattleState.ranEndEvents) {
-            const moveChoices = ["decent punch","decent punch","cry","wimpy punch","wimpier punch"];
-            return moves[moveChoices[sequencer.turnNumber % moveChoices.length]];
+            let moveChoices;
+            if(sequencer.globalBattleState.endBattleType === "head 1") {
+                moveChoices = ["decent punch","disposition","decent punch","disposition - 1","decent punch","self punch","cry","wimpy punch","disposition - 1","wimpier punch"];
+            } else {
+                moveChoices = ["decent punch","self punch","decent punch","disposition - 2","decent punch","cry","wimpy punch","wimpier punch","disposition - 2"];
+            }
+            return moves[moveChoices[(sequencer.turnNumber - sequencer.globalBattleState.turnOffset) % moveChoices.length]];
         } else {
             return null;
         }
