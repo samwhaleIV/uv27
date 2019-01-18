@@ -141,7 +141,7 @@ addRapBattleEntry(
     "hay is for horses\nbut you are-",
     {name:"neigh",quality:"bad"},
     {name:"mine",quality:"terrible"},
-    {name:"hot as f**k",quality:"perfect"},
+    {name:"hot as f**k",quality:"perfect",historyRequired:true},
     {name:"jester elf",quality:"terrible"}
 );
 addRapBattleEntry(
@@ -350,9 +350,8 @@ elves[10] = {
                         skip = true;
                     }
 
-                    if(!skip) {
+                    if(!skip && sequencer.globalBattleState.rapBattleIndex < rapBattleList.length) {
                         const rapBattleEntry = rapBattleList[sequencer.globalBattleState.rapBattleIndex](sequencer);
-                        sequencer.globalBattleState.rapBattleIndex++;
             
                         sequencer.globalBattleState.lastEntry = rapBattleEntry;
             
@@ -382,7 +381,7 @@ elves[10] = {
                             text: "all your rapping was perfect"
                         });
                         events.push({
-                            speech: "wow.\ni am very impressed\nyou 'sleighed' every verse\n\ni'll let you in on a secret...\n'<insert secret here>'"
+                            speech: "wow.\ni am very impressed\nyou 'sleighed' every verse\n\nhere's a secret...\n'<insert secret here>'"
                         });
                         events.push({
                             speech: "you've done well...\nand farewell\n\nthis is jester...\ngoodbye quester",
@@ -406,6 +405,7 @@ elves[10] = {
                     events = [{
                         text: getQualityReport(sequencer.globalBattleState.lastQuality)
                     },...events];
+                    sequencer.globalBattleState.rapBattleIndex++;
                 }
                 return {
                     events: events
