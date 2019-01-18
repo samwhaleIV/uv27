@@ -261,7 +261,7 @@ const politicsSelector = getSelectionMove(
         }]
     }
 );
-const shoppingSelector = getSelection(
+const shoppingSelector = getSelectionMove(
     "let's go shopping",{
         name: "elf mall",
         events: [{
@@ -281,7 +281,7 @@ const shoppingSelector = getSelection(
             action: sequencer => increaseHead2Disposition(sequencer)
         }]
     }
-)
+);
 const nameSelector = getSelectionMove(
     "tell them your name",{
         name: "names are overrated",

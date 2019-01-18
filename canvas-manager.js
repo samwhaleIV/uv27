@@ -284,7 +284,7 @@ const render = timestamp => {
     if(!paused) {
         animationFrame = window.requestAnimationFrame(render);
         const gamepad = navigator.getGamepads()[0];
-        if(gamepad !== null) {
+        if(gamepad) {
             processGamepad(gamepad);
         }
     }
