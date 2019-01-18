@@ -143,12 +143,141 @@ context.imageSmoothingEnabled = false;
 
 let rendererState, animationFrame, paused = false;
 
+const gamepadDeadzone = 0.5;
+const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
+const applyDeadZone = value => {
+    if(value < 0) {
+        value = value + gamepadDeadzone;
+        if(value > 0) {
+            value = 0;
+        } else {
+            value *= deadzoneNormalizer;
+        }
+    } else {
+        value = value - gamepadDeadzone;
+        if(value < 0) {
+            value = 0;
+        } else {
+            value *= deadzoneNormalizer;
+        }
+    }
+    return value;
+}
+
+const fakeButtonPressEvent = {pressed:true};
+const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 325;
+const processButton = (name,action,button,timestamp,isAxis) => {
+    if(button.pressed) {
+        if(!buttonStates[name]) {
+            buttonStates[name] = {timestamp:timestamp};
+            action();
+        } else if(timestamp >= buttonStates[name].timestamp + (isAxis ? axisRolloverTimeout : buttonRollverTimeout)) {
+            buttonStates[name].timestamp = timestamp;
+            action();
+        }
+    } else {
+        delete buttonStates[name];
+    }
+};
+
+const processGamepad = gamepad => {
+    processButton("a",()=>{
+        window.onkeydown({code:"Enter"});
+    },gamepad.buttons[0],gamepad.timestamp);
+
+    processButton("y",()=>{
+        window.onkeydown({code:"KeyP"});
+    },gamepad.buttons[3],gamepad.timestamp);
+
+    processButton("b",()=>{
+        window.onkeydown({code:"Escape"});
+    },gamepad.buttons[1],gamepad.timestamp);
+
+    processButton("up",()=>{
+        window.onkeydown({code:"KeyW"});
+    },gamepad.buttons[12],gamepad.timestamp);
+
+    processButton("down",()=>{
+        window.onkeydown({code:"KeyS"});
+    },gamepad.buttons[13],gamepad.timestamp);
+
+    processButton("left",()=>{
+        window.onkeydown({code:"KeyA"});
+    },gamepad.buttons[14],gamepad.timestamp);
+
+    processButton("right",()=>{
+        window.onkeydown({code:"KeyD"});
+    },gamepad.buttons[15],gamepad.timestamp);
+
+    processButton("start",()=>{
+        window.onkeydown({code:"Enter"});
+    },gamepad.buttons[9],gamepad.timestamp);
+
+    const leftXAxis = applyDeadZone(gamepad.axes[0]);
+    const leftYAxis = applyDeadZone(gamepad.axes[1]);
+
+    if(leftXAxis > 0) {
+        processButton("leftXAxis",()=>{
+            window.onkeydown({code:"KeyD"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else if(leftXAxis < 0) {
+        processButton("leftXAxis",()=>{
+            window.onkeydown({code:"KeyA"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else {
+        delete buttonStates["leftXAxis"];
+    }
+
+    if(leftYAxis > 0) {
+        processButton("leftYAxis",()=>{
+            window.onkeydown({code:"KeyS"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else if(leftYAxis < 0) {
+        processButton("leftYAxis",()=>{
+            window.onkeydown({code:"KeyW"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else {
+        delete buttonStates["leftYAxis"];
+    }
+
+    const rightXAxis = applyDeadZone(gamepad.axes[2]);
+    const rightYAxis = applyDeadZone(gamepad.axes[3]);
+
+    if(rightXAxis > 0) {
+        processButton("rightXAxis",()=>{
+            window.onkeydown({code:"KeyD"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else if(rightXAxis < 0) {
+        processButton("rightXAxis",()=>{
+            window.onkeydown({code:"KeyA"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else {
+        delete buttonStates["rightXAxis"];
+    }
+
+    if(rightYAxis > 0) {
+        processButton("rightYAxis",()=>{
+            window.onkeydown({code:"KeyS"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else if(rightYAxis < 0) {
+        processButton("rightYAxis",()=>{
+            window.onkeydown({code:"KeyW"});
+        },fakeButtonPressEvent,gamepad.timestamp,true);
+    } else {
+        delete buttonStates["rightYAxis"];
+    }
+}
+
 const render = timestamp => {
     rendererState.renderMethod(
         context,timestamp,canvas.width,canvas.height
     );
     if(!paused) {
         animationFrame = window.requestAnimationFrame(render);
+        const gamepad = navigator.getGamepads()[0];
+        if(gamepad !== null) {
+            processGamepad(gamepad);
+        }
     }
 };
 

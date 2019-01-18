@@ -63,8 +63,8 @@ addMove({
 });
 
 const defaultJesterElfMoves = [
-    moves["tell me a joke"],
     moves["rap battle"],
+    moves["tell me a joke"],
     moves["castles?"],
     moves["dragons?"]
 ];
@@ -274,9 +274,6 @@ elves[10] = {
                     }
                 }
 
-
-
-
                 if(sequencer.globalBattleState.rapBattleIndex >= rapBattleList.length) {
 
                     sequencer.elfBattleObject.state.diedFromPuns = true;
@@ -309,20 +306,3 @@ elves[10] = {
     },
     playerMoves: defaultJesterElfMoves
 }
-/*
-
-
-oh - hello\nyou're jest in time
-
-Starting moves:
-[tell me a joke]
-    -> <random joke> as (speech)
-[rap battle]
-    -> (rap battle start speech) -> [first four rap responses]
-[castles?]
-    -> <turn independent incremental factoids about castles> 
-[dragons?]
-    -> <turn independent incremental factoids about dragons> 
-
-
-*/
