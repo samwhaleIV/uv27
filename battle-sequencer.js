@@ -84,7 +84,7 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
-        this.bottomMessage = "you are dead";
+        this.bottomMessage =  this.elf.playerDeadText || "you are dead";
         renderer.firstInputMask = "game over";
 
         let duration = endScreenLength;
@@ -116,7 +116,7 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
-        this.bottomMessage = `${this.elf.name} is dead`;
+        this.bottomMessage = this.elf.elfDeadText || `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
 
         let duration = endScreenLength;
@@ -497,7 +497,8 @@ function BattleSequencer(renderer) {
                     eventsList.push({
                         text:actionResult.text,
                         speech:actionResult.speech,
-                        action:actionResult.action
+                        action:actionResult.action,
+                        persist:actionResult.persist
                     });
                 } else if(actionResult.events) {
                     for(let i = 0;i<actionResult.events.length;i++) {
@@ -505,7 +506,8 @@ function BattleSequencer(renderer) {
                         eventsList.push({
                             text:actionResultEvent.text,
                             speech:actionResultEvent.speech,
-                            action:actionResultEvent.action
+                            action:actionResultEvent.action,
+                            persist:actionResult.persist
                         });
                     }
                 }
@@ -528,9 +530,9 @@ function BattleSequencer(renderer) {
         } else if(event.speech) {
             this.showElfSpeech(
                 event.speech,0,
-                this.getTextDuration(event.speech),
+                event.persist?Infinity:this.getTextDuration(event.speech),
                 callback
-            );               
+            );
         } else {
             callback();
         }

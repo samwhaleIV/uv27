@@ -333,7 +333,7 @@ const moves = {
         process: (sequencer,user,target) => {
             sequencer.dropHealth(target,target.maxHealth);
             return {
-                text: `${target.name} got fucked up`
+                text: `${target.name} got f****d up`
             }
         }
     },
