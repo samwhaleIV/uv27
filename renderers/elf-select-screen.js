@@ -234,6 +234,12 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.processKey = key => {
         switch(key) {
+            case "LeftBumper":
+                this.goLeft();
+                break;
+            case "RightBumper":
+                this.goRight();
+                break;
             case "KeyW":
             case "ArrowUp":
                 if(this.hoverEffectIndex === null) {

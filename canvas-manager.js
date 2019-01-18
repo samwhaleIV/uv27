@@ -181,6 +181,15 @@ const processButton = (name,action,button,timestamp,isAxis) => {
 };
 
 const processGamepad = gamepad => {
+
+    processButton("LeftBumper",()=>{
+        window.onkeydown({code:"LeftBumper"});
+    },gamepad.buttons[4],gamepad.timestamp);
+
+    processButton("RightBumper",()=>{
+        window.onkeydown({code:"RightBumper"});
+    },gamepad.buttons[5],gamepad.timestamp);
+
     processButton("a",()=>{
         window.onkeydown({code:"Enter"});
     },gamepad.buttons[0],gamepad.timestamp);
