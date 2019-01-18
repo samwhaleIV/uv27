@@ -205,6 +205,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     
     this.processClick = (x,y) => {
+        if(this.transitioning) {
+            return;
+        }
         if(x && y) {
             this.processMove(x,y);
         }
@@ -235,10 +238,14 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.processKey = key => {
         switch(key) {
             case "LeftBumper":
-                this.goLeft();
+                if(!this.transitioning) {
+                    this.goLeft();
+                }
                 break;
             case "RightBumper":
-                this.goRight();
+                if(!this.transitioning) {
+                    this.goRight();
+                }
                 break;
             case "KeyW":
             case "ArrowUp":

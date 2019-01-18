@@ -631,6 +631,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.atWinState = false;
 
     this.processClick = (x,y) => {
+        if(this.transitioning) {
+            return;
+        }
         if(this.inEscapeMenu) {
             if(x > -1 && y > -1) {
                 this.escapeMenuIndex = this.getHitRegisterEscapeMenu(x,y);
