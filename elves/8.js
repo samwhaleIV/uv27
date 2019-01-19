@@ -102,7 +102,7 @@ addMove({
         } else {
             user.state.alchoholWarning = true;
             return {
-                text: `but ${user.name} can't get any more lit`
+                text: `but can ${user.name} can get any more lit?`
             }
         }
     }
