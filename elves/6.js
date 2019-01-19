@@ -98,7 +98,7 @@ addMove({
             difference = user.state.gold;
         }
         user.state.gold-=difference;
-        sequencer.dropHealth(target,9);
+        sequencer.dropHealth(target,6);
         user.subText[0] = `${user.state.gold} gold`;
         if(user.isElf && user.state.gold === 0 && user.name === "golden elfette") {
             sequencer.dropHealth(user,user.maxHealth);

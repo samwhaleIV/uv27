@@ -148,7 +148,7 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         if(!user.state.tiedShoes || user.state.barefoot) {
-            if((user.isPlayer && Math.random() > 0.8) || (user.isElf && Math.random() > 0.9)) {
+            if((user.isPlayer && Math.random() > 0.8) || (user.isElf && Math.random() > 0.95)) {
                 if(user.state.barefoot) {
                     user.dropHealth(user.maxHealth);
                     return {

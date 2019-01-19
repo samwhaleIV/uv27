@@ -357,12 +357,12 @@ const twentyFivePercentElfHealthDrop = sequencer => {
 
 const selectionSets = [
     [fruitSelector],
-    [sportSelector,animalSelector],
+    [sportSelector],
     [shoppingSelector,politicsSelector],
-    [animalSelector,colorSelector,nameSelector],
-    [fruitSelector,sportSelector,animalSelector],
+    [colorSelector,nameSelector],
+    [fruitSelector,colorSelector,sportSelector],
+    [fruitSelector,animalSelector,sportSelector],
     [nameSelector,politicsSelector,colorSelector],
-    [fruitSelector,sportSelector,sportSelector],
     [presentSelector]
 ];
 
