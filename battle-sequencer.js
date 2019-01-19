@@ -194,9 +194,10 @@ function BattleSequencer(renderer) {
         addHealth: amount => this.addHealth(this.elfBattleObject,amount)
     };
     this.dropHealth = (target,amount) => {
-        if(this.sequencerPersisting) {
-            playSound("clip");
+        if(!this.sequencerPersisting) {
+            return;
         }
+        playSound("clip");
         target.health -= amount;
         target.jitterHealthBar = true;
         if(target.health <= 0) {
@@ -217,10 +218,11 @@ function BattleSequencer(renderer) {
         }
     },
     this.addHealth = (target,amount) => {
-        target.health += amount;
-        if(this.sequencerPersisting) {
-            playSound("reverse-clip");
+        if(!this.sequencerPersisting) {
+            return;
         }
+        playSound("reverse-clip");
+        target.health += amount;
         target.healthBarDrop = true;
         if(target.health > target.maxHealth) {
             target.health = target.maxHealth;

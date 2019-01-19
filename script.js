@@ -28,7 +28,7 @@ const fontDictionary = {
     'r':{width:3},'s':{width:3},'t':{width:3},
     'u':{width:3},'v':{width:3},'w':{width:5},
     'x':{width:3},'y':{width:3},'z':{width:3},
-    '0':{width:3},'1':{width:1},'2':{width:3},
+    '0':{width:3},'1':{width:3},'2':{width:3},
     '3':{width:3},'4':{width:3},'5':{width:3},
     '6':{width:3},'7':{width:3},'8':{width:3},
     '9':{width:3},"*":{width:3},"'":{width:1},
