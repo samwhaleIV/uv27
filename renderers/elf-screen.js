@@ -217,7 +217,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.renderMethod = (context,timestamp,width,height) => {
 
-        rendererState.background.render(context,timestamp,width,height);
+        if(rendererState.background) {
+            rendererState.background.render(context,timestamp,width,height);
+        } else {
+            context.fillStyle = "black";
+            context.fillRect(0,0,width,height);
+        }
 
         if(!isBoss) {
             let elfX;

@@ -249,7 +249,7 @@ elves[11] = {
         } else if(sequencer.elfBattleObject.health <= 240) {
             if(!skipNewHeal) {
                 const pass = true;
-                if(sequencer.elfBattleObject.hasNapoleonComplex) {
+                if(sequencer.elfBattleObject.state.hasNaphasNapoleonComplex) {
                     pass = Math.random() > 0.5 ? true : false;
                 }
                 if(pass) {
@@ -259,7 +259,7 @@ elves[11] = {
             }
         }
         if(skipNewHeal) {
-            if(sequencer.elfBattleObject.hasNapoleonComplex) {
+            if(sequencer.elfBattleObject.state.hasNapoleonComplex) {
                 return Math.random() > 0.5 ? moves["napoleon complex"] : moves["lightweight champion"];
             } else {
                 return moves["napoleon complex"];

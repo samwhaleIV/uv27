@@ -381,7 +381,7 @@ elves[10] = {
                             text: "all your rapping was perfect"
                         });
                         events.push({
-                            speech: "wow.\ni am very impressed\nyou 'sleighed' every verse\n\nhere's a secret...\n'<insert secret here>'"
+                            speech: "wow.\ni am very impressed\nyou 'sleighed' every verse\n\nhere's a secret...\n<insert secret here>"
                         });
                         events.push({
                             speech: "you've done well...\nand farewell\n\nthis is jester...\ngoodbye quester",
