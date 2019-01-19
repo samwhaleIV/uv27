@@ -13,8 +13,8 @@ const shuffleWithMask = items => {
 const turboTextWordByWord = (sequencer,text,postText=null,postSpeech=null) => {
     const events = text.split(" ").map(word => {return{text:word}});
     events.push({
-        text: postSpeech,
-        speech: postText,
+        text: postText,
+        speech: postSpeech,
         action: () => {
             sequencer.disableTurboText();
         }
@@ -36,8 +36,12 @@ const turboTextIncremental = (sequencer,introText,text) => {
         arr[index] = text;
         return {text:text}
     })];
+    const startTurboValue = sequencer.turboTextVelocity;
     events[1].action = () => sequencer.enableTurboText(40);
-    events[events.length-1].action = sequencer.disableTurboText;
+    events[events.length-1].action = () => {
+        sequencer.disableTurboText();
+        sequencer.turboTextVelocity = startTurboValue;
+    };
     return events;
 }
 

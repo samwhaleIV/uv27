@@ -287,7 +287,9 @@ addMove({
     process: sequencer => {
         return {
             events: turboTextWordByWord(
+                sequencer,
                 "okay so my wife tracy broke up with me because she didn't love me anymore and now my heart is sad and broken and shattered into a million little elf pieces except i don't have a heart because i'm a skeleton but later you might notice that my kidneys fail so why would i have kidneys if i don't have a heart",
+                null,
                 "okay...\ndid you get all that?"
             )
         }

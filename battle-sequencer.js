@@ -28,11 +28,11 @@ function BattleSequencer(renderer) {
     }
 
     this.turboTextEnabled = false;
-    this.turboTextVelocity = 80;
+    this.turboTextVelocity = 125;
 
     this.enableTurboText = velocity => {
         this.turboTextEnabled = true;
-        if(velocity) {
+        if(velocity >= 0) {
             this.turboTextVelocity = velocity;
         }
     }
