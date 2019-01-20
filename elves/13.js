@@ -427,7 +427,7 @@ elves[12] = {
     getSpeech: sequencer => {
         if(sequencer.playerBattleObject.lastMove === "phantasmic swap" && sequencer.playerBattleObject.state.phasedOut) {
             return {
-                text: "what scares a ghost\nthe most?\n\nat most it's\njustanother ghost"
+                text: "what scares a ghost\nthe most?\n\nat most it's\njust another ghost"
             }
         }
         return null;
