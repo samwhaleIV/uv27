@@ -198,7 +198,7 @@ addMove({
                 }
             } else {
                 return {
-                    text: "your shoelaces got stuck in a mud"
+                    text: "your shoelaces got stuck in mud"
                 }
             }
         }
@@ -800,6 +800,7 @@ const getRaceMoveSet = (sequencer,index) => {
         ],
         () => [//6
             moves["trash talk"],
+            moves["steady pace"],
             moves["poke bear"],
             moves["call an uber"]
         ],
@@ -816,7 +817,7 @@ const getRaceMoveSet = (sequencer,index) => {
             moves["break ankle"],
             moves["find shortcut"],
             moves["pedal to the metal"],
-            moves["poke bear"]
+            moves["steady pace"]
         ],
         () => [//10
             moves["rip clothes off"],

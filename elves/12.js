@@ -303,7 +303,6 @@ elves[11] = {
             speechIndex: -1,
             postTurnProcess: sequencer => {
                 sequencer.playerBattleObject.state.dodging = false;
-                console.log(sequencer.playerBattleObject.state);
             }
         }
     },
@@ -311,7 +310,6 @@ elves[11] = {
     setup: sequencer => {
         sequencer.playerBattleObject.state.comboState = [];
         sequencer.elfBattleObject.movePreProcess = (sequencer,move) => {
-            console.log(sequencer.playerBattleObject.state);
             if(sequencer.playerBattleObject.state.dodging) {
                 if(move.type === "target") {
                     if(Math.random() > 0.6) {

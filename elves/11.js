@@ -28,7 +28,7 @@ addMove({
             sequencer.globalBattleState.castlesFactoidIndex
         ];
         return {
-            speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'`,
+            speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'\n\nwant to know more?`,
             action: () => {
                 sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.castlesFactoidIndex][0][1] = true;
                 sequencer.globalBattleState.castlesFactoidIndex = (sequencer.globalBattleState.castlesFactoidIndex + 1) % castleFragments.length;
@@ -45,7 +45,7 @@ addMove({
             sequencer.globalBattleState.dragonsFactoidIndex
         ];
         return {
-            speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}'`,
+            speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}\n\nwant to know more? '`,
             action: () => {
                 sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.dragonsFactoidIndex][1][1] = true;
                 sequencer.globalBattleState.dragonsFactoidIndex = (sequencer.globalBattleState.dragonsFactoidIndex + 1) % dragonFragments.length;

@@ -401,7 +401,7 @@ elves[7] = {
                         action: () => {
                             sequencer.dropHealth(sequencer.playerBattleObject,5);
                         },
-                        condition: () => sequencer.playerBattleObject.health >= 1
+                        condition: () => sequencer.playerBattleObject.health > 0
                     });
                 }
                 if(sequencer.playerBattleObject.state.isLit) {
@@ -410,7 +410,7 @@ elves[7] = {
                         action: () => {
                             sequencer.dropHealth(sequencer.playerBattleObject,5);
                         },
-                        condition: () => sequencer.playerBattleObject.health >= 1
+                        condition: () => sequencer.playerBattleObject.health > 0
                     });                    
                 }
                 if(sequencer.elfBattleObject.state.isPoisoned) {
@@ -419,7 +419,7 @@ elves[7] = {
                         action: () => {
                             sequencer.dropHealth(sequencer.playerBattleObject,Math.round(sequencer.elfBattleObject.health * 0.05));
                         },
-                        condition: () => sequencer.elfBattleObject.health >= 1
+                        condition: () => sequencer.elfBattleObject.health > 0
                     });
                 }
                 if(sequencer.elfBattleObject.state.isLit) {
@@ -428,7 +428,7 @@ elves[7] = {
                         action: () => {
                             sequencer.dropHealth(sequencer.elfBattleObject,Math.round(sequencer.elfBattleObject.health * 0.05));
                         },
-                        condition: () => sequencer.elfBattleObject.health >= 1
+                        condition: () => sequencer.elfBattleObject.health > 0
                     });                    
                 }
                 if(sequencer.globalBattleState.bonePileCount >= 1) {
@@ -437,7 +437,7 @@ elves[7] = {
                         action: () => {
                             sequencer.addHealth(sequencer.elfBattleObject,Math.round(sequencer.elfBattleObject.health * 0.04) * sequencer.globalBattleState.bonePileCount)
                         },
-                        condition: () => sequencer.elfBattleObject.health >= 1 && sequencer.elfBattleObject.health !== sequencer.elfBattleObject.maxHealth
+                        condition: () => sequencer.elfBattleObject.health >= 0 && sequencer.elfBattleObject.health !== sequencer.elfBattleObject.maxHealth
                     });
                 }
                 if(eventStack.length > 0) {

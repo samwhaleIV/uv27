@@ -494,6 +494,9 @@ elves[12] = {
         sequencer.elfBattleObject.subText = ["dimension 1","in temporal phase"];
 
         sequencer.globalBattleState.dimensionCount = 3;
+
+        sequencer.playerBattleObject.state.phasedOut = false;
+        sequencer.elfBattleObject.state.phasedOut = false;
     },
 
     getDefaultGlobalState: () => {
