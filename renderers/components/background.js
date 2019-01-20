@@ -1,15 +1,23 @@
+const defaultBackgroundCycleTime = 20000;
+let backgroundStreamMode = false;
+
 function Background(name,color,cycleTime) {
     this.name = name;
     this.color = color;
-    this.cycleTime = cycleTime || 20000;
+    this.cycleTime = cycleTime || defaultBackgroundCycleTime;
 
     this.staticY = 372;
     this.staticHeight = 278;
     this.staticTopHeight = canvas.height - this.staticHeight;
 
     this.renderNormal = (context,timestamp,width,height) => {
-        const horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
-        const inverseOffset = width - horizontalOffset;
+
+        let horizontalOffset = 0, inverseOffset = width;
+
+        if(!backgroundStreamMode) {
+            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
+            inverseOffset -= horizontalOffset;
+        }
 
         context.drawImage(
             imageDictionary[this.name],
@@ -17,11 +25,13 @@ function Background(name,color,cycleTime) {
             0,0,inverseOffset,height
         );
 
-        context.drawImage(
-            imageDictionary[this.name],
-            0,0,horizontalOffset,height,
-            inverseOffset,0,horizontalOffset,height
-        );
+        if(!backgroundStreamMode) {
+            context.drawImage(
+                imageDictionary[this.name],
+                0,0,horizontalOffset,height,
+                inverseOffset,0,horizontalOffset,height
+            );
+        }
 
         context.save();
         context.globalCompositeOperation = "multiply";
@@ -32,8 +42,13 @@ function Background(name,color,cycleTime) {
 
     this.render = (context,timestamp,width,height) => {
 
-        const horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
-        const inverseOffset = width - horizontalOffset;
+        let horizontalOffset = 0, inverseOffset = width;
+
+        if(!backgroundStreamMode) {
+            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
+            inverseOffset -= horizontalOffset;
+        }
+
 
         context.drawImage(
             imageDictionary[this.name],
@@ -41,13 +56,13 @@ function Background(name,color,cycleTime) {
             0,0,inverseOffset,this.staticTopHeight
         );
 
-        context.drawImage(
-            imageDictionary[this.name],
-            0,0,horizontalOffset,this.staticTopHeight,
-            inverseOffset,0,horizontalOffset,this.staticTopHeight
-        );
-
-
+        if(!backgroundStreamMode) {
+            context.drawImage(
+                imageDictionary[this.name],
+                0,0,horizontalOffset,this.staticTopHeight,
+                inverseOffset,0,horizontalOffset,this.staticTopHeight
+            );
+        }
 
         context.drawImage(
             imageDictionary[this.name],

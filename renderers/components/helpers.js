@@ -1,5 +1,10 @@
 const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minShade=0,maxShade=255) {
 
+    if(backgroundStreamMode) {
+        basicFadeOut(intensity,context,width,height);
+        return;
+    }
+
     const shadeRange = maxShade - minShade;
 
     const horizontalGrain = Math.ceil(width / grainSize);
@@ -21,6 +26,11 @@ const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minSh
             );
         }
     }
+}
+
+const basicFadeOut = function(intensity,context,width,height) {
+    context.fillStyle = `rgba(0,0,0,${intensity})`;
+    context.fillRect(0,0,width,height);
 }
 
 const drawTextTest = function(text,scale,spacing=1) {

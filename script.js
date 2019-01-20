@@ -264,6 +264,10 @@ const debug_reset = () => {
     location.reload();
 }
 
+const debug_toggle_stream_mode = () => {
+    backgroundStreamMode = !backgroundStreamMode;
+}
+
 const debug_scroll_speed = seconds => {
     if(rendererState && rendererState.background) {
         console.log("The default scroll speed is 20 seconds");

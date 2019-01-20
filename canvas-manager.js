@@ -45,9 +45,21 @@ const processMouseMove = event => {
 canvas.onpointerdown = processMouseMove;
 canvas.onpointermove = processMouseMove;
 window.onkeydown = event => {
-    if(event.code === "KeyP") {
-        cycleSizeMode();
-        return;
+    switch(event.code) {
+        case "KeyP":
+            cycleSizeMode();
+            break;
+        case "KeyO":
+            debug_toggle_stream_mode();
+            if(pictureModeElementTimeout) {
+                clearTimeout(pictureModeElementTimeout);
+            }
+            pictureModeElement.textContent = `stream mode ${backgroundStreamMode ? "on" : "off"}`
+            pictureModeElementTimeout = setTimeout(()=>{
+                pictureModeElement.textContent = "";
+                pictureModeElementTimeout = null;
+            },600);
+            break;
     }
     if(paused || !rendererState) {
         return;

@@ -6,8 +6,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     if(this.elf.backgroundCycleTime) {
         backgroundCycleTime = this.elf.backgroundCycleTime;
-    } else {
-        backgroundCycleTime = isBoss ? 10000 : 20000;
+    } else if(isBoss) {
+        backgroundCycleTime = 10000;
     }
 
     if(this.elf.song) {
