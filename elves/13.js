@@ -9,9 +9,10 @@ addMove({
             }
         }
         if(target.state.phasedOut !== user.state.phasedOut) {
+            const whomstve = target.state.phasedOut ? target : user;
             return {
                 failed: true,
-                text: `but ${target.name} ${overb(target)} out of phase`
+                text: `but ${whomstve.name} ${overb(whomstve)} out of phase`
             }
         }
         if(user.state.ateElfmartVitamins || target.state.ateElfmartVitamins) {
@@ -107,9 +108,10 @@ addMove({
             }
         }
         if(target.state.phasedOut !== user.state.phasedOut) {
+            const whomstve = target.state.phasedOut ? target : user;
             return {
                 failed: true,
-                text: `but ${target.name} ${overb(target)} out of phase`
+                text: `but ${whomstve.name} ${overb(whomstve)} out of phase`
             }
         }
         target.dropHealth(24);
@@ -149,9 +151,10 @@ addMove({
             }
         }
         if(target.state.phasedOut !== user.state.phasedOut) {
+            const whomstve = target.state.phasedOut ? target : user;
             return {
                 failed: true,
-                text: `but ${target.name} ${overb(target)} out of phase`
+                text: `but ${whomstve.name} ${overb(whomstve)} out of phase`
             }
         }
         const events = [];
@@ -277,30 +280,47 @@ addMove({
     name: "ghost buster",
     type: "target",
     process: (sequencer,user,target) => {
-        if(user.state.dimensionIndex === target.state.dimensionIndex && target.state.phasedOut) {
-            target.dropHealth(10);
-            return {
-                text: `${target.name} resisted capture`
-            }      
-        } else if(user.state.phasedOut) {
+        if(user.state.dimensionIndex === target.state.dimensionIndex && target.phasedOut) {
+            if(Math.random() > 0.5) {
+                target.dropHealth(target.maxHealth);
+                return {
+                    text: `${target.name} got ghost busted`
+                }
+            } else {
+                target.dropHealth(10);
+                return {
+                    text: `${target.name} resisted capture`
+                }
+            }
+        }
+        if(user.state.phasedOut) {
             user.dropHealth(user.maxHealth);
             return {
                 text: `but ${user.name} ${user.isPlayer ? "were" : "was"} a ghost`
             }
-        } else if(user.state.dimensionIndex !== target.state.dimensionIndex) {
-            return {
-                failed: true,
-                text: "<error> - <dimension mismatch>"
-            }
-        } else if(target.state.phasedOut) {
-            target.dropHealth(10);
-            return {
-                text: `${target.name} resisted capture`
+        } else if(user.state.dimensionIndex === target.state.dimensionIndex) {
+            if(target.state.phasedOut) {
+                if(Math.random() > 0.5) {
+                    target.dropHealth(target.maxHealth);
+                    return {
+                        text: `${target.name} got ghost busted`
+                    }
+                } else {
+                    target.dropHealth(10);
+                    return {
+                        text: `${target.name} resisted capture`
+                    }
+                }
+            } else {
+                return {
+                    text: `but ${user.name} dialed the wrong number`
+                }
             }
         } else {
             return {
-                text: `but ${user.name} dialed the wrong number`
-            }
+                failed: true,
+                text: "<error> - <dimension mismatch>"
+            }            
         }
     }
 });
@@ -382,7 +402,7 @@ const playerMoveSetsByDimensions = [
         moves["glitch punch"],
         moves["dimensional shift"],
         moves["ghost buster"],
-        moves["health swap"]
+        moves["boo"]
     ],
     [
         moves["glitch punch"],
@@ -394,7 +414,7 @@ const playerMoveSetsByDimensions = [
         moves["glitch punch"],
         moves["dimensional shift"],
         moves["multiverse"],
-        moves["boo"]
+        moves["health swap"]
     ]
 ]
 
@@ -403,6 +423,17 @@ elves[12] = {
     background: "background-5",
     backgroundColor: "white",
     health: 100,
+
+    getSpeech: sequencer => {
+        if(sequencer.playerBattleObject.lastMove === "phantasmic swap" && sequencer.playerBattleObject.state.phasedOut) {
+            return {
+                text: "what scares a ghost\nthe most?\n\nat most it's\njustanother ghost"
+            }
+        }
+        return null;
+    },
+
+    startText: "everyone's moves are bound by their dimension",
 
     startSpeech: {
         text: "a lone ghost in a vacuum\ndestroys itself\n\nwell played player"
@@ -427,11 +458,10 @@ elves[12] = {
             if(!sequencer.playerBattleObject.state.justJumped) {
                 return moves["dimensional jump"];
             }
-            //self move sets
             const moveSets = [
-                ["phantasmic swap","lizard"],
-                ["punching vitamins?","confusion","multiverse"],
-                ["multiverse","eternal darkness","hungry hungry potato"],
+                ["phantasmic swap"],
+                ["hungry hungry potato","confusion"],
+                ["multiverse","eternal darkness"],
             ];
             const moveSet = moveSets[sequencer.elfBattleObject.state.dimensionIndex];
             const moveName = moveSet[sequencer.turnNumber % moveSet.length];
@@ -441,11 +471,10 @@ elves[12] = {
             if(sequencer.playerBattleObject.phasedOut && !sequencer.elfBattleObject.phasedOut && Math.random() > 0.5) {
                 return moves["ghost buster"];
             }
-            //target move sets
             const moveSets = [
-                ["quantum detangle","trapezoid","phantasmic swap"],
-                ["trapezoid","eternal darkness","quantum detangle"],
-                ["multiverse","trapezoid","glitch punch"],
+                ["phantasmic swap","quantum detangle"],
+                ["confusion","trapezoid","hungry hungry potato","quantum detangle"],
+                ["multiverse","eternal darkness","trapezoid","glitch punch"],
             ];
             const moveSet = moveSets[sequencer.elfBattleObject.state.dimensionIndex];
             const moveName = moveSet[sequencer.turnNumber % moveSet.length];
