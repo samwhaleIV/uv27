@@ -161,7 +161,8 @@ addMove({
                     text: `${user.name} gave ${target.name} a big hug`
                 },
                 {
-                    text: `${target.name} looks uncomfortable`
+                    text: "human germs are too strong for elves",
+                    action: () => target.dropHealth(10)
                 }
             ]
         }
@@ -274,7 +275,7 @@ addMove({
                 failed: true,
             }
         } else {
-            target.dropHealth(10);
+            target.dropHealth(15);
             return {
                 text: "it was almost a miss"
             }
@@ -466,7 +467,7 @@ elves[7] = {
         sequencer.elfBattleObject.subText = [""];
         elves[7].updateBoneCountDisplay(sequencer);
         sequencer.playerBattleObject.movePreProcess = (sequencer,move) => {
-            let chance = 1 - (0.05 * sequencer.globalBattleState.bonePileCount);
+            let chance = 1 - (0.07 * sequencer.globalBattleState.bonePileCount);
             if(Math.random() > chance) {
                 return moves["failed because bones"];
             } else {

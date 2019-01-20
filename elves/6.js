@@ -77,7 +77,8 @@ addMove({
                 user.state.totalSquirrels = 0;
             }
             user.state.totalSquirrels++;
-            user.subText[1] = `${user.state.squirrels} squirrel${user.state.squirrels !== 1 ? "s" : ""}`;
+            user.subText[1] = `${user.state.squirrels} squirrel${user.state.squirrels !== 1 ? "s" : ""} helping you`;
+            user.subText[2] = `[+${user.state.squirrels} gold grab boost]`;
             return {
                 text: `${user.name} purchased 1 squirrel`
             }
@@ -112,7 +113,14 @@ addMove({
             }
         } else {
             return {
-                text: `${target.name} punched too hard and dropped ${difference} gold`
+                events: [
+                    {
+                        text: `${user.name} is really angry about squirrel rights`
+                    },
+                    {
+                        text: `${target.name} punched too hard and dropped ${difference} gold`
+                    }
+                ]
             }
         }
     }
@@ -147,6 +155,44 @@ addMove({
         }
     }
 });
+addMove({
+    name: "free squirrel",
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(target.state.squirrels >= 1) {
+            target.state.squirrels--;
+            target.subText[1] = `${target.state.squirrels} squirrel${target.state.squirrels !== 1 ? "s" : ""} helping you`;
+            target.subText[2] = `[+${target.state.squirrels} gold grab boost]`;
+            return {
+                text: `${user.name} freed 1 squirrel from ${target.name}`
+            }
+        } else {
+            return {
+                failed: true,
+                text: `but ${user.isPlayer ? "your" : "their"} is out of squirrels`
+            }
+        }
+    }
+});
+addMove({
+    name: "complain",
+    type: "self",
+    process: (sequencer,user,target) => {
+        return {
+            events: [
+                {
+                    text: `${user.name} is complaining about animal rights`
+                },
+                {
+                    text: `though important - her message isn't getting across`
+                },
+                {
+                    text: "maybe you just need more squirrels"
+                }
+            ]
+        }
+    }
+});
 elves[5] = {
     name: "golden elfette",
     background: "background-3",
@@ -165,12 +211,12 @@ elves[5] = {
     playerMoves: [
         moves["take gold"],
         moves["give gold"],
-        moves["band aid"],
+        moves["band aid 2.0"],
         moves["buy squirrel - 3 gold"]
     ],
     getMove: sequencer => {
         if(sequencer.elfBattleObject.state.puttingAnEndToThis) {
-            return moves["unfiscal punch"];
+            return Math.random() < 0.5 ? moves["unfiscal punch"] : Math.random() > 0.5 ? moves["cry"] : moves["complain"];
         }
         if(sequencer.playerBattleObject.lastMove === "take gold" && !sequencer.playerBattleObject.state.protectedTheirNuts) {
             if(sequencer.playerBattleObject.state.squirrels >= 1) {
@@ -185,24 +231,7 @@ elves[5] = {
             ];
             if(sequencer.playerBattleObject.state.squirrels >= 1) {
                 if(Math.random() > 0.5) {
-                    elfMoves.push({
-                        name: "free squirrel",
-                        type: "target",
-                        process: (sequencer,user,target) => {
-                            if(target.state.squirrels >= 1) {
-                                target.state.squirrels--;
-                                target.subText[1] = `${target.state.squirrels} squirrel${target.state.squirrels !== 1 ? "s" : ""}`;
-                                return {
-                                    text: `${user.name} freed 1 squirrel from ${target.name}`
-                                }
-                            } else {
-                                return {
-                                    failed: true,
-                                    text: `but ${user.isPlayer ? "your" : "their"} is out of squirrels`
-                                }
-                            }
-                        }
-                    });
+                    elfMoves.push(moves["free squirrel"]);
                 }
             }
             return elfMoves[Math.floor(Math.random() * elfMoves.length)];

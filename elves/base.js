@@ -460,7 +460,17 @@ const moves = {
         process: (sequencer,user) => {
             sequencer.addHealth(user,10);
             return {
-                text: `${user.name} used a band aid`
+                text: `${user.name} applied a band aid`
+            }
+        }
+    },
+    "band aid 2.0": {
+        type: "self",
+        name: "band aid 2.0",
+        process: (sequencer,user) => {
+            sequencer.addHealth(user,18);
+            return {
+                text: `${user.name} applied a slightly improved band aid`
             }
         }
     },

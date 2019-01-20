@@ -28,7 +28,7 @@ addMove({
             sequencer.globalBattleState.castlesFactoidIndex
         ];
         return {
-            speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'\n\nwant to know more?`,
+            speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'\n\nwant to know more?\nthen keep asking`,
             action: () => {
                 sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.castlesFactoidIndex][0][1] = true;
                 sequencer.globalBattleState.castlesFactoidIndex = (sequencer.globalBattleState.castlesFactoidIndex + 1) % castleFragments.length;
@@ -45,7 +45,7 @@ addMove({
             sequencer.globalBattleState.dragonsFactoidIndex
         ];
         return {
-            speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}\n\nwant to know more? '`,
+            speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}\n\nwant to know more?\nthen keep asking'`,
             action: () => {
                 sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.dragonsFactoidIndex][1][1] = true;
                 sequencer.globalBattleState.dragonsFactoidIndex = (sequencer.globalBattleState.dragonsFactoidIndex + 1) % dragonFragments.length;
@@ -258,7 +258,7 @@ elves[10] = {
     backgroundColor: "rgb(278,0,255)",
     health: 300,
     startSpeech: {
-        text: "oh - hello\nyou're 'jest' in time"
+        text: "oh - hello\nyou're 'jest' in time\n\n(ps - i am very biased\nto things i've said\nbefore especially\nin rap battles)"
     },
     elfDeadText: "jester elf died from pun suicide",
     getDefaultGlobalState: () => {

@@ -1,3 +1,5 @@
+const noComboChainText = "no combo chain";
+
 addMove({
     name: "dodgy dodge",
     type: "self",
@@ -5,6 +7,7 @@ addMove({
         user.state.dodging = true;
         if(user.state.comboState.length === 0) {
             user.state.comboState.push(0);
+            user.subText = ["combo chain active","[stage 1 of 3]","1. dodgy dodge"];
             return {
                 events: [{
                     text: "a combo has started! >:)"
@@ -14,6 +17,7 @@ addMove({
             }
         } else {
             user.state.comboState = [];
+            user.subText = [noComboChainText];
             return {
                 events: [{
                     text: "you broke your combo :("
@@ -31,6 +35,7 @@ addMove({
     process: (sequencer,user) => {
         if(user.state.comboState.length !== 0) {
             user.state.comboState = [];
+            user.subText = [noComboChainText];
             user.addHealth(30);
             return {
                 text: "the healing broke your combo"
@@ -68,6 +73,7 @@ addMove({
         if(user.state.comboState.length === 2) {
             if(user.state.comboState[0] === 0 && user.state.comboState[1] === 1) {
                 user.state.comboState = [];
+                user.subText = [noComboChainText];
                 target.dropHealth(250);
                 return {
                     events: [
@@ -81,10 +87,12 @@ addMove({
                 }
             } else {
                 user.state.comboState = [];
+                user.subText = [noComboChainText];
                 return breakComboKick();
             }
         } else if(user.state.comboState.length !== 0) {
             user.state.comboState = [];
+            user.subText = [noComboChainText];
             return breakComboKick();
         }
         target.dropHealth(35);
@@ -133,6 +141,7 @@ addMove({
             if(user.state.comboState[0] === 0) {
                 user.state.comboState.push(1);
                 target.dropHealth(20);
+                user.subText = ["combo chain active","[stage 2 of 3]","1. dodgy dodge","2. uppercut"];
                 const events = [
                     {
                         text: "this continues your combo"
@@ -151,10 +160,12 @@ addMove({
                 }
             } else {
                 user.state.comboState = [];
+                user.subText = [noComboChainText];
                 return breakComboPunch();
             }
         } else if(user.state.comboState.length !== 0) {
             user.state.comboState = [];
+            user.subText = [noComboChainText];
             return breakComboPunch();
         }
         target.dropHealth(15);
@@ -284,8 +295,11 @@ elves[11] = {
             "wanna go for a run\n\nha.. ha.. ha",
             "how's the weather\nup there?",
             "have you learned \nabout combos?",
+            "combos are broken if\nyou don't use\nmoves in the right order",
+            "dodge...\nuppercut...\nkick.\nn\nalways an effective combo",
             "i trained red elfette\n\nthis is for her",
             "you know - you are\njust another monster",
+            "uppercuts can prevent\ntranquility\n(aka - healing)",
             "elves did nothing wrong\n\nwe simply\nrestore balance\nto this ill\ndivided world",
             "i could keep going\nall day",
             "get your hands and\nlegs off me",
@@ -308,6 +322,9 @@ elves[11] = {
     },
 
     setup: sequencer => {
+
+        sequencer.playerBattleObject.subText = [noComboChainText];
+
         sequencer.playerBattleObject.state.comboState = [];
         sequencer.elfBattleObject.movePreProcess = (sequencer,move) => {
             if(sequencer.playerBattleObject.state.dodging) {

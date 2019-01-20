@@ -155,7 +155,7 @@ addMove({
     type: "target",
     name: "chit chat",
     process: (sequencer,user,target) => {
-        sequencer.dropHealth(target,5);
+        sequencer.dropHealth(target,4);
         return {
             text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} voice grates ${target.isPlayer ? "your" : `${user.name}'${user.name.endsWith("s") ? "" : "s"}`} ears`
         }

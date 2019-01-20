@@ -10,7 +10,7 @@ elves[6] = {
         ],"question1");
     },
     startSpeech: {
-        text: "war... war...\nwhat is it good for?",
+        text: "you've got a lot to do\nso i won't waste\nyour time :)\n\nnow tell me..\nwar... war...\nwhat is it good for?",
         persist: true
     },
     getSpeech: sequencer => {
@@ -117,6 +117,7 @@ elves[6] = {
 
                 sequencer.playerBattleObject.state.startTime = Date.now();
                 break;
+
             case 3:
                 switch(sequencer.playerBattleObject.state["question4"]) {
                     case 0:
@@ -171,7 +172,7 @@ elves[6] = {
 
                     sequencer.updatePlayerMoves(
                         getStaticRadioSet(
-                            ["yes","no","eh..."],"question6"
+                            ["yes","no","not sure"],"question6"
                         )
                     );
                 }
@@ -180,8 +181,12 @@ elves[6] = {
             case 5:
                 switch(sequencer.playerBattleObject.state["question6"]) {
                     case 0:
-                        lines += "well - i don't like it\n\ndie.";
-                        sequencer.dropHealth(sequencer.playerBattleObject,sequencer.playerBattleObject.maxHealth);
+                        lines += "really? be honest";
+                        sequencer.updatePlayerMoves(
+                            getStaticRadioSet(
+                                ["yes - really","fine - no","still not sure"],"question6"
+                            )
+                        );
                         break;
                     case 1:
                         lines += "thank you. everyone\nalways lies about it.\ntruth is - it's not\npaint. this is really\nmy face\nnow i can die happy\n*dies*";

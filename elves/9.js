@@ -10,6 +10,7 @@ addMove({
             }
         } else {
             user.state.tiedShoes = true;
+            user.subText[1] = "tied shoes";
             return {
                 text: `${user.name} tied ${oposv(user)} shoes`
             }
@@ -27,6 +28,7 @@ addMove({
             }
         } else {
             user.state.tiedShoes = false;
+            user.subText[1] = "untied shoes";
             return {
                 text: `${user.name} untied ${oposv(user)} shoes`
             }
@@ -62,6 +64,7 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         user.state.barefoot = true;
+        user.subText[1] = "barefoot";
         return moves["ready up"].process(sequencer,user);
     }
 });
@@ -122,13 +125,29 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         sequencer.globalBattleState.stage = 1;
-        user.state.raceProgress++;
+        let newPoints = 1;
         if(user.state.tookDrugs) {
-            user.state.raceProgress++;
+            newPoints++;
         }
-        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+        const events = [
+            {
+                text: "let the race begin!"
+            },
+            {
+                text: `+${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                action: () => {
+                    user.state.raceProgress+=newPoints;
+                    user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                }
+            }
+        ];
+        if(user.state.tookDrugs) {
+            events.push({
+                text: "(score was boosted by drug use)"
+            });
+        }
         return {
-            text: "let the race begin!"
+            events: events
         }
     }
 });
@@ -148,36 +167,125 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         if(!user.state.tiedShoes || user.state.barefoot) {
-            if((user.isPlayer && Math.random() > 0.8) || (user.isElf && Math.random() > 0.95)) {
+            if((user.isPlayer && Math.random() > 0.8) || (user.isElf && Math.random() > 0.95 - (sequencer.turnNumber * 0.01))) {
                 if(user.state.barefoot) {
                     user.dropHealth(user.maxHealth);
                     return {
-                        text: `${user.name} stepped on a nail with ${user.isElf?"their":"your"} bare foot`
+                        text: `${user.name} stepped on a nail with ${oposv(user)} bare foot`
                     }
                 } else {
                     user.dropHealth(user.maxHealth);
                     return {
-                        text: `${user.name} tripped on their shoelaces`
+                        text: `${user.name} tripped on ${oposv(user)} shoelaces`
                     }
                 }
             }
         }
-        if(!(user.state.raceProgress >= 0)) {
-            user.state.raceProgress = 0;
-        }
-        user.state.raceProgress++;
+        let newPoints = 1;
         if(user.state.goingTurbo) {
-            user.state.raceProgress++;
+            newPoints++;
         }
         if(user.state.tookDrugs) {
-            user.state.raceProgress++;
+            newPoints++;
         }
         if(user.state.stretches >= 1) {
-            user.state.raceProgress += user.state.stretches;
+            newPoints += user.state.stretches;
         }
-        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+
+        const events = [
+            {
+                text: `${user.name} stay${user.isElf?"s":""} on the path`
+            },
+            {
+                text: `+${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                action: () => {
+                    user.state.raceProgress+=newPoints;
+                    user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                }
+            }
+        ];
+
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by being turbo)"
+            });
+        }
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by drug use)"
+            });
+        }
+        if(user.state.stretches >= 1) {
+            events.push({
+                text: "(points were boosted for each set of stretches)"
+            });
+        }
+
         return {
-            text: `${user.name} stay${user.isElf?"s":""} on the path`
+            events: events
+        }
+    }
+});
+addMove({
+    name: "rapid pace",
+    type: "self",
+    process: (sequencer,user) => {
+        if(!user.state.tiedShoes || user.state.barefoot) {
+            if((user.isPlayer && Math.random() > 0.6) || (user.isElf && Math.random() > 0.8)) {
+                if(user.state.barefoot) {
+                    user.dropHealth(user.maxHealth);
+                    return {
+                        text: `${user.name} stepped on a fire ant with ${oposv(user)} bare foot`
+                    }
+                } else {
+                    user.dropHealth(user.maxHealth);
+                    return {
+                        text: `${user.name} tripped on ${oposv(user)} shoelaces`
+                    }
+                }
+            }
+        }
+        let newPoints = 2;
+        if(user.state.goingTurbo) {
+            newPoints+=2;
+        }
+        if(user.state.tookDrugs) {
+            newPoints+=2;
+        }
+        if(user.state.stretches >= 1) {
+            newPoints += user.state.stretches*2;
+        }
+
+        const events = [
+            {
+                text: `${user.name} trail blaze${user.isElf?"s":""}`
+            },
+            {
+                text: `+${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                action: () => {
+                    user.state.raceProgress+=newPoints;
+                    user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                }
+            }
+        ];
+
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by being turbo)"
+            });
+        }
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by drug use)"
+            });
+        }
+        if(user.state.stretches >= 1) {
+            events.push({
+                text: "(points were boosted for each set of stretches)"
+            });
+        }
+        return {
+            events: events
         }
     }
 });
@@ -188,7 +296,7 @@ addMove({
         if(user.state.barefoot) {
             user.dropHealth(user.maxHealth);
             return {
-                text: `${user.name} got ${user.isPlayer ? "your" : "their"} bare feet stuck in a bear trap`
+                text: `${user.name} got ${opsov(user)} bare feet stuck in a bear trap`
             }
         } else if(!user.state.tiedShoes) {
             user.dropHealth(user.maxHealth);
@@ -209,10 +317,37 @@ addMove({
             }
         }
         if(Math.random() > 0.5) {
-            user.state.raceProgress += 2;
-            user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+            let newPoints = 3;
+            if(user.state.tookDrugs) {
+                newPoints++;
+            }
+            if(user.state.goingTurbo) {
+                newPoints++;
+            }
+            const events = [
+                {
+                    text: `${user.name} found a great shortcut!`
+                },
+                {
+                    text: `+${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                    action: () => {
+                        user.state.raceProgress+=newPoints;
+                        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                    }
+                }
+            ];
+            if(user.state.goingTurbo) {
+                events.push({
+                    text: "(points were boosted by being turbo)"
+                });
+            }
+            if(user.state.goingTurbo) {
+                events.push({
+                    text: "(points were boosted by drug use)"
+                });
+            }
             return {
-                text: `${user.name} found a great shortcut!`
+                events: events
             }
         } else {
             user.dropHealth(user.maxHealth);
@@ -256,12 +391,7 @@ addMove({
     type: "target",
     process: (sequencer,user,target) => {
         user.state.trippedElf = true;
-        target.state.raceProgress-=2;
-        if(target.state.raceProgress < 0) {
-            target.state.raceProgress = 0;
-        }
-        target.dropHealth(Math.floor(target.maxHealth * 0.15));
-        target.subText[0] = getRaceProgressSubText(target.state.raceProgress);
+        target.dropHealth(Math.floor(target.maxHealth * 0.25));
         return {
             text: `${user.name} tripped ${target.name}. how rude!`
         }
@@ -271,6 +401,12 @@ addMove({
     name: "go turbo",
     type: "self",
     process: (sequencer,user) => {
+        if(user.state.goingTurbo) {
+            return {
+                failed: true,
+                text: "but you were already going turbo"
+            }
+        }
         user.state.goingTurbo = true;
         return {
             text: `${user.name} ${overb(user)} emulating sonic`
@@ -315,10 +451,31 @@ addMove({
     name: "call an uber",
     type: "self",
     process: (sequencer,user) => {
-        return {
-            failed: true,
-            text: "but there's no cell service here"
+        if(Math.random() > 0.5) {
+            return {
+                failed: true,
+                text: "but there's no cell service right now"
+            }
+        } else {
+            return {
+                events: [
+                    {
+                        text: "an uber came"
+                    },
+                    {
+                        text: "and fortunately - no one could've seen"
+                    },
+                    {
+                        text: "+4 race points",
+                        action: () => {
+                            user.state.raceProgress+=4;
+                            user.subText[0] = getRaceProgressSubText(user.state.raceProgress);                            
+                        }
+                    }
+                ]
+            }
         }
+
     }
 });
 addMove({
@@ -337,24 +494,35 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         if(user.state.goingTurbo) {
-            return {
-                failed: true,
-                events: [
-                    {
-                        text: `but ${user.name} ${overb(user)} going full turbo`
-                    },
-                    {
-                        text: `this hurts a bit`,
-                        action: () => {
-                            user.state.raceProgress++;
-                            if(user.state.tookDrugs) {
-                                user.state.raceProgress++;
-                            }
-                            user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
-                            user.dropHealth(20);
-                        }
+            let newPoints = 1;
+            if(user.state.tookDrugs) {
+                newPoints++;
+            }
+            const events = [
+                {
+                    text: `but ${user.name} ${overb(user)} going full turbo`
+                },
+                {
+                    text: `this hurts a bit`,
+                    action: () => {
+                        user.dropHealth(20);
                     }
-                ]
+                },
+                {
+                    text: `+${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                    action: () => {
+                        user.state.raceProgress+=newPoints;
+                        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                    }
+                },
+            ];
+            if(user.state.goingTurbo) {
+                events.push({
+                    text: "(points were boosted by drug use)"
+                });
+            }
+            return {
+                events: events
             }
         } else {
             return moves["stay on path"].process(sequencer,user)
@@ -365,33 +533,45 @@ addMove({
     name: "drive piano",
     type: "self",
     process: (sequencer,user) => {
-        return {
-            events: [
-                {
-                    text: `but ${user.name} ${overb(user)}n't vanessa carlton`,
-                    action: () => sequencer.turboTextVelocity = 150
-                },{
-                    text: `but ${user.name} won't let a game dictate ${oposv(user)} choices`
-                },{
-                    text: `${user.name} spend${user.isElf?"s":""} 4 years in singing school`
-                },...turboTextWordByWord(sequencer,"making my way downtown walking fast faces pass and i'm home bound staring blanky ahead just making my way"),
-                {
-                    text: `${user.name} forgot the rest of the lyrics`
-                },
-                {
-                    text: "anyways - you scored some points",
-                    action: () => {
-                        user.state.raceProgress++;
-                        if(user.state.tookDrugs) {
-                            user.state.raceProgress++;
-                        }
-                        if(user.state.goingTurbo) {
-                            user.state.raceProgress++;
-                        }
-                        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
-                    }
+        let newPoints = 3;
+        if(user.state.tookDrugs) {
+            newPoints++;
+        }
+        if(user.state.goingTurbo) {
+            newPoints++;
+        }
+        const events = [
+            {
+                text: `but ${user.name} ${overb(user)}n't vanessa carlton`,
+                action: () => sequencer.turboTextVelocity = 150
+            },{
+                text: `but ${user.name} won't let a game dictate ${oposv(user)} choices`
+            },{
+                text: `${user.name} spend${user.isElf?"s":""} 4 years in singing school`
+            },...turboTextWordByWord(sequencer,"making my way downtown walking fast faces pass and i'm home bound staring blanky ahead just making my way"),
+            {
+                text: `${user.name} forgot the rest of the lyrics`
+            },
+            {
+                text: `anyways - you scored ${newPoints} race point${newPoints !== 1 ? "s" : ""}`,
+                action: () => {
+                    user.state.raceProgress+=newPoints;
+                    user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
                 }
-            ]
+            }
+        ];
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by being turbo)"
+            });
+        }
+        if(user.state.goingTurbo) {
+            events.push({
+                text: "(points were boosted by drug use)"
+            });
+        }
+        return {
+            events: events
         }
     }
 });
@@ -399,14 +579,26 @@ addMove({
     name: "calm mind",
     type: "self",
     process: (sequencer,user) => {
+        if(user.state.tookDrugs) {
+            user.state.tookDrugs = false;
+            return {
+                text: "this gets the drug traces out of your system"
+            }
+        }
         return {
             failed: true,
             events: [
                 {
-                    text: "but this isn't pokemon"
+                    text: "you concentrate long and hard"
                 },
                 {
-                    text: "this still helped a little bit",
+                    text: "this is so peaceful"
+                },
+                {
+                    text: "this could be a sobering act"
+                },
+                {
+                    text: "+1 race point",
                     action: () => {
                         user.state.raceProgress++;
                         user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
@@ -423,10 +615,10 @@ addMove({
         return {
             events: [
                 {
-                    text: `${user.name} broke ${user.isPlayer ? "your" : "their"} ankle`
+                    text: `${user.name} broke ${opsov(user)} ankle`
                 },
                 {
-                    text: `${user.isPlayer ? "your" : "their"} racing days are over`
+                    text: `${opsov(user)} racing days are over`
                 },
                 {
                     text: "this is so sad"
@@ -488,8 +680,29 @@ addMove({
                 text: "but the trash talking can't be forgotten"
             }
         } else {
-            return {
+            const events = [{
                 text: `${user.name} exchange${user.isElf ?"s":""} kind words with ${target.name}`
+            },{
+                text: `${target.name} appreciated the gesture`
+            }];
+            if(target.state.raceProgress >= 3) {
+                events.push({
+                    text: `${target.name} gave you 3 of their race points`,
+                    action: () => {
+                        user.state.raceProgress+=3;
+                        user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+
+                        target.state.raceProgress-=3;
+                        target.subText[0] = getRaceProgressSubText(target.state.raceProgress);
+                    }
+                });
+            } else {
+                events.push({
+                    text: `${target.name} would give you race points if they had more`
+                });
+            }
+            return {
+                events: events
             }
         }
     }
@@ -509,10 +722,19 @@ addMove({
                 text: `${user.name} died from dehydration`
             }
         } else {
-            user.state.raceProgress++;
-            user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
             return {
-                text: `${user.name} ${overb(user)} a ${user.isElf?"trooper":"camel"}`
+                events: [
+                    {
+                        text: `${user.name} ${overb(user)} a ${user.isElf?"trooper":"camel"}`
+                    },
+                    {
+                        text: "+2 race points",
+                        action: () => {
+                            user.state.raceProgress+=2;
+                            user.subText[0] = getRaceProgressSubText(user.state.raceProgress);
+                        }
+                    }
+                ]
             }
         }
     }
@@ -747,6 +969,15 @@ addMove({
     process: (sequencer,user) => moves["take drugs"].process(sequencer,user)
 });
 addMove({
+    name: "pee break",
+    type: "self",
+    process: (sequencer,user) => {
+        return {
+            text: `${user.name} pee${user.isPlayer?"":"s"} eagerly`
+        }
+    }
+});
+addMove({
     name: "short rest",
     type: "self",
     process: (sequencer,user) => {
@@ -754,8 +985,20 @@ addMove({
             text: `${user.name} rest${user.isPlayer?"":"s"} eagerly`
         }
     }
-})
+});
 const getRaceMoveSet = (sequencer,index) => {
+    const moveSets = [
+        ["stay on path","steady pace","peaceful pace","rapid pace"],//Progress
+        ["break ankle","trip elf","poke bear","distracting thoughts","go turbo","self destruct"],//Other
+        ["find shortcut","call an uber","drive piano","pedal to the metal","trash talk"]//Other 2
+    ];
+    const getMoveSet = () => {
+        return [
+            moves[moveSets[0][Math.floor(Math.random()*moveSets[0].length)]],
+            moves[moveSets[1][Math.floor(Math.random()*moveSets[1].length)]],
+            moves[moveSets[2][Math.floor(Math.random()*moveSets[2].length)]]
+        ];
+    }
     const raceMoves = [
         () => {
             const theseMoves = [//0
@@ -781,44 +1024,14 @@ const getRaceMoveSet = (sequencer,index) => {
             sequencer.playerBattleObject.state.tookDrugs ?
                 moves["take more drugs"] : moves["take drugs"]
         ],
-        () => [//2
-            moves["stay on path"],
-            moves["find shortcut"],
-        ],
-        () => [//3
-            moves["poke bear"],
-            moves["stay on path"],
-        ],
-        () => [//4
-            moves["stay on path"],
-            moves["distracting thoughts"]
-        ],
-        () => [//5
-            moves["distracting thoughts"],
-            moves["trip elf"],
-            moves["go turbo"]
-        ],
-        () => [//6
-            moves["trash talk"],
-            moves["steady pace"],
-            moves["poke bear"],
-            moves["call an uber"]
-        ],
-        () => [//7
-            moves["self destruct"],
-            moves["peaceful pace"],
-        ],
-        () => [//8
-            moves["poke bear"],
-            moves["drive piano"],
-            moves["calm mind"]
-        ],
-        () => [//9
-            moves["break ankle"],
-            moves["find shortcut"],
-            moves["pedal to the metal"],
-            moves["steady pace"]
-        ],
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
+        getMoveSet,
         () => [//10
             moves["rip clothes off"],
             moves["overheat and die"]
@@ -838,7 +1051,7 @@ const getRaceMoveSet = (sequencer,index) => {
             return theseMoves;
         },
         () => {//13
-            const lastMoves = [moves["finish race"],moves["poke bear"]];
+            const lastMoves = [moves["finish race"]];
             if(sequencer.playerBattleObject.state.tookDrugs) {
                 lastMoves.push(moves["admit drug use"]);
             }
@@ -866,14 +1079,14 @@ elves[8] = {
             switch(sequencer.globalBattleState.stage) {
                 case "readying to go":
                 case "starting line":
-                    const startingLineMoves = [sequencer.elfBattleObject.state.tiedShoes ? "untie shoes" : "tie shoes","stretch","hydrate"];
+                    const startingLineMoves = [sequencer.elfBattleObject.state.tiedShoes ? "untie shoes" : "tie shoes","hydrate","stretch","hydrate"];
                     return moves[startingLineMoves[sequencer.turnNumber % startingLineMoves.length]];
                 case "finish line":
                     return null;
                 case "fist fight":
                     return moves["wimpy punch"];
                 default:
-                    const elfMoves = ["perseverance","elf trot","steady pace","elf trot","short rest"];
+                    const elfMoves = ["perseverance","pee break","elf trot","steady pace","elf trot","short rest"];
                     return moves[elfMoves[sequencer.turnNumber % elfMoves.length]];
             }
         }
@@ -884,8 +1097,8 @@ elves[8] = {
         sequencer.playerBattleObject.state.raceProgress = 0;
         sequencer.elfBattleObject.state.raceProgress = 0;
 
-        sequencer.playerBattleObject.subText = [getRaceProgressSubText(0)];
-        sequencer.elfBattleObject.subText = [getRaceProgressSubText(0)];
+        sequencer.playerBattleObject.subText = [getRaceProgressSubText(0),"untied shoes"];
+        sequencer.elfBattleObject.subText = [getRaceProgressSubText(0),"untied shoes"];
 
         sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
         sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;

@@ -472,7 +472,7 @@ elves[12] = {
                 return moves["ghost buster"];
             }
             const moveSets = [
-                ["phantasmic swap","quantum detangle"],
+                ["phantasmic swap","quantum detangle","euclidean hell"],
                 ["confusion","trapezoid","hungry hungry potato","quantum detangle"],
                 ["multiverse","eternal darkness","trapezoid","glitch punch"],
             ];

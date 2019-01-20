@@ -349,6 +349,47 @@ const presentSelector = getSelectionMove(
     }
 );
 
+const shorthandGetSelectorMove = (name,...responses) => {
+    const processedResponses = responses.map(response => {
+        let action;
+        switch(response[3]) {
+            case "2neg":
+                action = sequencer => increaseHead2Disposition(sequencer)
+                break;
+            case "1neg":
+                action = sequencer => increaseHead1Disposition(sequencer)
+                break;
+            default:
+                action = sequencer => getEndEvents(sequencer)
+                break;
+        }
+        return {
+            name: response[0],
+            events: [
+                {
+                    speech: getDoubleSpeech(response[1],response[2]),
+                    action: action
+                }
+            ]
+        }
+    });
+    return getSelectionMove(name,...processedResponses);
+}
+
+const drinkSelector = shorthandGetSelectorMove(
+    "anyone thirsty?",
+    ["beer","i'm actually not\nthe legal age","but i am...\nhow is that possible?","1neg"],
+    ["water","water? ew.\nwho drinks water","i know right?\nhumans are crazt","none"],
+    ["syrup","mmmm syrup","that's unhealthy","2neg"],
+);
+
+const foodSelector = shorthandGetSelectorMove(
+    "anyone hungry?",
+    ["elf food","food made of elves?","or...\nfood made for elves?","none"],
+    ["mexican food","hot d**n\nthat's my favorite","it's too spicy for me","2neg"],
+    ["outgoing food","whelp. count me out.","the perfect food\nfor me.\n\nthanks. <3","1neg"]
+);
+
 const twentyFivePercentElfHealthDrop = sequencer => {
     sequencer.elfBattleObject.dropHealth(
         Math.ceil(sequencer.elfBattleObject.health / 4)
@@ -356,13 +397,16 @@ const twentyFivePercentElfHealthDrop = sequencer => {
 }
 
 const selectionSets = [
-    [fruitSelector],
-    [sportSelector],
-    [shoppingSelector,politicsSelector],
+    [fruitSelector,politicsSelector],
+
+    [drinkSelector,foodSelector],
+
+    [shoppingSelector,sportSelector],
+
     [colorSelector,nameSelector],
-    [fruitSelector,colorSelector,sportSelector],
-    [fruitSelector,animalSelector,sportSelector],
-    [nameSelector,politicsSelector,colorSelector],
+
+    [nameSelector,animalSelector],
+
     [presentSelector]
 ];
 
