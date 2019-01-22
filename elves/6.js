@@ -181,10 +181,10 @@ addMove({
         return {
             events: [
                 {
-                    text: `${user.name} is complaining about animal rights`
+                    text: `${user.name} is angry about animal rights`
                 },
                 {
-                    text: `though important - her message isn't getting across`
+                    text: `her message isn't getting across to you`
                 },
                 {
                     text: "maybe you just need more squirrels"

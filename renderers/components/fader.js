@@ -18,9 +18,9 @@ const getFader = function() {
             playSound("swish-2",staticTime);
             if(rendererState.song) {
                 if(rendererState.songIntro) {
-                    playMusicWithIntro(rendererState.song,rendererState.songIntro,staticTime);
+                    playMusicWithIntro(rendererState.song,rendererState.songIntro);
                 } else {
-                    playMusic(rendererState.song,staticTime);
+                    playMusic(rendererState.song);
                 }
             }
         },
@@ -33,7 +33,7 @@ const getFader = function() {
             const staticTime = rendererState.fader.time / 1000;
             playSound("swish-1",staticTime);
             if(musicNode) {
-                stopMusic(staticTime);
+                stopMusic();
             }
         },
         oninEnd: () => {

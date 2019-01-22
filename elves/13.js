@@ -263,7 +263,7 @@ addMove({
                 text: "<error> - <dimension mismatch>"
             }
         }
-        if(user.state.phasedOut) {
+        if(target.state.phasedOut) {
             return {
                 failed: true,
                 text: "but shapes don't work on ghosts"

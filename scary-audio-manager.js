@@ -1,24 +1,18 @@
 const audioContext = new AudioContext();
 
 const soundGain = 1;
-const musicNodeGain = 0.2;
+const musicNodeGain = 0.15;
 
 const volumeNode = audioContext.createGain();
+volumeNode.gain.setValueAtTime(soundGain,audioContext.currentTime);
 volumeNode.connect(audioContext.destination);
-volumeNode.gain.setValueAtTime(soundGain,0);
-
-const musicCompressor = audioContext.createDynamicsCompressor();
-musicCompressor.threshold.value = -50;
-musicCompressor.knee.value = 40;
-musicCompressor.ratio.value = 12;
-musicCompressor.attack.value = 0;
-musicCompressor.release.value = 0.25;
 
 const musicVolumeNode = audioContext.createGain();
-musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
-
+musicVolumeNode.gain.setValueAtTime(musicNodeGain,audioContext.currentTime);
 musicVolumeNode.connect(audioContext.destination);
-musicCompressor.connect(musicVolumeNode);
+
+const musicOutputNode = musicVolumeNode;
+const soundOutputNode = volumeNode;
 
 const audioBuffers = {};
 let musicNode = null, musicMuted = false, soundMuted = false;
@@ -40,7 +34,7 @@ const toggleSoundMute = () => {
 
 const muteMusic = () => {
     if(!musicMuted) {
-        musicVolumeNode.gain.setValueAtTime(0,0);
+        musicVolumeNode.gain.setValueAtTime(0,audioContext.currentTime);
         musicMuted = true;
         localStorage.setItem("musicMuted",true);
     } else {
@@ -49,7 +43,7 @@ const muteMusic = () => {
 }
 const muteSound = () => {
     if(!soundMuted) {
-        volumeNode.gain.setValueAtTime(0,0);
+        volumeNode.gain.setValueAtTime(0,audioContext.currentTime);
         soundMuted = true;
         localStorage.setItem("soundMuted",true);
     } else {
@@ -59,7 +53,7 @@ const muteSound = () => {
 
 const unmuteSound = () => {
     if(soundMuted) {
-        volumeNode.gain.setValueAtTime(soundGain,0);
+        volumeNode.gain.setValueAtTime(soundGain,audioContext.currentTime);
         soundMuted = false;
         localStorage.setItem("soundMuted",false);
     } else {
@@ -69,7 +63,7 @@ const unmuteSound = () => {
 
 const unmuteMusic = () => {
     if(musicMuted) {
-        musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
+        musicVolumeNode.gain.setValueAtTime(musicNodeGain,audioContext.currentTime);
         musicMuted = false;
         localStorage.setItem("musicMuted",false);
     } else {
@@ -77,7 +71,7 @@ const unmuteMusic = () => {
     }
 }
 
-const playMusicWithIntro = (loopName,introName,fadeTime=0,withLoop=true) => {
+const playMusicWithIntro = (loopName,introName,withLoop=true) => {
     if(musicNode) {
         console.error("Error: Music is already playing");
     } else {
@@ -93,23 +87,16 @@ const playMusicWithIntro = (loopName,introName,fadeTime=0,withLoop=true) => {
                 musicNode = audioContext.createBufferSource();
                 musicNode.buffer = loopBuffer;
                 musicNode.loop = withLoop;
-                musicNode.connect(musicCompressor);
+                musicNode.connect(musicOutputNode);
                 musicNode.start();
             }
-            musicNode.connect(musicCompressor);
+            musicNode.connect(musicOutputNode);
             musicNode.start();
-            if(!musicMuted) {
-                if(fadeTime > 0) {
-                    musicVolumeNode.gain.linearRampToValueAtTime(musicNodeGain,audioContext.currentTime + fadeTime);
-                } else {
-                    musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
-                }
-            }
         }
     }
 }
 
-const playMusic = (name,fadeTime=0,withLoop=true) => {
+const playMusic = (name,withLoop=true) => {
     if(musicNode) {
         console.error("Error: Music is already playing");
     } else {
@@ -123,35 +110,19 @@ const playMusic = (name,fadeTime=0,withLoop=true) => {
             musicNode = audioContext.createBufferSource();
             musicNode.buffer = buffer;
             musicNode.loop = withLoop;
-            musicNode.connect(musicVolumeNode);
+            musicNode.connect(musicOutputNode);
             musicNode.start();
-            if(!musicMuted) {
-                if(fadeTime > 0) {
-                    musicVolumeNode.gain.linearRampToValueAtTime(musicNodeGain,audioContext.currentTime + fadeTime);
-                } else {
-                    musicVolumeNode.gain.setValueAtTime(musicNodeGain,0);
-                }
-            }
             if(!withLoop) {
                 return buffer.duration;
             }
         }
     }
 }
-const stopMusic = (fadeTime=0) => {
+const stopMusic = () => {
     if(musicNode) {
         let oldMusicNode = musicNode;
         musicNode = null;
-        if(fadeTime === 0) {
-            oldMusicNode.stop();
-        } else {
-            if(!musicMuted) {
-                musicVolumeNode.gain.linearRampToValueAtTime(0,audioContext.currentTime + fadeTime);
-            }
-            setTimeout(()=>{
-                oldMusicNode.stop();
-            },(fadeTime*1000)+50);
-        }
+        oldMusicNode.stop();
     } else {
         console.warn("Warning: No music is playing and cannot be stopped again");
     }
@@ -163,9 +134,9 @@ const playSound = (name,duration) => {
         const bufferSourceNode = audioContext.createBufferSource();
         bufferSourceNode.buffer = buffer;
         if(duration) {
-            bufferSourceNode.playbackRate.value = buffer.duration / duration;
+            bufferSourceNode.playbackRate.setValueAtTime(buffer.duration / duration,audioContext.currentTime);
         }
-        bufferSourceNode.connect(volumeNode);
+        bufferSourceNode.connect(soundOutputNode);
         bufferSourceNode.start();
     } else {
         console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);

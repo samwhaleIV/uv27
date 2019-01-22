@@ -1,6 +1,4 @@
 const defaultBackgroundCycleTime = 20000;
-let backgroundStreamMode = false;
-
 function Background(name,color,cycleTime) {
     this.name = name;
     this.color = color;

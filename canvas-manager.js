@@ -153,7 +153,7 @@ const sizeModeDisplayNames = {
 const context = canvas.getContext("2d");
 context.imageSmoothingEnabled = false;
 
-let rendererState, animationFrame, paused = false;
+let rendererState, animationFrame, paused = false, backgroundStreamMode = false;
 
 const gamepadDeadzone = 0.5;
 const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
