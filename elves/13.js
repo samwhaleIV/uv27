@@ -235,7 +235,7 @@ addMove({
     }
 });
 addMove({
-    name: "phantasmic swap",
+    name: "phase shift",
     type: "self",
     process: (sequencer,user,target) => {
         if(user.state.phasedOut) {
@@ -251,29 +251,6 @@ addMove({
                 text: `${user.name} phased out of temporal space`
             }
         }
-    }
-});
-addMove({
-    name: "euclidean hell",
-    type: "target",
-    process: (sequencer,user,target) => {
-        if(user.state.dimensionIndex !== target.state.dimensionIndex) {
-            return {
-                failed: true,
-                text: "<error> - <dimension mismatch>"
-            }
-        }
-        if(target.state.phasedOut) {
-            return {
-                failed: true,
-                text: "but shapes don't work on ghosts"
-            }
-        }
-        target.dropHealth(30);
-        return {
-            text: `${target.name} got shot with a polygon!`
-        }
-
     }
 });
 addMove({
@@ -407,7 +384,7 @@ const playerMoveSetsByDimensions = [
     [
         moves["glitch punch"],
         moves["dimensional shift"],
-        moves["phantasmic swap"],
+        moves["phase shift"],
         moves["punching vitamins?"]
     ],
     [
@@ -425,7 +402,7 @@ elves[12] = {
     health: 100,
 
     getSpeech: sequencer => {
-        if(sequencer.playerBattleObject.lastMove === "phantasmic swap" && sequencer.playerBattleObject.state.phasedOut) {
+        if(sequencer.playerBattleObject.lastMove === "phase shift" && sequencer.playerBattleObject.state.phasedOut) {
             return {
                 text: "what scares a ghost\nthe most?\n\nat most it's\njust another ghost"
             }
@@ -459,7 +436,7 @@ elves[12] = {
                 return moves["dimensional jump"];
             }
             const moveSets = [
-                ["phantasmic swap"],
+                ["phase shift"],
                 ["hungry hungry potato","confusion"],
                 ["multiverse","eternal darkness"],
             ];
@@ -472,7 +449,7 @@ elves[12] = {
                 return moves["ghost buster"];
             }
             const moveSets = [
-                ["phantasmic swap","quantum detangle","euclidean hell"],
+                ["phase shift","quantum detangle"],
                 ["confusion","trapezoid","hungry hungry potato","quantum detangle"],
                 ["multiverse","eternal darkness","trapezoid","glitch punch"],
             ];
