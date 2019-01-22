@@ -41,7 +41,7 @@ addMove({
         if(Math.random() > 0.5) {
             return {
                 failed: true,
-                text: "but it slipped through a black hole"
+                text: "but it slipped through time itself"
             }
         } else if(Math.random() < 0.5) {
             target.dropHealth(15);

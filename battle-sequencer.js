@@ -683,22 +683,33 @@ function BattleSequencer(renderer) {
         if(this.sequencerPersisting) {
             renderer.disablePlayerInputs();
         }
-        const endMethod = !this.elf.startSpeech && this.elf.startSpeech.text?
-            renderer.enablePlayerInputs: 
-            () => {
+        let endMethod;
+        if(this.elf.startSpeech && this.elf.startSpeech.text) {
+            endMethod = () => {
                 this.showElfSpeech(
                     this.elf.startSpeech.text,
                     0,this.elf.startSpeech.persist ? Infinity : this.getTextDuration(this.elf.startSpeech.text),
                     renderer.enablePlayerInputs
                 );
             }
+        } else {
+            endMethod = () => {
+                if(this.sequencerPersisting) {
+                    renderer.enablePlayerInputs();
+                }
+            }
+        }        
         this.showText(
             this.elf.startText,0,
             500+this.getTextDuration(this.elf.startText),
             endMethod
         );
     } else {
-        const startEnd = renderer.enablePlayerInputs;
+        const startEnd = () => {
+            if(this.sequencerPersisting) {
+                renderer.enablePlayerInputs();
+            }
+        };
         if(this.elf.startSpeech && this.elf.startSpeech.text) {
             if(this.sequencerPersisting) {
                 renderer.disablePlayerInputs();

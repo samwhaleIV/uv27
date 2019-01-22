@@ -83,7 +83,7 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         return {
-            text: `${user.name} ${overb(user)} stalling for no reason`
+            text: `${user.name} ${overb(user)} stalling for some reason`
         }
     }
 });
@@ -989,8 +989,8 @@ addMove({
 const getRaceMoveSet = (sequencer,index) => {
     const moveSets = [
         ["stay on path","steady pace","peaceful pace","rapid pace"],//Progress
-        ["break ankle","trip elf","poke bear","distracting thoughts","go turbo","self destruct"],//Other
-        ["find shortcut","call an uber","drive piano","pedal to the metal","trash talk"]//Other 2
+        Math.random() < 0.9 ? ["break ankle","trip elf","poke bear","distracting thoughts","go turbo","self destruct"] : ["stall","cry"],//Other
+        Math.random() < 0.95 ? ["find shortcut","call an uber","drive piano","pedal to the metal","trash talk"] : ["magic"] //Other 2
     ];
     const getMoveSet = () => {
         return [
