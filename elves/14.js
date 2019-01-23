@@ -304,7 +304,7 @@ addMove({
     name: "sober punch",
     type: "target",
     process: (sequencer,user,target) => {
-        target.dropHealth(7);
+        target.dropHealth(9);
         return {
             failed: true,
             text: "being lit would've helped"
@@ -329,7 +329,7 @@ addMove({
                             text: "the saloon is out of stools. sorry."
                         },
                         {
-                            text: "(more stools at midnight)"
+                            text: "(stools restock at 1 in the morning)"
                         }
                     ]
                 }
@@ -340,6 +340,9 @@ addMove({
                 {
                     text: "it was a big stool",
                     action: () => target.dropHealth(35)
+                },
+                {
+                    text: `${sequencer.globalBattleState.stools} stool${sequencer.globalBattleState.stools !== 1?"s":""} left`
                 }
             ]
         }
@@ -676,7 +679,7 @@ elves[13] = {
                             speech: "hello - again...\nhere for some coins?\n\nbring it"
                         }
                     }
-                    if(sequencer.elfBattleObject.health <= 55) {
+                    if(sequencer.elfBattleObject.health <= 65) {
                         return {
                             events: [
                                 {
@@ -695,7 +698,7 @@ elves[13] = {
                                     )
                                 },
                                 {
-                                    text: "you are awarded 10 coins",
+                                    text: "you are awarded 10 coins for kicking a**",
                                     action: () => {
                                         sequencer.playerBattleObject.state.money += 10;
                                         const money = sequencer.playerBattleObject.state.money;
@@ -726,7 +729,7 @@ elves[13] = {
                                     )
                                 },
                                 {
-                                    text: "you are awarded 5 coins",
+                                    text: "you are awarded 5 coins for trying",
                                     action: () => {
                                         sequencer.playerBattleObject.state.money += 5;
                                         const money = sequencer.playerBattleObject.state.money;
@@ -741,10 +744,35 @@ elves[13] = {
                 }
 
                 if(!timeFrozen) {
-                    if(sequencer.globalBattleState.time === 0) {
-                        sequencer.globalBattleState.stools = 3;
+                    if(sequencer.globalBattleState.time === 1) {
+                        if(sequencer.globalBattleState.stools < 3) {
+                            sequencer.globalBattleState.stools = 3;
+                            return {
+                                text: "the saloon got new stools!"
+                            }
+                        }
                     }
+                    if(sequencer.globalBattleState.time === 0) {
+                        if(sequencer.playerBattleObject.state.isLit || sequencer.playerBattleObject.state.isSuperLit) {
+                            sequencer.playerBattleObject.state.isLit = false;
+                            sequencer.playerBattleObject.state.isSuperLit = false;
+                            sequencer.playerBattleObject.state.alchoholWarning = false;
 
+                            sequencer.elfBattleObject.state.isLit = false;
+                            sequencer.elfBattleObject.state.isSuperLit = false;
+                            sequencer.elfBattleObject.state.alchoholWarning = false;
+                            return {
+                                events: [
+                                    {
+                                        text: "new day - new you"
+                                    },
+                                    {
+                                        text: "the effects of daytime drinking wore off"
+                                    }
+                                ]
+                            }
+                        }
+                    }
 
                     if(sequencer.globalBattleState.time === 18 && sequencer.globalBattleState.raffleAmount) {
                         sequencer.globalBattleState.raffleAmount = 0;
