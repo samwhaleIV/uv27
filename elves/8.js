@@ -69,22 +69,22 @@ addMove({
             user.state.isLit = true;
             if(user.isPlayer) {
                 return {
-                    text: `${user.name} are getting lit`
+                    events: [{text: `${user.name} are getting lit`}]
                 }
             } else {
                 return {
-                    text: `${user.name} is getting lit`
+                    events: [{text: `${user.name} is getting lit`}]
                 }
             }
         } else if(!user.state.isSuperLit) {
             user.state.isSuperLit = true;
             if(user.isPlayer) {
                 return {
-                    text: `${user.name} are super lit now`
+                    events: [{text: `${user.name} are super lit now`}]
                 }
             } else {
                 return {
-                    text: `${user.name} got super lit`
+                    events: [{text: `${user.name} got super lit`}]
                 }
             }
         } else if(user.state.alchoholWarning) {
@@ -92,17 +92,17 @@ addMove({
             user.state.alchoholOD = true;
             if(user.isPlayer) {
                 return {
-                    text: "your kidneys have failed"
+                    events: [{text: "your kidneys have failed"}]
                 }
             } else {
                 return {
-                    text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} kidneys have failed`
+                    events: [{text: `${user.name}'${user.name.endsWith("s") ? "" : "s"} kidneys have failed`}]
                 }
             }
         } else {
             user.state.alchoholWarning = true;
             return {
-                text: `but can ${user.name} get any more lit?`
+                events: [{text: `but can ${user.name} get any more lit?`}]
             }
         }
     }
@@ -155,6 +155,31 @@ addMove({
     name: "big hug",
     type: "target",
     process: (sequencer,user,target) => {
+        if(user.state.ownsLove) {
+            return {
+                events: [
+                    {
+                        text: "human love is too much for an elf!"
+                    },
+                    {
+                        text: "(especially the germs)"
+                    },
+                    {
+                        speech: "please! spare me!"
+                    },
+                    {
+                        text: "*here comes the hug*"
+                    },
+                    {
+                        speech: "nooooooo!"
+                    },
+                    {
+                        text: `${target.name}'s skin melted on contact`,
+                        action: () => target.dropHealth(target.maxHealth)
+                    }
+                ]
+            }
+        }
         return {
             events: [
                 {
@@ -265,7 +290,8 @@ addMove({
     name: "drunken punch",
     type: "target",
     process: (sequencer,user,target) => {
-        if(Math.random() > 0.63) {
+        const successRate = user.state.isSuperLit ? 0.8 : 0.63;
+        if(Math.random() > successRate) {
             return {
                 events: turboTextIncremental(
                     sequencer,
@@ -275,7 +301,7 @@ addMove({
                 failed: true,
             }
         } else {
-            target.dropHealth(15);
+            target.dropHealth(user.state.isSuperLit ? 20 : 15);
             return {
                 text: "it was almost a miss"
             }
