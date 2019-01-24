@@ -1,5 +1,7 @@
 function BattleSequencer(renderer) {
 
+    this.renderer = renderer;
+
     this.sequencerPersisting = true;
     this.murderSequencerGracefully = () => {
         this.sequencerPersisting = false;
@@ -46,7 +48,7 @@ function BattleSequencer(renderer) {
         } else if(this.debugInfinity) {
             return Infinity;
         } else {
-            return 10000;
+            return 15000;
         }
     }
 

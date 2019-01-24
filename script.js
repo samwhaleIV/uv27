@@ -275,4 +275,25 @@ const debug_scroll_speed = seconds => {
         rendererState.background.cycleTime = seconds * 1000;
     }
 }
+const getRandomSelections = (options,selectionCount,selectionMapper) => {
 
+    const selections = new Array(selectionCount);
+    const selectionCountPlusOne = selectionCount + 1;
+
+    for(let i = 0;i<selectionCount;i++) {
+        const optionIndex = Math.floor(Math.random()*options.length);
+        const option = options[optionIndex];
+
+        options = [
+            ...options.slice(0,optionIndex),...options.slice(optionIndex+1,selectionCountPlusOne)
+        ];
+
+        if(selectionMapper) {
+            selections[i] = selectionMapper(option);
+        } else {
+            selections[i] = option;
+        }
+        
+    }
+    return selections;
+}

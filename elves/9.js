@@ -210,7 +210,7 @@ addMove({
                 text: "(points were boosted by being turbo)"
             });
         }
-        if(user.state.goingTurbo) {
+        if(user.state.tookDrugs) {
             events.push({
                 text: "(points were boosted by drug use)"
             });
@@ -274,7 +274,7 @@ addMove({
                 text: "(points were boosted by being turbo)"
             });
         }
-        if(user.state.goingTurbo) {
+        if(user.state.tookDrugs) {
             events.push({
                 text: "(points were boosted by drug use)"
             });
@@ -341,7 +341,7 @@ addMove({
                     text: "(points were boosted by being turbo)"
                 });
             }
-            if(user.state.goingTurbo) {
+            if(user.state.tookDrugs) {
                 events.push({
                     text: "(points were boosted by drug use)"
                 });
@@ -516,7 +516,7 @@ addMove({
                     }
                 },
             ];
-            if(user.state.goingTurbo) {
+            if(user.state.tookDrugs) {
                 events.push({
                     text: "(points were boosted by drug use)"
                 });
@@ -565,7 +565,7 @@ addMove({
                 text: "(points were boosted by being turbo)"
             });
         }
-        if(user.state.goingTurbo) {
+        if(user.state.tookDrugs) {
             events.push({
                 text: "(points were boosted by drug use)"
             });

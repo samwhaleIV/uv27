@@ -224,6 +224,16 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             context.fillRect(0,0,width,height);
         }
 
+        if(this.battleSequencer.playerBattleObject.subText !== null) {
+            for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
+                drawTextWhite(
+                    this.battleSequencer.playerBattleObject.subText[i],
+                    this.leftHealthBar.x,
+                    this.subTextY + (i*20),this.subTextScale
+                );
+            }
+        }
+
         if(!isBoss) {
             let elfX;
             if(this.elfMoveStart) {
@@ -296,16 +306,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 drawTextWhite(
                     this.battleSequencer.elfBattleObject.subText[i],
                     this.rightHealthBar.x,
-                    this.subTextY + (i*20),this.subTextScale
-                );
-            }
-        }
-
-        if(this.battleSequencer.playerBattleObject.subText !== null) {
-            for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
-                drawTextWhite(
-                    this.battleSequencer.playerBattleObject.subText[i],
-                    this.leftHealthBar.x,
                     this.subTextY + (i*20),this.subTextScale
                 );
             }
