@@ -11,7 +11,7 @@ const cookiesTemperature = 350;
 const overheatTemperature = 105;
 const hypothermiaTemperature = 95;
 
-const playerHeatRiseFactor = 0.5;
+const playerHeatRiseFactor = 0.6;
 const baseTemperatureRiseFactor = 1.015;
 const neutralCoolingFactor = 0.5;
 
@@ -196,7 +196,7 @@ addMove({
                 ]
             }
         }
-        const degreeDrop = 2.5;
+        const degreeDrop = 2;
         return {
             text: `your temperature dropped by ${formatDegrees(degreeDrop)}`,
             action: () => {
@@ -381,12 +381,12 @@ elves[14] = {
         if(sequencer.playerBattleObject.lastMove === "anti antifreeze") {
             return Math.random() > 0.25 ? moves["global warming"] : moves[punchMove];
         } else if(sequencer.playerBattleObject.lastMove === "glacial blast") {
-            return Math.random() > 0.25 ? moves["antifreeze"] : moves[punchMove];
+            return Math.random() > 0.25 ? moves["antifreeze"] : Math.random() > 0.5 ? moves[punchMove] : moves["global warming"];
         } else if(sequencer.playerBattleObject.lastMove === "icy band aid" || sequencer.playerBattleObject.lastMove === "consume ice cubes") {
             return Math.random() > 0.33 ? (Math.random() > 0.5 ? moves[punchMove] : moves["global warming"]) : moves["antifreeze"];
         }
 
-        return Math.random() > 0.33 ? Math.random() > 0.25 ? moves[punchMove] : moves["antifreeze"] : moves["global warming"];
+        return Math.random() > 0.5 ? (Math.random() > 0.33 ? moves[punchMove] : moves["antifreeze"]) : moves["global warming"];
     },
 
     getDefaultGlobalState: () => {
