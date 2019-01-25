@@ -275,6 +275,11 @@ const debug_scroll_speed = seconds => {
         rendererState.background.cycleTime = seconds * 1000;
     }
 }
+
+const debug_polar_inversion = () => {
+    rendererState.fader = new polarInversionRenderer();
+}
+
 const getRandomSelections = (options,selectionCount,selectionMapper) => {
 
     const selections = new Array(selectionCount);
