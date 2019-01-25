@@ -279,6 +279,20 @@ const debug_scroll_speed = seconds => {
 const debug_polar_inversion = () => {
     rendererState.fader = new polarInversionRenderer();
 }
+const debug_polar_set = () => {
+
+    const radialRange = 100000;
+
+    const amountRange = 7;
+
+    const amount = (Math.random() * amountRange * 2) - amountRange;
+    const radius = Math.floor(Math.random() * radialRange * 2) - radialRange;
+
+    rendererState.fader.radiusSquared = radius;
+    rendererState.fader.amount = amount;
+
+    console.log(radius,amount);
+}
 
 const getRandomSelections = (options,selectionCount,selectionMapper) => {
 
