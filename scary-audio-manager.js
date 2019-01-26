@@ -1,7 +1,7 @@
 const audioContext = new AudioContext();
 
-const soundGain = 2 / 3;
-const musicNodeGain = 0.15;
+const soundGain = 3 / 4;
+const musicNodeGain = 0.2;
 
 const volumeNode = audioContext.createGain();
 volumeNode.gain.setValueAtTime(soundGain,audioContext.currentTime);
