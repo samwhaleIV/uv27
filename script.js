@@ -119,7 +119,7 @@ const animationDictionary = {
     },
     punch: {
         index: 3,
-        frameCount: 5,
+        frameCount: 6,
         frameRate: 60,
         playOnce: true
     }
