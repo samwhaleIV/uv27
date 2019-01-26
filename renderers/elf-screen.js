@@ -254,6 +254,58 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 this.elf.x,0,elfSourceWidth,elfSourceHeight,
                 elfX,0,this.elfWidth,this.elfHeight
             );
+
+            if(this.battleSequencer.activeAnimation) {
+
+                const animation = animationDictionary[this.battleSequencer.activeAnimation.name];
+                if(animation.playOnce) {
+
+                    if(!this.battleSequencer.activeAnimation.complete) {
+
+                        if(!this.battleSequencer.activeAnimation.playing) {
+                            this.battleSequencer.activeAnimation.startTime = timestamp;
+                            this.battleSequencer.activeAnimation.playing = true;
+                            this.battleSequencer.activeAnimation.complete = false;
+
+                            const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
+                            context.drawImage(
+                                imageDictionary["animation-effects"],
+                                animation.frameBounds[frameNumber],animation.y,
+                                elfSourceWidth,elfSourceHeight,
+                                elfX,0,this.elfWidth,this.elfHeight
+                            );
+                        } else {
+
+                            const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime
+
+                            const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
+
+
+                            if(frameNumber >= animation.frameCount) {
+                                this.battleSequencer.activeAnimation.complete = true;
+                                this.battleSequencer.activeAnimation.playing = false;
+                            } else {
+                                context.drawImage(
+                                    imageDictionary["animation-effects"],
+                                    animation.frameBounds[frameNumber],animation.y,
+                                    elfSourceWidth,elfSourceHeight,
+                                    elfX,0,this.elfWidth,this.elfHeight
+                                );
+                            }
+                        }
+
+
+                    }
+                } else {
+                    const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
+                    context.drawImage(
+                        imageDictionary["animation-effects"],
+                        animation.frameBounds[frameNumber],animation.y,
+                        elfSourceWidth,elfSourceHeight,
+                        elfX,0,this.elfWidth,this.elfHeight
+                    );
+                }
+            }
         }
 
         this.drawHealthBar(

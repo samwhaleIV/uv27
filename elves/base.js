@@ -211,6 +211,7 @@ const moves = {
         type: "self",
         name: "cry",
         process: (sequencer,user) => {
+            const animation = user.isElf ? {name:"crying",persist:true} : null;
             if(user.state.isLit) {
                 const wasCrying = user.state.isCrying;
                 user.state.isCrying = true;
@@ -221,7 +222,8 @@ const moves = {
                                 return {
                                     events: [
                                         {
-                                            text: `${user.name} ${user.isPlayer ? "are" : "is"} really hammered`
+                                            text: `${user.name} ${user.isPlayer ? "are" : "is"} really hammered`,
+                                            animation:animation
                                         },
                                         {
                                             text: "the narrator looks intimidated"
@@ -235,7 +237,8 @@ const moves = {
                                 return {
                                     events: [
                                         {
-                                            text: "this might go on for a while"
+                                            text: "this might go on for a while",
+                                            animation:animation
                                         },
                                         {
                                             text: `*something about ${user.isPlayer ? "an ex-wife" : "santa"} is brought up*`
@@ -248,7 +251,8 @@ const moves = {
                                 return {
                                     events: [
                                         {
-                                            text: "who needs therapy"
+                                            text: "who needs therapy",
+                                            animation:animation
                                         },
                                         {
                                             text: "*the angry banter continues*"
@@ -265,7 +269,8 @@ const moves = {
                                 return {
                                     events: [
                                         {
-                                            text: "the patheticness continues"
+                                            text: "the patheticness continues",
+                                            animation:animation
                                         },
                                         {
                                             text: `*${user.isPlayer ? "childhood" : "elf labor"} issues are ranted about*`
@@ -282,7 +287,8 @@ const moves = {
                             return {
                                 events: [
                                     {
-                                        text: `so much crying washes away the alchohol`
+                                        text: `so much crying washes away the alchohol`,
+                                        animation:animation
                                     },
                                     {
                                         text: `${user.name} ${user.isPlayer ? "are" : "is"} now sober`
@@ -296,16 +302,19 @@ const moves = {
                         return {
                             events: [
                                 {
-                                    text: user.wasCrying ? "the crying continues" : "the crying starts"
+                                    text: user.wasCrying ? "the crying continues" : "the crying starts",
+                                    animation:animation
                                 },
                                 {
-                                    text: `${user.name} ${user.isPlayer ? "have" : "has"} a lot of emotions with booze`
+                                    text: `${user.name} ${user.isPlayer ? "have" : "has"} a lot of emotions with booze`,
+                                    animation:animation
                                 }
                             ]
                         }
                     } else {
                         return {
-                            text: `${user.name} ${wasCrying ? "cries" : "starts to cry"} with the booze`
+                            text: `${user.name} ${wasCrying ? "cries" : "starts to cry"} with the booze`,
+                            animation:animation
                         }
                     }
                 }
@@ -316,7 +325,8 @@ const moves = {
 
                 user.state.isCrying = true;
                 return {
-                    text: text
+                    text: text,
+                    animation:animation
                 }
             }
         }
@@ -346,6 +356,11 @@ const moves = {
         name: "decent punch",
         process: (sequencer,user,target) => {
 
+            animation = null;
+            if(target.isElf) {
+                animation = {name:"punch"};
+            }
+
             let damage = 15;
             if(user.state.atePunchingVitamins) {
                 damage += damage;
@@ -354,11 +369,13 @@ const moves = {
             sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
-                    text: `${target.name} might need some ice`
+                    text: `${target.name} might need some ice`,
+                    animation:animation
                 }
             } else {
                 return {
-                    text: `${target.name} didn't survive that`
+                    text: `${target.name} didn't survive that`,
+                    animation:animation
                 }
             }
         }
@@ -368,6 +385,11 @@ const moves = {
         name: "wimpy punch",
         process: (sequencer,user,target) => {
 
+            animation = null;
+            if(target.isElf) {
+                animation = {name:"punch"};
+            }
+
             let damage = 10;
             if(user.state.atePunchingVitamins) {
                 damage += damage;
@@ -376,11 +398,13 @@ const moves = {
             sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
-                    text: `${target.name} might cry now`
+                    text: `${target.name} might cry now`,
+                    animation:animation
                 }
             } else {
                 return {
-                    text: `${target.name} got punched out`
+                    text: `${target.name} got punched out`,
+                    animation:animation
                 }
             }
         }
@@ -389,6 +413,12 @@ const moves = {
         type: "target",
         name: "wimpier punch",
         process: (sequencer,user,target) => {
+
+            animation = null;
+            if(target.isElf) {
+                animation = {name:"punch"};
+            }
+
             const responses = [
                 ()=>`${target.name} look${target.isElf ?"s" : ""} confused`,
                 ()=>`${target.name} think${target.isElf ?"s" : ""} ${user.name} held back`
@@ -400,11 +430,13 @@ const moves = {
             sequencer.dropHealth(target,damage);
             if(target.health > 0) {
                 return {
-                    text: responses[Math.floor(Math.random() * responses.length)]()
+                    text: responses[Math.floor(Math.random() * responses.length)](),
+                    animation:animation
                 };
             } else {
                 return {
-                    text: "it was a knock out hit"
+                    text: "it was a knock out hit",
+                    animation:animation
                 }
             }
         }
@@ -478,6 +510,11 @@ const moves = {
         type: "target",
         name: "health swap",
         process: (sequencer,user,target) => {
+            let animation = null;
+            if(user.name === "wizard elf" || target.name === "wizard elf") {
+                animation = {name:"robeHealth"}
+            }
+
             const userHealth = user.health;
             const targetHealth = target.health;
             if(userHealth === targetHealth) {
@@ -496,7 +533,8 @@ const moves = {
                 sequencer.dropHealth(user,difference);
             }
             return {
-                text: `${user.name} and ${target.name} swapped health`
+                text: `${user.name} and ${target.name} swapped health`,
+                animation: animation
             }
         }
     },

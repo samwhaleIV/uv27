@@ -367,8 +367,9 @@ function BattleSequencer(renderer) {
             moveResult.events = [{
                 text:moveResult.text,
                 speech:moveResult.speech,
-                action:moveResult.action}
-            ];
+                action:moveResult.action,
+                animation:moveResult.animation
+            }];
         }
         if(moveResult.events && moveResult.events.length >= 1) {
             let eventIndex = 0;
@@ -441,6 +442,7 @@ function BattleSequencer(renderer) {
             if(!this.playerHasDied) {
                 let elfSpeech = null;
                 let speechPersistence = false;
+                let speechAnimation = null;
                 if(this.elf.getSpeech) {
                     let elfSpeechResult = this.elf.getSpeech(this);
                     if(elfSpeechResult) {
@@ -449,6 +451,16 @@ function BattleSequencer(renderer) {
                             if(elfSpeechResult.persist === true) {
                                 speechPersistence = true;
                             }
+                            if(elfSpeechResult.animation) {
+                                if(speechPersistence) {
+                                    console.warn("Battle sequencer: animations are incompatible with persistent speeches");
+                                } else {
+                                    speechAnimation = elfSpeechResult.animation;
+                                    this.showAnimation(speechAnimation);
+                                }
+                            }
+                        } else if(elfSpeechResult) {
+                            console.warn("Battle sequencer: animations must have a speech to go with them when sent from a speech event");
                         }
                     } else if(elfSpeechResult !== null) {
                         console.error("Battle sequencer: elf.getSpeech did not return a proper value");
@@ -461,7 +473,10 @@ function BattleSequencer(renderer) {
                     this.showElfSpeech(
                         elfSpeech,0,
                         speechPersistence ? Infinity : this.getTextDuration(elfSpeech) * 1.33,
-                        this.returnInput
+                        speechAnimation?()=>{
+                            this.clearAnimation();
+                            this.returnInput();
+                        }:this.returnInput
                     );
                 } else {
                     this.returnInput();
@@ -502,7 +517,8 @@ function BattleSequencer(renderer) {
                         text:actionResult.text,
                         speech:actionResult.speech,
                         action:actionResult.action,
-                        persist:actionResult.persist
+                        persist:actionResult.persist,
+                        animation:actionResult.animation
                     });
                 } else if(actionResult.events) {
                     for(let i = 0;i<actionResult.events.length;i++) {
@@ -511,35 +527,79 @@ function BattleSequencer(renderer) {
                             text:actionResultEvent.text,
                             speech:actionResultEvent.speech,
                             action:actionResultEvent.action,
-                            persist:actionResult.persist
+                            persist:actionResult.persist,
+                            animation:actionResult.animation
                         });
                     }
                 }
             }
         }
-        callback = index >= eventsList.length-1 ? endCallback : recursiveCallback;
+        const shouldEndCallback = index >= eventsList.length-1;
+        callback = shouldEndCallback ? endCallback : recursiveCallback;
         if(event.text) {
+            let hasAnimation = false;
+            if(event.animation) {
+                this.showAnimation(event.animation);
+                hasAnimation = true;
+            }
             this.showText(event.text,0,this.getTextDuration(event.text),
             ()=>{
                 if(event.speech) {
                     this.showElfSpeech(
                         event.speech,0,
                         this.getTextDuration(event.speech),
-                        callback
+                        hasAnimation?()=>{
+                            if(!this.activeAnimation.persist || shouldEndCallback) {
+                                this.clearAnimation();
+                            }
+                            callback();
+                        }:callback
                     );
                 } else {
+                    if(hasAnimation) {
+                        if(!this.activeAnimation.persist || shouldEndCallback) {
+                            this.clearAnimation();
+                        }
+                    }
                     callback();
                 }
             });
         } else if(event.speech) {
+            let hasAnimation = false;
+            if(event.animation) {
+                if(!event.speech.persist) {
+                    this.showAnimation(event.animation);
+                    hasAnimation = true;
+                } else {
+                    console.warn("Battle sequencer: animations must have a speech to go with them when sent from a speech only event");      
+                }
+            }
             this.showElfSpeech(
                 event.speech,0,
                 event.persist?Infinity:this.getTextDuration(event.speech),
-                callback
+                hasAnimation?()=>{
+                    this.clearAnimation();
+                    callback();
+                }:callback
             );
         } else {
+            if(event.animation) {
+                console.warn("Battle sequencer: Animations cannot be shown if they are not supplied with a text or speech event");
+            }
             callback();
         }
+    }
+
+    this.activeAnimation = null;
+    this.showAnimation = animation => {
+        console.log("Battle sequencer: Showing animation",animation);
+        this.activeAnimation = animation;
+    }
+    this.clearAnimation = () => {
+        if(this.activeAnimation) {
+            console.log("Battle sequencer: Clearing animation",this.activeAnimation);
+        }
+        this.activeAnimation = null;
     }
 
     this.showingPersistentSpeech;

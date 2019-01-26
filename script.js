@@ -42,23 +42,6 @@ const fontDictionary = {
 const elfSourceWidth = 11;
 const elfSourceHeight = 24;
 
-const tileDictionary = [];
-const tileSize = 25;
-
-const processMetaTileset = () => {
-    const rows = 5;
-    const columns = 5;
-    const tileCount = rows * columns;
-    for(let i = 0;i<tileCount;i++) {
-        let x = i % columns;
-        let y = Math.floor(i / columns);
-        tileDictionary[i] = {
-            x: x * tileSize,
-            y: y * tileSize
-        }
-    }
-}
-
 const processElvesMeta = () => {
     for(let i = 0;i<27;i++) {
         if(elves[i]) {
@@ -115,6 +98,55 @@ const loadSounds = callback => {
     sounds.forEach(value => addBufferSource(value,soundProcessed,soundProcessed));
 }
 
+const animationDictionary = {
+    crying: {
+        index: 0,
+        frameCount: 18,
+        frameRate: 40,
+        playOnce: false
+    },
+    robeSmoke: {
+        index: 1,
+        frameCount: 2,
+        frameRate: 30,
+        playOnce: true
+    },
+    robeHealth: {
+        index: 2,
+        frameCount: 5,
+        frameRate: 30,
+        playOnce: true
+    },
+    punch: {
+        index: 3,
+        frameCount: 5,
+        frameRate: 60,
+        playOnce: true
+    }
+}
+
+const loadAnimationMetadata = () => {
+    const animationDictionaryKeys = Object.keys(animationDictionary);
+    for(let i = 0;i<animationDictionaryKeys.length;i++) {
+        const animation = animationDictionary[animationDictionaryKeys[i]];
+
+        const height = animation.index * elfSourceHeight;
+
+        const frameBounds = [];
+        for(let x = 0;x<animation.frameCount;x++) {
+            frameBounds.push(x*elfSourceWidth);
+        }
+
+        animation.frameDuration = 1000 / animation.frameRate;
+        animation.fullDuration = animation.frameDuration * animation.frameCount;
+
+        animation.y = height;
+        animation.frameBounds = frameBounds;
+        //width - elfSourceWidth
+        //height - elfSourceHeight
+    }
+}
+
 const loadImages = callback => {
     const images = [
         "images/fontspace.png",
@@ -135,7 +167,9 @@ const loadImages = callback => {
         "images/backgrounds/background-9.png",
     
         "images/elves.png",
-        "images/end-screen.png"
+        "images/end-screen.png",
+
+        "images/animation-effects.png"
     ];
     let loadedImages = 0;
     for(let i = 0;i<images.length;i++) {
@@ -161,7 +195,7 @@ const loadImages = callback => {
     }
 }
 
-processMetaTileset();
+loadAnimationMetadata();
 adjustFontPositions();
 processElvesMeta();
 

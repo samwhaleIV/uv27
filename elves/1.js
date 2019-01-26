@@ -19,7 +19,8 @@ elves[0] = {
             elfBattleObject.state.speechIndex = (elfBattleObject.state.speechIndex + 1) % speeches.length;
         }
         return {
-            text: speeches[elfBattleObject.state.speechIndex] + "\n*crying sounds*"
+            text: speeches[elfBattleObject.state.speechIndex] + "\n*crying sounds*",
+            animation:{name:"crying"}
         }
     },
     playerMoves: [

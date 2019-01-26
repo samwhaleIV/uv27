@@ -5,7 +5,8 @@ addMove({
         sequencer.dropHealth(user,10);
         sequencer.dropHealth(target,20);
         return {
-            text: "and got hurt by recoil"
+            text: "and got hurt by recoil",
+            animation: {name:"robeSmoke"}
         }
     }
 });
@@ -22,11 +23,18 @@ addMove({
     type: "self",
     name: "self punch",
     process: (sequencer,user) => {
+
+        let animation = null;
+        if(user.isElf) {
+            animation = {name:"punch"};
+        }
+
         sequencer.dropHealth(
             user,user.state.atePunchingVitamins ? 30 : 15
         );
         return {
-            text: `${user.name} ha${user.isPlayer ? "ve" : "s"} self esteem issues`
+            text: `${user.name} ha${user.isPlayer ? "ve" : "s"} self esteem issues`,
+            animation: animation
         }
     }
 });
