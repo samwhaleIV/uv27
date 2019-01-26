@@ -57,10 +57,15 @@ function BattleSequencer(renderer) {
     const endScreenLength = 4000;
     const postSongDelay = 1000;
 
+    this.battleOver = false;
+
     this.everybodyDiedMethod = () => {
         if(!this.sequencerPersisting) {
             return;
         }
+
+        this.battleOver = true;
+
         this.bottomMessage = "everyone is dead";
         renderer.firstInputMask = "game over";
         let duration = endScreenLength;
@@ -86,6 +91,9 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
+
+        this.battleOver = true;
+
         this.bottomMessage =  this.elf.playerDeadText || "you are dead";
         renderer.firstInputMask = "game over";
 
@@ -118,6 +126,9 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
+
+        this.battleOver = true;
+
         this.bottomMessage = this.elf.elfDeadText || `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
 

@@ -248,11 +248,19 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             } else {
                 elfX = this.elfX;
             }
+
+            let elfY = 0;
+
+
+            if(this.battleSequencer.elfBattleObject.jitterHealthBar && !this.battleSequencer.battleOver) {
+                elfX += Math.floor(Math.random() * 4) - 2;
+                elfY += Math.floor(Math.random() * 4) - 2;
+            }
     
             context.drawImage(
                 imageDictionary["elves"],
                 this.elf.x,0,elfSourceWidth,elfSourceHeight,
-                elfX,0,this.elfWidth,this.elfHeight
+                elfX,elfY,this.elfWidth,this.elfHeight
             );
 
             if(this.battleSequencer.activeAnimation) {
@@ -272,7 +280,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                                 imageDictionary["animation-effects"],
                                 animation.frameBounds[frameNumber],animation.y,
                                 elfSourceWidth,elfSourceHeight,
-                                elfX,0,this.elfWidth,this.elfHeight
+                                elfX,elfY,this.elfWidth,this.elfHeight
                             );
                         } else {
 
@@ -289,7 +297,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                                     imageDictionary["animation-effects"],
                                     animation.frameBounds[frameNumber],animation.y,
                                     elfSourceWidth,elfSourceHeight,
-                                    elfX,0,this.elfWidth,this.elfHeight
+                                    elfX,elfY,this.elfWidth,this.elfHeight
                                 );
                             }
                         }
@@ -302,7 +310,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         imageDictionary["animation-effects"],
                         animation.frameBounds[frameNumber],animation.y,
                         elfSourceWidth,elfSourceHeight,
-                        elfX,0,this.elfWidth,this.elfHeight
+                        elfX,elfY,this.elfWidth,this.elfHeight
                     );
                 }
             }
