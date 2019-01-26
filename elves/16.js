@@ -1,6 +1,413 @@
+addMove({
+    name: "search",
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(target.state.searched) {
+            return {
+                failed: true,
+                events: [
+                    {
+                        text: "but it failed"
+                    },
+                    {
+                        text: "invisible elf is already found"
+                    }
+                ]
+            }
+        }
+        if(user.state.visualFatigue) {
+            return {
+                failed: true
+            }
+        } else {
+            target.state.searched = true;
+            setElfSearchSubText(sequencer);
+            return {
+                text: "invisible elf has been detected"
+            }
+        }
+    }
+});
+addMove({
+    name: "destroy",
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(!target.state.searched) {
+            return {
+                failed: true,
+                events: [
+                    {
+                        text: "but it failed"
+                    },
+                    {
+                        text: "invisible elf hasn't been detected"
+                    }
+                ]
+            }
+        }
+        if(target.state.visualFatigue) {
+            return {
+                failed: true,
+                events: [
+                    {
+                        text: "but it failed"
+                    },
+                    {
+                        text: "you are visually fatigued"
+                    }
+                ]
+            }
+        }
+        return {
+            events: [
+                {
+                    text: "a lock-on hit!",
+                    action: () => target.dropHealth(destroyDamage)
+                },
+                {
+                    text: "invisible elf is now concealed again",
+                    action: () => {
+                        target.state.searched = false;
+                        setElfSearchSubText(sequencer);
+                    }
+                }
+            ]
+        }
+    }
+});
+
+addMove({
+    name: "smoke bomb",
+    type: "self",
+    process: sequencer => {
+        return {
+            text: "1 smoke dose added - good luck invisible elf",
+            action: () => {
+                sequencer.globalBattleState.smokeDoses++;
+                setSmokeSubText(sequencer);
+            }
+        }      
+    }
+});
+
+addMove({
+    name: "sneaky punch",
+    type: "target",
+    process: (sequencer,user,target) => {
+        const chanceOfFailure = sequencer.globalBattleState.smokeDoses * 0.25;
+        if(Math.random() >= chanceOfFailure) {
+            return {
+                events: [
+                    {
+                        text: "invisible elf nabbed you!",
+                        action: () => target.dropHealth(sneakyPunchDamage)
+                    },
+                    {
+                        text: "maybe you need more smoke?"
+                    }
+                ]
+            }
+        } else {
+            return {
+                failed: true,
+                text: "but smoke got in the way of the sneaky"
+            }
+        }
+    }
+});
+addMove({
+    name: "sleuth punch",
+    type: "target",
+    process: (sequencer,user,target) => {
+        const chanceOfSuccess = sequencer.globalBattleState.smokeDoses * 0.25;
+        if(Math.random() <= chanceOfSuccess) {
+            return {
+                text: "you sleuthed invisible elf and strook hard",
+                action: () => target.dropHealth(sluethPunchDamage)
+            }
+        } else {
+            return {
+                failed: true,
+                events: [{
+                    text: "but invisible elf couldn't be sleuthed"
+                },{
+                    text: "maybe you need more smoke?"
+                }]
+            }
+        }
+    }
+});
+
+addMove({
+    name: "place trap",
+    type: "self",
+    process: sequencer => {
+        return {
+            text: "1 trap added - invisible elf should be careful",
+            action: () => {
+                sequencer.globalBattleState.trapsPlaced++;
+                setTrapSubText(sequencer);
+            }
+        }
+    }
+});
+
+addMove({
+    name: "air purifier",
+    type: "self",
+    process: sequencer => {
+        if(sequencer.globalBattleState.smokeDoses <= 0) {
+            return {
+                failed: true,
+                text: "but the air is already clean"
+            }
+        }
+        return {
+            text: "1 smoke dose removed",
+            action: () => {
+                sequencer.globalBattleState.smokeDoses--;
+                setSmokeSubText(sequencer);
+            }
+        }
+    }
+});
+
+
+addMove({
+    name: "you can't see me",
+    type: "self",
+    process: (sequencer,user,target) => {
+        if(!user.state.searched) {
+            return {
+                failed: true
+            }
+        }
+        return {
+            text: "invisible elf broke your search",
+            action: () => {
+                user.state.searched = false;
+                setElfSearchSubText(sequencer);
+            }
+        }
+    }
+});
+addMove({
+    name: "photon proxy",
+    type: "target",
+    process: (sequencer,user,target) => {
+        if(target.state.visualFatigue) {
+            return {
+                failed: true,
+            }
+        } else {
+            sequencer.globalBattleState.justSetVisualFatigue = true;
+            target.state.visualFatigue = true;
+            sequencer.globalBattleState.visualFatigueTurnsLeft = visualFatigueTurnCount;
+            setPlayerVisualFatigueSubText(sequencer);
+
+            let cancelledSearch = false;
+            if(user.state.searched) {
+                user.state.searched = false;
+                cancelledSearch = true;
+                setElfSearchSubText(sequencer);
+            }
+
+            const events = [{
+                text: "this confused your eyeballs"
+            },{
+                text: "for now - search is disabled"
+            }];
+
+            if(cancelledSearch) {
+                events.push({
+                    text: "this also broke your current search"
+                },{
+                    text: "invisible elf is now undetected"
+                });
+            }
+
+            return {
+                events: events
+            }
+        }
+    }
+});
+
+const visualFatigueTurnCount = 3;
+const destroyDamage = 60;
+
+const sluethPunchDamage = 25;
+const sneakyPunchDamage = 20;
+
+const trapDamage = 50;
+
+const setElfSearchSubText = sequencer =>
+    sequencer.elfBattleObject.subText[0] = sequencer.elfBattleObject.state.searched ?
+    "detected" : "undetected";
+
+const setPlayerVisualFatigueSubText = sequencer =>
+    sequencer.playerBattleObject.subText[1] = sequencer.playerBattleObject.state.visualFatigue ?
+    `visual fatigue - ${sequencer.globalBattleState.visualFatigueTurnsLeft} turn${sequencer.globalBattleState.visualFatigueTurnsLeft!==1?"s":""} left` : "";
+
+const setTrapSubText = sequencer =>
+    sequencer.playerBattleObject.subText[0] = `${sequencer.globalBattleState.trapsPlaced} trap${sequencer.globalBattleState.trapsPlaced!==1?"s":""} set`;
+
+const setSmokeSubText = sequencer =>
+    sequencer.elfBattleObject.subText[1] = `${sequencer.globalBattleState.smokeDoses} smoke dose${sequencer.globalBattleState.smokeDoses!==1?"s":""}`;
+
+const getInvisibleElfMoves = sequencer => [
+    sequencer.elfBattleObject.state.searched ?
+        moves["destroy"]:moves["search"],
+    moves["smoke bomb"],
+    moves["sleuth punch"],
+    moves["place trap"]
+];
+
+addMove({
+    name: "trap failure",
+    type: "self",
+    process: (sequencer,user) => {
+        return {
+            failed: true,
+            events: [
+                {
+                    text: "but a trap got in the way!"
+                },
+                {
+                    text: "a bear trap snapped on invisible elf! ouch",
+                    action: () => {
+                        sequencer.globalBattleState.trapsPlaced--;
+                        setTrapSubText(sequencer);
+                        user.dropHealth(trapDamage);
+                    }
+                }
+            ]
+        }
+    }
+})
+
 elves[15] = {
     name: "invisible elf",
     background: "background-4",
     backgroundColor: "rgb(224,240,255)",
-    health: 300
+    health: 250,
+
+    getPlayerMoves: sequencer => getInvisibleElfMoves(sequencer),
+
+    setup: sequencer => {
+        const player = sequencer.playerBattleObject;
+        const elf = sequencer.elfBattleObject;
+
+        elf.movePreProcess = (sequencer,move) => {
+            const trapHitChance = sequencer.globalBattleState.trapsPlaced * 0.15;
+            if(sequencer.globalBattleState.trapsPlaced >= 1 && Math.random() <= trapHitChance) {
+                return moves["trap failure"];
+            }
+            return move;
+        }
+
+        player.subText = [];
+        elf.subText = [];
+
+        elf.state.searched = false;
+        player.state.visualFatigue = false;
+
+
+        setElfSearchSubText(sequencer);
+        setPlayerVisualFatigueSubText(sequencer);
+
+        setSmokeSubText(sequencer);
+        setTrapSubText(sequencer);
+    },
+
+    getMove: sequencer => {
+        switch(sequencer.playerBattleObject.lastMove) {
+            case "search":
+                if(Math.random() > 0.75) {
+                    return moves["you can't see me"];
+                }
+                break;
+            case "destroy":
+                if(Math.random() < 0.5) {
+                    return moves["photon proxy"];
+                }
+                break;
+            case "smoke bomb":
+                if(Math.random() < 0.15) {
+                    return moves["air purifier"];
+                }
+                break;
+            case "sleuth punch":
+                if(sequencer.playerBattleObject.lastMove.failed) {
+                    return moves["sneaky punch"];
+                }
+                break;
+        }
+
+        if(sequencer.globalBattleState.smokeDoses >= 4) {
+            if(Math.random() < 0.6) {
+                return moves["air purifier"];
+            }
+        } else if(sequencer.globalBattleState.smokeDoses >= 3) {
+            if(Math.random() < 0.25) {
+                return moves["air purifier"];
+            }
+        } else if(sequencer.globalBattleState.smokeDoses >= 1) {
+            if(Math.random() < 0.15) {
+                return moves["air purifier"];
+            }
+        }
+
+        
+
+        return Math.random() < 0.75 ? moves["sneaky punch"] : sequencer.playerBattleObject.state.visualFatigue ? moves["sneaky punch"] : moves["photon proxy"];
+    },
+
+    getDefaultGlobalState: () => {
+        return {
+            smokeDoses: 0,
+            trapsPlaced: 0,
+            postTurnProcess: sequencer => {
+
+                if(sequencer.globalBattleState.justSetVisualFatigue) {
+                    sequencer.globalBattleState.justSetVisualFatigue = false;
+                } else {
+                    sequencer.globalBattleState.visualFatigueTurnsLeft--;
+                    if(sequencer.globalBattleState.visualFatigueTurnsLeft <= 0) {
+                        sequencer.playerBattleObject.state.visualFatigue = false;
+                    }
+                    setPlayerVisualFatigueSubText(sequencer);
+                }
+
+                if(sequencer.elfBattleObject.isDead) {
+                    return {
+                        events: [
+                            {
+                                text: "you have defeated invisible elf"
+                            },
+                            {
+                                text: "you are granted the elfmart sword"
+                            },
+                            {
+                                text: "may it guide you to the very end"
+                            },
+                            {
+                                speech: "you have...\npotential"
+                            }
+                        ]
+                    }
+                }
+
+                sequencer.updatePlayerMoves(
+                    getInvisibleElfMoves(sequencer)
+                );
+
+                return null;
+            }
+        }
+    },
+
+    startSpeech: {
+        text: "oh - have you come for the\nfabled elfmart sword?"
+    }
 }

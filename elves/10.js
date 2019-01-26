@@ -359,8 +359,12 @@ const shorthandGetSelectorMove = (name,...responses) => {
             case "1neg":
                 action = sequencer => increaseHead1Disposition(sequencer)
                 break;
-            default:
+            case "end":
                 action = sequencer => getEndEvents(sequencer)
+                break;
+            default:
+            case "none":
+                action = sequencer => advanceSelectionScreen(sequencer)
                 break;
         }
         return {
@@ -420,11 +424,11 @@ selectionSets.forEach(
 const updateDispositionSubtexts = sequencer => {
     if(sequencer.elfBattleObject.state.head1Disposition === sequencer.elfBattleObject.state.head2Disposition) {
         if(sequencer.elfBattleObject.state.head1Disposition === 0) {
-            sequencer.elfBattleObject.subText[0] = "no disposition";
-            sequencer.elfBattleObject.subText[1] = "no disposition";
+            sequencer.elfBattleObject.subText[0] = "no resentment";
+            sequencer.elfBattleObject.subText[1] = "no resentment";
         } else {
-            sequencer.elfBattleObject.subText[0] = "equal disposition";
-            sequencer.elfBattleObject.subText[1] = "equal disposition";
+            sequencer.elfBattleObject.subText[0] = "equal resentment";
+            sequencer.elfBattleObject.subText[1] = "equal resentment";
         }
     } else {
         if(sequencer.elfBattleObject.state.head1Disposition > sequencer.elfBattleObject.state.head2Disposition) {
@@ -432,41 +436,41 @@ const updateDispositionSubtexts = sequencer => {
             let dispositionText;
             switch(difference) {
                 case NaN:
-                    dispositionText = "broken disposition";
+                    dispositionText = "broken resentment";
                     break;
                 case 1:
-                    dispositionText = "low disposition";
+                    dispositionText = "low resentment";
                     break;
                 case 2:
-                    dispositionText = "medium disposition";
+                    dispositionText = "medium resentment";
                     break;
                 default:
                 case 3:
-                    dispositionText = "high disposition";
+                    dispositionText = "high resentment";
                     break;
             }
             sequencer.elfBattleObject.subText[0] = dispositionText;
-            sequencer.elfBattleObject.subText[1] = sequencer.elfBattleObject.state.head2Disposition === 0 ? "no disposition" : "less disposition";
+            sequencer.elfBattleObject.subText[1] = sequencer.elfBattleObject.state.head2Disposition === 0 ? "no resentment" : "less resentment";
         } else {
             const difference = sequencer.elfBattleObject.state.head2Disposition - sequencer.elfBattleObject.state.head1Disposition;
             let dispositionText;
             switch(difference) {
                 case NaN:
-                    dispositionText = "broken disposition";
+                    dispositionText = "broken resentment";
                     break;
                 case 1:
-                    dispositionText = "low disposition";
+                    dispositionText = "low resentment";
                     break;
                 case 2:
-                    dispositionText = "medium disposition";
+                    dispositionText = "medium resentment";
                     break;
                 default:
                 case 3:
-                    dispositionText = "high disposition";
+                    dispositionText = "high resentment";
                     break;
             }
             sequencer.elfBattleObject.subText[1] = dispositionText;
-            sequencer.elfBattleObject.subText[0] = sequencer.elfBattleObject.state.head1Disposition === 0 ? "no disposition" : "less disposition";
+            sequencer.elfBattleObject.subText[0] = sequencer.elfBattleObject.state.head1Disposition === 0 ? "no resentment" : "less resentment";
         }
     }
 }
@@ -520,7 +524,7 @@ elves[9] = {
         sequencer.elfBattleObject.state.head1Disposition = 0;
         sequencer.elfBattleObject.state.head2Disposition = 0;
 
-        sequencer.elfBattleObject.subText = ["no disposition","no disposition"];
+        sequencer.elfBattleObject.subText = ["no resentment","no resentment"];
 
         sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
         sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;

@@ -225,7 +225,15 @@ addMove({
         sequencer.updatePlayerMoves(oldTimeyMoveTree.highNoon(sequencer));
 
         user.subText = sequencer.globalBattleState.subTexts.highNoon;
+        
         user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+        user.subText[1] = `${user.state.bullets} bullet${user.state.bullets === 1 ? "" : "s"}`;
+        user.subText[2] = `${user.state.loadedBullets} loaded`;
+        if(user.state.freshSpin) {
+            user.subText[3] = "spun";
+        } else {
+            user.subText[3] = "not spun";
+        }
 
         sequencer.globalBattleState.playerInterfaced = true;
         sequencer.globalBattleState.currentPlace = "highNoon";
