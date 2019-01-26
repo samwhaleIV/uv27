@@ -81,7 +81,7 @@ addMove({
     type: "self",
     process: sequencer => {
         return {
-            text: "1 smoke dose added - good luck invisible elf",
+            text: "1 smoke dose added",
             action: () => {
                 sequencer.globalBattleState.smokeDoses++;
                 setSmokeSubText(sequencer);
@@ -103,7 +103,7 @@ addMove({
                         action: () => target.dropHealth(sneakyPunchDamage)
                     },
                     {
-                        text: "maybe you need more smoke?"
+                        text: `maybe you need ${sequencer.globalBattleState.smokeDoses <= 0 ? "some" : "more"} smoke?`
                     }
                 ]
             }
@@ -123,7 +123,8 @@ addMove({
         if(Math.random() <= chanceOfSuccess) {
             return {
                 text: "you sleuthed invisible elf and strook hard",
-                action: () => target.dropHealth(sluethPunchDamage)
+                action: () => target.dropHealth(sluethPunchDamage),
+                animation: {name:"punch"}
             }
         } else {
             return {
@@ -131,7 +132,7 @@ addMove({
                 events: [{
                     text: "but invisible elf couldn't be sleuthed"
                 },{
-                    text: "maybe you need more smoke?"
+                    text: `maybe you need ${sequencer.globalBattleState.smokeDoses <= 0 ? "some" : "more"} smoke?`
                 }]
             }
         }
@@ -143,7 +144,7 @@ addMove({
     type: "self",
     process: sequencer => {
         return {
-            text: "1 trap added - invisible elf should be careful",
+            text: "1 trap added",
             action: () => {
                 sequencer.globalBattleState.trapsPlaced++;
                 setTrapSubText(sequencer);
@@ -215,7 +216,7 @@ addMove({
             const events = [{
                 text: "this confused your eyeballs"
             },{
-                text: "for now - search is disabled"
+                text: "search is temporarily disabled"
             }];
 
             if(cancelledSearch) {
@@ -236,8 +237,8 @@ addMove({
 const visualFatigueTurnCount = 3;
 const destroyDamage = 60;
 
-const sluethPunchDamage = 25;
-const sneakyPunchDamage = 20;
+const sluethPunchDamage = 30;
+const sneakyPunchDamage = 17;
 
 const trapDamage = 50;
 
@@ -292,7 +293,7 @@ elves[15] = {
     backgroundColor: "rgb(224,240,255)",
     health: 250,
 
-    getPlayerMoves: sequencer => getInvisibleElfMoves(sequencer),
+    getPlayerMoves: getInvisibleElfMoves,
 
     setup: sequencer => {
         const player = sequencer.playerBattleObject;
@@ -332,11 +333,6 @@ elves[15] = {
                     return moves["photon proxy"];
                 }
                 break;
-            case "smoke bomb":
-                if(Math.random() < 0.15) {
-                    return moves["air purifier"];
-                }
-                break;
             case "sleuth punch":
                 if(sequencer.playerBattleObject.lastMove.failed) {
                     return moves["sneaky punch"];
@@ -345,7 +341,7 @@ elves[15] = {
         }
 
         if(sequencer.globalBattleState.smokeDoses >= 4) {
-            if(Math.random() < 0.6) {
+            if(Math.random() < 0.5) {
                 return moves["air purifier"];
             }
         } else if(sequencer.globalBattleState.smokeDoses >= 3) {
@@ -353,7 +349,7 @@ elves[15] = {
                 return moves["air purifier"];
             }
         } else if(sequencer.globalBattleState.smokeDoses >= 1) {
-            if(Math.random() < 0.15) {
+            if(Math.random() < 0.125) {
                 return moves["air purifier"];
             }
         }
@@ -369,16 +365,26 @@ elves[15] = {
             trapsPlaced: 0,
             postTurnProcess: sequencer => {
 
+                let endEvent = null;
+
                 if(sequencer.globalBattleState.justSetVisualFatigue) {
                     sequencer.globalBattleState.justSetVisualFatigue = false;
                 } else {
                     sequencer.globalBattleState.visualFatigueTurnsLeft--;
                     if(sequencer.globalBattleState.visualFatigueTurnsLeft <= 0) {
-                        sequencer.playerBattleObject.state.visualFatigue = false;
+                        if(sequencer.playerBattleObject.state.visualFatigue) {
+                            sequencer.playerBattleObject.state.visualFatigue = false;
+                            endEvent = {
+                                text: "your visual fatigue has ended",
+                                action: sequencer => setPlayerVisualFatigueSubText(sequencer)
+                            }
+                        } else {
+                            setPlayerVisualFatigueSubText(sequencer);
+                        }
+                    } else {
+                        setPlayerVisualFatigueSubText(sequencer);
                     }
-                    setPlayerVisualFatigueSubText(sequencer);
                 }
-
                 if(sequencer.elfBattleObject.isDead) {
                     return {
                         events: [
@@ -402,7 +408,7 @@ elves[15] = {
                     getInvisibleElfMoves(sequencer)
                 );
 
-                return null;
+                return endEvent;
             }
         }
     },

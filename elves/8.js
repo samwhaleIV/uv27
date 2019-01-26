@@ -293,17 +293,18 @@ addMove({
         const successRate = user.state.isSuperLit ? 0.8 : 0.63;
         if(Math.random() > successRate) {
             return {
+                failed: true,
                 events: turboTextIncremental(
                     sequencer,
                     "but it failed because...",
                     "it's booooooooooooze o' clock!!!",
-                ),
-                failed: true,
+                )
             }
         } else {
             target.dropHealth(user.state.isSuperLit ? 20 : 15);
             return {
-                text: "it was almost a miss"
+                text: "it was almost a miss",
+                animation:target.isElf?{name:"punch"}:null
             }
         }
     }

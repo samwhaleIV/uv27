@@ -174,12 +174,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.drawHealthBar = (context,timestamp,healthBar,target) => {
 
         let xOffset = healthBar.x,yOffset = 0;
-        if(target.jitterHealthBar) {
-            xOffset += Math.floor(Math.random() * 4) - 2;
-            yOffset += Math.floor(Math.random() * 4) - 2;
+        if(target.jitterHealthBar && !this.battleSequencer.battleOver) {
+            xOffset += Math.round(Math.random() * 4) - 2;
+            yOffset += Math.round(Math.random() * 4) - 2;
         }
         if(target.healthBarDrop) {
-            yOffset -= Math.floor(Math.random() * 2) - 1;
+            yOffset -= Math.round(Math.random() * 2) - 1;
         }
 
         const healthBarEnd = Math.floor(this.healthBarWidth * (
@@ -251,10 +251,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
             let elfY = 0;
 
-
             if(this.battleSequencer.elfBattleObject.jitterHealthBar && !this.battleSequencer.battleOver) {
-                elfX += Math.floor(Math.random() * 4) - 2;
-                elfY += Math.floor(Math.random() * 4) - 2;
+                elfX += Math.round(Math.random() * 2) - 1;
+                elfY += Math.round(Math.random() * 2) - 1;
             }
     
             context.drawImage(
@@ -428,24 +427,30 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
                 const yValues = this.playerInputsYValues[i];
 
+                let jitterOffsetX = 0;
+                let jitterOffsetY = 0;
+                if(this.battleSequencer.playerBattleObject.jitterHealthBar && !this.battleSequencer.battleOver) {
+                    jitterOffsetX += Math.round(Math.random() * 6) - 3;
+                    jitterOffsetY += Math.round(Math.random() * 6) - 3;                    
+                }
 
                 if(i === this.hoverEffectIndex && !animating && this.playerInputsEnabled) {
                     context.fillStyle = this.hoverColor;
                     context.fillRect(
-                        this.hoverEffectX,yValues.hoverValue,
+                        this.hoverEffectX+jitterOffsetX,yValues.hoverValue+jitterOffsetY,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
                 } else if(this.firstInputMask && this.hoverEffectIndex !== null && i === 0 && (this.lastEventWasKeyBased || this.hoverEffectIndex === 0)) {
                     context.fillStyle = this.hoverColor;
                     context.fillRect(
-                        this.hoverEffectX,yValues.hoverValue,
+                        this.hoverEffectX+jitterOffsetX,yValues.hoverValue+jitterOffsetY,
                         this.hoverEffectWidth,this.hoverEffectHeight
                     );
                 }
 
                 context.fillStyle = this.fillColor;
                 context.fillRect(
-                    this.playerInputsX + xOffset,yValues.value,
+                    this.playerInputsX + xOffset+jitterOffsetX,yValues.value+jitterOffsetY,
                     this.playerInputsWidth,this.playerInputsHeight
                 );   
                 if(inputText) {

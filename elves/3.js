@@ -177,10 +177,10 @@ elves[2] = {
         sequencer.playerBattleObject.state.money = 5;
         sequencer.playerBattleObject.subText = ["5 coins"];
     },
-    getLoseSpeech: sequencer => {
+    getLoseSpeech: () => {
         return "took you long enough\n*ded*"
     },
-    getWinSpeech: sequencer => {
+    getWinSpeech: () => {
         return "well that's the\nlast time i give\nsomeone a gun"
     },
     getSpeech: sequencer => {

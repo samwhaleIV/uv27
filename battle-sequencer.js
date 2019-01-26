@@ -224,11 +224,10 @@ function BattleSequencer(renderer) {
                 this.elfBattleObject.isDead = true;
                 this.elfBattleObject.isAlive = false;
             }
-        } else {
-            setTimeout(()=>{
-                target.jitterHealthBar = false;
-            },100);
         }
+        setTimeout(()=>{
+            target.jitterHealthBar = false;
+        },100); 
     },
     this.addHealth = (target,amount) => {
         if(!this.sequencerPersisting) {

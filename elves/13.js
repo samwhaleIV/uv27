@@ -44,14 +44,16 @@ addMove({
                 text: "but it slipped through time itself"
             }
         } else if(Math.random() < 0.5) {
-            target.dropHealth(15);
             return {
-                text: "it went through a goat but it worked"
+                text: "it went through a goat but it worked",
+                action: () => target.dropHealth(15),
+                animation: target.isElf ? {name:"punch"}:null
             }
         } else {
-            user.dropHealth(15);
             return {
-                text: "but the fist went backwards"
+                text: "but the fist went backwards",
+                action: () => user.dropHealth(15),
+                animation: user.isElf?{name:"punch"}:null
             }
         }
     }
@@ -234,19 +236,21 @@ addMove({
         }
     }
 });
+const temporalPhaseText = "in temporal phase";
+const ghostPhaseText = "in ghost phase";
 addMove({
     name: "phase shift",
     type: "self",
     process: (sequencer,user,target) => {
         if(user.state.phasedOut) {
             user.state.phasedOut = false;
-            user.subText[1] = "in temporal phase";
+            user.subText[1] = temporalPhaseText;
             return {
                 text: `${user.name} phased into temporal space`
             }
         } else {
             user.state.phasedOut = true;
-            user.subText[1] = "in ghost phase";
+            user.subText[1] = ghostPhaseText;
             return {
                 text: `${user.name} phased out of temporal space`
             }
@@ -467,8 +471,8 @@ elves[12] = {
         sequencer.playerBattleObject.state.jumpCount = 0;
         sequencer.elfBattleObject.state.jumpCount = 0;
 
-        sequencer.playerBattleObject.subText = ["dimension 1","in temporal phase"];
-        sequencer.elfBattleObject.subText = ["dimension 1","in temporal phase"];
+        sequencer.playerBattleObject.subText = ["dimension 1",temporalPhaseText];
+        sequencer.elfBattleObject.subText = ["dimension 1",temporalPhaseText];
 
         sequencer.globalBattleState.dimensionCount = 3;
 

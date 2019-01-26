@@ -314,8 +314,9 @@ addMove({
     process: (sequencer,user,target) => {
         target.dropHealth(9);
         return {
-            failed: true,
-            text: "being lit would've helped"
+            failed: false,
+            text: "being lit would've helped",
+            animation:{name:"punch"}
         }
     }
 });
@@ -633,6 +634,9 @@ elves[13] = {
             sequencer.globalBattleState.time
         ]];
 
+        sequencer.playerBattleObject.state.bullets = 0;
+        sequencer.playerBattleObject.state.loadedBullets = 0;
+
         sequencer.playerBattleObject.state.money = 0;
         sequencer.playerBattleObject.subText = [`${sequencer.playerBattleObject.state.money} coin${sequencer.playerBattleObject.state.money !== 1 ? "s" : ""}`];
 
@@ -761,14 +765,15 @@ elves[13] = {
                         }
                     }
                     if(sequencer.globalBattleState.time === 0) {
+
+                        sequencer.elfBattleObject.state.isLit = false;
+                        sequencer.elfBattleObject.state.isSuperLit = false;
+                        sequencer.elfBattleObject.state.alchoholWarning = false;
+
                         if(sequencer.playerBattleObject.state.isLit || sequencer.playerBattleObject.state.isSuperLit) {
                             sequencer.playerBattleObject.state.isLit = false;
                             sequencer.playerBattleObject.state.isSuperLit = false;
                             sequencer.playerBattleObject.state.alchoholWarning = false;
-
-                            sequencer.elfBattleObject.state.isLit = false;
-                            sequencer.elfBattleObject.state.isSuperLit = false;
-                            sequencer.elfBattleObject.state.alchoholWarning = false;
                             return {
                                 events: [
                                     {
