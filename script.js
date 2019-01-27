@@ -75,11 +75,11 @@ const loadSounds = callback => {
         "audio/reverse-clip.mp3",
 
         "audio/music/Menu Music.ogg",
-        "audio/music/Wimpy Wimpy.ogg",
+        //"audio/music/Wimpy Wimpy.ogg",
 
-        "audio/music/Greed.ogg",
-        "audio/music/Professional Boxer.ogg",
-        "audio/music/Magic.ogg"
+        //"audio/music/Greed.ogg",
+        //"audio/music/Professional Boxer.ogg",
+        //"audio/music/Magic.ogg"
 
         //"audio/music/win.ogg",
         //"audio/music/lose.ogg"
@@ -100,9 +100,27 @@ const loadSounds = callback => {
 
 const animationDictionary = {
     crying: {
-        index: 0,
-        frameCount: 18,
-        frameRate: 40,
+        index: -1,
+        realTime: true,
+        fullDuration: 750,
+        render: (timestamp,x,y,width,height) => {
+            const pixelSize = width / elfSourceWidth;
+            const tearOneX = pixelSize * 4;
+            const tearTwoX = pixelSize * 6;
+
+            const tearYOffset = tearTwoX + pixelSize;
+
+            const timeNormal = (timestamp % animationDictionary.crying.fullDuration) / animationDictionary.crying.fullDuration;
+
+            const tearOneY = ((timeNormal % 1)*16)*pixelSize;
+            const tearTwoY = (((timeNormal+0.5) % 1)*16)*pixelSize;
+
+            context.fillStyle = "rgba(0,82,255,0.32)";
+            context.fillRect(x+tearOneX,y+tearOneY+tearYOffset,pixelSize,pixelSize);
+
+            context.fillStyle = "rgba(0,82,255,0.32)";
+            context.fillRect(x+tearTwoX,y+tearTwoY+tearYOffset,pixelSize,pixelSize);
+        },
         playOnce: false
     },
     robeSmoke: {
@@ -118,9 +136,22 @@ const animationDictionary = {
         playOnce: true
     },
     punch: {
-        index: 3,
-        frameCount: 6,
-        frameRate: 60,
+        index: -2,
+        fullDuration: 60,
+        realTime: true,
+        render: (timestamp,x,y,width,height) => {
+
+            const size = (1 - (timestamp / animationDictionary.punch.fullDuration)) * 100;
+
+            const halfSize = size/2;
+
+            x += Math.round((width / 2) - halfSize);
+            y += Math.round((height / 2) - halfSize);
+
+            context.lineWidth = 8;
+            context.strokeStyle = "red";
+            context.strokeRect(x,y,size,size);
+        },
         playOnce: true
     }
 }
@@ -129,6 +160,10 @@ const loadAnimationMetadata = () => {
     const animationDictionaryKeys = Object.keys(animationDictionary);
     for(let i = 0;i<animationDictionaryKeys.length;i++) {
         const animation = animationDictionary[animationDictionaryKeys[i]];
+
+        if(animation.index < 0) {
+            continue;
+        }
 
         const height = animation.index * elfSourceHeight;
 
@@ -238,6 +273,11 @@ const getEndScreen = () => {
         EndScreenRenderer,
         getSelectScreen
     );
+}
+
+const debug_cheat_everything = () => {
+    localStorage.setItem("elfIndex",26);
+    location.reload();
 }
 
 const getBattleScreen = battleIndex => {

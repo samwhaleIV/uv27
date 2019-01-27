@@ -11,7 +11,10 @@ elves[17] = {
             type: "interface",
             process: sequencer => {
                 sequencer.setRenderLayer(1,!sequencer.elfRenderLayers[1]);
-                return null;
+                return {
+                    text: "toggled layer",
+                    animation:{name:"crying"}
+                };
             }
         },
         {
@@ -19,7 +22,10 @@ elves[17] = {
             type: "interface",
             process: sequencer => {
                 sequencer.setRenderLayer(2,!sequencer.elfRenderLayers[2]);
-                return null;
+                return {
+                    text: "toggled layer",
+                    animation:{name:"crying"}
+                };
             }
         },
         {
@@ -27,7 +33,10 @@ elves[17] = {
             type: "interface",
             process: sequencer => {
                 sequencer.setRenderLayer(3,!sequencer.elfRenderLayers[3]);
-                return null;
+                return {
+                    text: "toggled layer",
+                    animation:{name:"crying"}
+                };
             }
         },
         {
@@ -35,7 +44,10 @@ elves[17] = {
             type: "interface",
             process: sequencer => {
                 sequencer.setRenderLayer(4,!sequencer.elfRenderLayers[4]);
-                return null;
+                return {
+                    text: "toggled layer",
+                    animation:{name:"crying"}
+                };
             }
         }
     ]

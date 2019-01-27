@@ -373,8 +373,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
         this.background.renderNormal(context,timestamp,width,height);
 
-
-
         if(this.elf.defaultRenderLayers) {
             for(let i = 0;i<this.elf.defaultRenderLayers.length;i++) {
                 if(this.elf.defaultRenderLayers[i]) {

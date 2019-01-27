@@ -20,9 +20,10 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.halfWidth = canvas.width / 2;
 
-    this.elfWidth = 180;
     this.elfHeight = 372;
-    this.elfCenterX = Math.floor(this.halfWidth - (this.elfWidth / 2));
+    this.elfWidth = Math.round((elfSourceWidth / elfSourceHeight) * this.elfHeight);
+
+    this.elfCenterX = Math.round(this.halfWidth - (this.elfWidth / 2));
     this.fader = getFader();
     this.background = !isBoss ? new Background(this.elf.background,this.elf.backgroundColor,backgroundCycleTime) : new BossBackground(backgroundCycleTime);
     this.elfX = this.elfCenterX;
@@ -274,28 +275,18 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     if(!this.battleSequencer.activeAnimation.complete) {
 
                         if(!this.battleSequencer.activeAnimation.playing) {
+
                             this.battleSequencer.activeAnimation.startTime = timestamp;
                             this.battleSequencer.activeAnimation.playing = true;
                             this.battleSequencer.activeAnimation.complete = false;
 
-                            const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
-                            context.drawImage(
-                                imageDictionary["animation-effects"],
-                                animation.frameBounds[frameNumber],animation.y,
-                                elfSourceWidth,elfSourceHeight,
-                                elfX,elfY,this.elfWidth,this.elfHeight
-                            );
-                        } else {
+                            if(animation.realTime) {
 
-                            const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime
+                                animation.render(0,elfX,elfY,this.elfWidth,this.elfHeight);
 
-                            const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
-
-
-                            if(frameNumber >= animation.frameCount) {
-                                this.battleSequencer.activeAnimation.complete = true;
-                                this.battleSequencer.activeAnimation.playing = false;
                             } else {
+    
+                                const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
                                 context.drawImage(
                                     imageDictionary["animation-effects"],
                                     animation.frameBounds[frameNumber],animation.y,
@@ -303,18 +294,51 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                                     elfX,elfY,this.elfWidth,this.elfHeight
                                 );
                             }
-                        }
 
+                        } else {
+
+                            const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime;
+
+                            if(animation.realTime) {
+
+                                if(timestampDifference >= animation.fullDuration) {
+                                    this.battleSequencer.activeAnimation.complete = true;
+                                    this.battleSequencer.activeAnimation.playing = false;                                    
+                                } else {
+                                    animation.render(timestampDifference,elfX,elfY,this.elfWidth,this.elfHeight);
+                                }
+
+                            } else {
+
+                                const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
+    
+                                if(frameNumber >= animation.frameCount) {
+                                    this.battleSequencer.activeAnimation.complete = true;
+                                    this.battleSequencer.activeAnimation.playing = false;
+                                } else {
+                                    context.drawImage(
+                                        imageDictionary["animation-effects"],
+                                        animation.frameBounds[frameNumber],animation.y,
+                                        elfSourceWidth,elfSourceHeight,
+                                        elfX,elfY,this.elfWidth,this.elfHeight
+                                    );
+                                }
+                            }
+                        }
 
                     }
                 } else {
-                    const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
-                    context.drawImage(
-                        imageDictionary["animation-effects"],
-                        animation.frameBounds[frameNumber],animation.y,
-                        elfSourceWidth,elfSourceHeight,
-                        elfX,elfY,this.elfWidth,this.elfHeight
-                    );
+                    if(animation.realTime) {
+                        animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight);
+                    } else {
+                        const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
+                        context.drawImage(
+                            imageDictionary["animation-effects"],
+                            animation.frameBounds[frameNumber],animation.y,
+                            elfSourceWidth,elfSourceHeight,
+                            elfX,elfY,this.elfWidth,this.elfHeight
+                        );
+                    }
                 }
             }
         }
