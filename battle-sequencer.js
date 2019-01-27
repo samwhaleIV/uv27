@@ -157,6 +157,10 @@ function BattleSequencer(renderer) {
         this.skipHandles.push(setSkippableTimeout(renderer.winCallback,duration));
     }
 
+    if(this.elf.getDefaultBattleState) {
+        console.warn("Battle sequencer: Did you mean getDefaultGlobalState? You typed getDefaultBattleState");
+    }
+
     this.globalBattleState = this.elf.getDefaultGlobalState ?
         this.elf.getDefaultGlobalState():{}
 

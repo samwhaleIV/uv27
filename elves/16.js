@@ -334,7 +334,7 @@ elves[15] = {
                 }
                 break;
             case "sleuth punch":
-                if(sequencer.playerBattleObject.lastMove.failed) {
+                if(sequencer.playerBattleObject.lastMoveFailed) {
                     return moves["sneaky punch"];
                 }
                 break;
