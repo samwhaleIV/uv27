@@ -172,7 +172,7 @@ function BattleSequencer(renderer) {
     }
 
     this.elfRenderLayers = this.elf.defaultRenderLayers?
-        this.elf.defaultRenderLayers : [true];
+        [...this.elf.defaultRenderLayers] : [true];
 
     this.setRenderLayer = (index,shown) => {
         this.elfRenderLayers[index] = shown;
