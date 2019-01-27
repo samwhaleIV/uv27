@@ -171,6 +171,13 @@ function BattleSequencer(renderer) {
         this.globalBattleState.postTurnProcess = null;
     }
 
+    this.elfRenderLayers = this.elf.defaultRenderLayers?
+        this.elf.defaultRenderLayers : [true];
+
+    this.setRenderLayer = (index,shown) => {
+        this.elfRenderLayers[index] = shown;
+    }
+
     this.playerHasDied = false;
     this.elfHasDied = false;
 
@@ -179,8 +186,8 @@ function BattleSequencer(renderer) {
         isElf: false,
         isDead: false,
         isAlive: true,
-        health: 100,
-        maxHealth: 100,
+        health: this.elf.playerHealth ? this.elf.playerHealth : 100,
+        maxHealth: this.elf.playerHealth ? this.elf.playerHealth : 100,
         jitterHealthBar: false,
         healthBarDrop: false,
         name: "you",
@@ -190,7 +197,7 @@ function BattleSequencer(renderer) {
         movePreProcess: null,
         subText: null,
         dropHealth: amount => this.dropHealth(this.playerBattleObject,amount),
-        addHealth: amount => this.addHealth(this.playerBattleObject,amount)
+        addHealth: amount => this.addHealth(this.playerBattleObject,amount),
     };
     this.elfBattleObject = {
         isPlayer: false,

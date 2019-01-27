@@ -255,12 +255,16 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 elfX += Math.round(Math.random() * 2) - 1;
                 elfY += Math.round(Math.random() * 2) - 1;
             }
-    
-            context.drawImage(
-                imageDictionary["elves"],
-                this.elf.x,0,elfSourceWidth,elfSourceHeight,
-                elfX,elfY,this.elfWidth,this.elfHeight
-            );
+
+            for(let i = 0;i<this.battleSequencer.elfRenderLayers.length;i++) {
+                if(this.battleSequencer.elfRenderLayers[i]) {
+                    context.drawImage(
+                        imageDictionary[`elves-layer-${i}`],
+                        this.elf.x,0,elfSourceWidth,elfSourceHeight,
+                        elfX,elfY,this.elfWidth,this.elfHeight
+                    );
+                }
+            }
 
             if(this.battleSequencer.activeAnimation) {
 

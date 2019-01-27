@@ -373,11 +373,25 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
         this.background.renderNormal(context,timestamp,width,height);
 
-        context.drawImage(
-            imageDictionary["elves"],
-            this.elf.x,0,elfSourceWidth,elfSourceHeight,
-            this.elfX,this.elfY,this.elfWidth,this.elfHeight
-        );
+
+
+        if(this.elf.defaultRenderLayers) {
+            for(let i = 0;i<this.elf.defaultRenderLayers.length;i++) {
+                if(this.elf.defaultRenderLayers[i]) {
+                    context.drawImage(
+                        imageDictionary[`elves-layer-${i}`],
+                        this.elf.x,0,elfSourceWidth,elfSourceHeight,
+                        this.elfX,this.elfY,this.elfWidth,this.elfHeight
+                    );
+                }
+            }
+        } else {
+            context.drawImage(
+                imageDictionary["elves-layer-0"],
+                this.elf.x,0,elfSourceWidth,elfSourceHeight,
+                this.elfX,this.elfY,this.elfWidth,this.elfHeight
+            );
+        }
 
         drawTextWhite(this.text,this.textX,this.textY,this.textScale);
         drawTextWhite(this.currentIndexText,15,15,3);

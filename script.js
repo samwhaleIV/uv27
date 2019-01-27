@@ -166,7 +166,12 @@ const loadImages = callback => {
         "images/backgrounds/background-8.png",
         "images/backgrounds/background-9.png",
     
-        "images/elves.png",
+        "images/elves-layer-0.png",
+        "images/elves-layer-1.png",
+        "images/elves-layer-2.png",
+        "images/elves-layer-3.png",
+        "images/elves-layer-4.png",
+
         "images/end-screen.png",
 
         "images/animation-effects.png"
@@ -308,6 +313,13 @@ const debug_scroll_speed = seconds => {
         console.log("The number of seconds can be non-integer, e.g. 1.2, 0.9, 69.69");
         rendererState.background.cycleTime = seconds * 1000;
     }
+}
+let seq, seqPlayer, seqElf;
+const debug_seq = () => {
+    seq = rendererState.battleSequencer;
+    seqPlayer = seq.playerBattleObject;
+    seqElf = seq.elfBattleObject;
+    console.log("Use seq. now to access an active battle sequencer");
 }
 
 const debug_polar_inversion = () => {

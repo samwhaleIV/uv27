@@ -152,7 +152,7 @@ addMove({
             text: eventText,
             process: sequencer => {
                 target.dropHealth(maniacalSlashDamage);
-                sequencer.playerBattleObject.forcedBloodLoss = true;
+                sequencer.playerBattleObject.state.forcedBloodLoss = true;
                 sequencer.updatePlayerMoves(getRogueElfPlayerMoves(sequencer));
             }
         }
@@ -193,7 +193,7 @@ addMove({
 addMove({
     name: "interference",
     type: "target",
-    proces: (sequencer,user,target) => {
+    process: (sequencer,user,target) => {
         if(target.state.inCombo) {
             return {
                 text: "you broke rogue elf's combo",
@@ -256,7 +256,7 @@ addMove({
                     text: eventText,
                     process: sequencer => {
                         user.dropBlood(bloodLossAmount);
-                        sequencer.playerBattleObject.forcedBloodLoss = false;
+                        sequencer.playerBattleObject.state.forcedBloodLoss = false;
                         sequencer.updatePlayerMoves(getRogueElfPlayerMoves(sequencer));
                     }
                 },
@@ -280,7 +280,7 @@ addMove({
 });
 
 const getRogueElfPlayerMoves = sequencer => {
-    if(sequencer.playerBattleObject.forcedBloodLoss) {
+    if(sequencer.playerBattleObject.state.forcedBloodLoss) {
         return [moves["blood loss"]];
     }
     return [
@@ -314,16 +314,8 @@ const getRogueElfElfMove = sequencer => {
                 return moves[moveOrder[2]];
         }
     }
-    
-    switch(sequencer.playerBattleObject.lastMove) {
-        case "interference":
-            if(!sequencer.playerBattleObject.lastMoveFailed) {
-                return Math.random() > 0.5 ? moves["maniacal slash"] : moves["i hate santa"];
-            }
-            break;
-    }
 
-    const moveSequence = ["decent punch","i hate santa","maniacal slash","i hate santa","maniacal slash","i hate santa","band aid"];
+    const moveSequence = ["decent punch","i hate santa","maniacal slash","decent punch","i hate santa","decent punch","maniacal slash","i hate santa","maniacal slash","band aid"];
     return moves[moveSequence[sequencer.turnNumber%moveSequence.length]];
 }
 
