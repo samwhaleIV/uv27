@@ -7,9 +7,6 @@ addMove({
                 failed: true,
                 events: [
                     {
-                        text: "but it failed"
-                    },
-                    {
                         text: "invisible elf is already found"
                     }
                 ]
@@ -17,7 +14,12 @@ addMove({
         }
         if(user.state.visualFatigue) {
             return {
-                failed: true
+                failed: true,
+                events: [
+                    {
+                        text: "your eyeballs are too tired for that"
+                    }
+                ]
             }
         } else {
             target.state.searched = true;
@@ -37,9 +39,6 @@ addMove({
                 failed: true,
                 events: [
                     {
-                        text: "but it failed"
-                    },
-                    {
                         text: "invisible elf hasn't been detected"
                     }
                 ]
@@ -49,9 +48,6 @@ addMove({
             return {
                 failed: true,
                 events: [
-                    {
-                        text: "but it failed"
-                    },
                     {
                         text: "you are visually fatigued"
                     }

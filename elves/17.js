@@ -168,9 +168,6 @@ addMove({
                 failed: true,
                 events: [
                     {
-                        text: "but it failed"
-                    },
-                    {
                         text: "you already have maximum blood"
                     }
                 ]
@@ -206,9 +203,6 @@ addMove({
             return {
                 failed: true,
                 events: [
-                    {
-                        text: "but it failed"
-                    },
                     {
                         text: "rogue elf isn't making a combo right now"
                     }
@@ -448,8 +442,8 @@ elves[16] = {
 
     startText: "blood heals you - but run out and you'll die",
 
-    getLoseSpeech: () => "there's alway a\nbigger fish.",
-    getWinSpeech: () => "predictable.",
+    getLoseSpeech: () => {return{text:"there's alway a\nbigger fish."}},
+    getWinSpeech: () => {return{text:"predictable."}},
 
     setup: setupRogueElfBattle,
     getMove: getRogueElfElfMove,

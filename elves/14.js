@@ -332,9 +332,6 @@ addMove({
                     failed: true,
                     events: [
                         {
-                            text: "but it failed"
-                        },
-                        {
                             text: "the saloon is out of stools. sorry."
                         },
                         {

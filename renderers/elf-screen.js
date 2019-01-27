@@ -274,19 +274,24 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
                     if(!this.battleSequencer.activeAnimation.complete) {
 
-                        if(!this.battleSequencer.activeAnimation.playing) {
+                        const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime;
 
-                            this.battleSequencer.activeAnimation.startTime = timestamp;
-                            this.battleSequencer.activeAnimation.playing = true;
-                            this.battleSequencer.activeAnimation.complete = false;
+                        if(animation.realTime) {
 
-                            if(animation.realTime) {
-
-                                animation.render(0,elfX,elfY,this.elfWidth,this.elfHeight);
-
+                            if(timestampDifference >= animation.fullDuration) {
+                                this.battleSequencer.activeAnimation.complete = true;
+                                this.battleSequencer.activeAnimation.playing = false;                                    
                             } else {
-    
-                                const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
+                                animation.render(timestampDifference,elfX,elfY,this.elfWidth,this.elfHeight);
+                            }
+
+                        } else {
+
+                            const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
+
+                            if(frameNumber >= animation.frameCount) {
+                                this.battleSequencer.activeAnimation.complete = true;
+                            } else {
                                 context.drawImage(
                                     imageDictionary["animation-effects"],
                                     animation.frameBounds[frameNumber],animation.y,
@@ -294,39 +299,10 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                                     elfX,elfY,this.elfWidth,this.elfHeight
                                 );
                             }
-
-                        } else {
-
-                            const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime;
-
-                            if(animation.realTime) {
-
-                                if(timestampDifference >= animation.fullDuration) {
-                                    this.battleSequencer.activeAnimation.complete = true;
-                                    this.battleSequencer.activeAnimation.playing = false;                                    
-                                } else {
-                                    animation.render(timestampDifference,elfX,elfY,this.elfWidth,this.elfHeight);
-                                }
-
-                            } else {
-
-                                const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
-    
-                                if(frameNumber >= animation.frameCount) {
-                                    this.battleSequencer.activeAnimation.complete = true;
-                                    this.battleSequencer.activeAnimation.playing = false;
-                                } else {
-                                    context.drawImage(
-                                        imageDictionary["animation-effects"],
-                                        animation.frameBounds[frameNumber],animation.y,
-                                        elfSourceWidth,elfSourceHeight,
-                                        elfX,elfY,this.elfWidth,this.elfHeight
-                                    );
-                                }
-                            }
                         }
 
                     }
+
                 } else {
                     if(animation.realTime) {
                         animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight);
@@ -458,8 +434,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 let jitterOffsetX = 0;
                 let jitterOffsetY = 0;
                 if(this.battleSequencer.playerBattleObject.jitterHealthBar && !this.battleSequencer.battleOver) {
-                    jitterOffsetX += Math.round(Math.random() * 6) - 3;
-                    jitterOffsetY += Math.round(Math.random() * 6) - 3;                    
+                    jitterOffsetX += Math.round(Math.random() * 2) - 1;
+                    jitterOffsetY += Math.round(Math.random() * 2) - 1;                    
                 }
 
                 if(i === this.hoverEffectIndex && !animating && this.playerInputsEnabled) {

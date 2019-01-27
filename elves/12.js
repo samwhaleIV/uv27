@@ -284,10 +284,10 @@ elves[11] = {
     },
 
     getLoseSpeech: sequencer => {
-        return "looks like i'm bested\n\ni feel like i was\ndesigned with a\ndisadvantage *cough*\ni don't even have legs"
+        return {text:"looks like i'm bested\n\ni feel like i was\ndesigned with a\ndisadvantage *cough*\ni don't even have legs"};
     },
     getWinSpeech: sequencer => {
-        return "i did this for red elfette\nher blood is\non your hands...\n\nnow yours is on mine."
+        return {text:"i did this for red elfette\nher blood is\non your hands...\n\nnow yours is on mine."};
     },
 
     getSpeech: sequencer => {

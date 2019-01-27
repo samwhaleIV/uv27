@@ -19,11 +19,11 @@ elves[4] = {
         moves["wimpy punch"],
         moves["punching vitamins"]
     ],
-    getWinSpeech: sequencer => {
-        return "i told you i was\na good boxer\nsee ya around"
+    getWinSpeech: () => {
+        return {text:"i told you i was\na good boxer\nsee ya around"}
     },
-    getLoseSpeech: sequencer => {
-        return "this is...\nimpossible"
+    getLoseSpeech: () => {
+        return {text:"this is...\nimpossible"}
     },
     startSpeech: {
         text: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best"

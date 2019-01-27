@@ -6,9 +6,8 @@ elves[0] = {
     song: "Wimpy Wimpy",
     backgroundCycleTime: 35000,
 
-    getMove: sequencer => {
-        return moves["cry"];
-    },
+    getMove: () => moves["cry"],
+
     getSpeech: sequencer => {
         const elfBattleObject = sequencer.elfBattleObject;
 
@@ -28,6 +27,16 @@ elves[0] = {
     ],
     health: 100,
 
-    getWinSpeech: () => "bye\nthanks for stopping by\ncome again some time",
-    getLoseSpeech: () => "*cue famous last words*\ni am one but we are many\n*dies*"
+    winSpeech: "bye\nthanks for stopping by\ncome again some time",
+
+    getLoseSpeech: () => {
+        return {
+            text:"*cue famous last words*\ni am one but we are many\n*dies*",
+            action: sequencer => {
+                if(sequencer.elfBattleObject.state.isCrying) {
+                    sequencer.showAnimation({name:"crying"});
+                }
+            }
+        }
+    }
 }

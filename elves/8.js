@@ -478,16 +478,16 @@ elves[7] = {
     },
     getWinSpeech: sequencer => {
         if(sequencer.playerBattleObject.state.alchoholOD) {
-            return "rip\nshouldn't drink so much"
+            return {text:"rip\nshouldn't drink so much"};
         } else {
-            return "looks like you've been...\nb o n e d"
+            return {text:"looks like you've been...\nb o n e d"};
         }
     },
     getLoseSpeech: sequencer => {
         if(sequencer.elfBattleObject.state.alchoholOD) {
-            return "errrr\nderrr...\nblurbbb..\n\n*ded*"
+            return {text:"errrr\nderrr...\nblurbbb..\n\n*ded*"};
         } else {
-            return "damn...\ni've been... boned"
+            return {text:"damn...\ni've been... boned"};
         }
     },
     setup: sequencer => {

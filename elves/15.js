@@ -81,9 +81,6 @@ addMove({
                     failed: true,
                     events: [
                         {
-                            text: "but it failed"
-                        },
-                        {
                             text: "it's too cold for a fiery fist"
                         }
                     ]
@@ -165,7 +162,6 @@ addMove({
             return {
                 failed: true,
                 events: [
-                    {text: "but it failed"},
                     {text: "there are no antifreezes right now"}
                 ]
             }
@@ -187,9 +183,6 @@ addMove({
             return {
                 failed: true,
                 events: [
-                    {
-                        text: "but it failed"
-                    },
                     {
                         text: "antifreeze prevents ice cube use"
                     }
@@ -231,9 +224,6 @@ addMove({
                 failed: true,
                 events: [
                     {
-                        text: "but it failed"
-                    },
-                    {
                         text: "you don't have any wounds"
                     }
                 ]
@@ -243,9 +233,6 @@ addMove({
             return {
                 failed: true,
                 events: [
-                    {
-                        text: "but it failed"
-                    },
                     {
                         text: "antifreeze prevents icy band aids!"
                     }

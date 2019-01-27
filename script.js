@@ -275,11 +275,6 @@ const getEndScreen = () => {
     );
 }
 
-const debug_cheat_everything = () => {
-    localStorage.setItem("elfIndex",26);
-    location.reload();
-}
-
 const getBattleScreen = battleIndex => {
     elfIndex = battleIndex;
     if(battleIndex === 26) {
@@ -338,11 +333,14 @@ const gameLoop = () => {
 
 }
 
+const debug_cheat_everything = () => {
+    localStorage.setItem("elfIndex",26);
+    location.reload();
+}
 const debug_reset = () => {
     localStorage.clear();
     location.reload();
 }
-
 const debug_toggle_stream_mode = () => {
     backgroundStreamMode = !backgroundStreamMode;
 }
@@ -354,30 +352,13 @@ const debug_scroll_speed = seconds => {
         rendererState.background.cycleTime = seconds * 1000;
     }
 }
+
 let seq, seqPlayer, seqElf;
 const debug_seq = () => {
     seq = rendererState.battleSequencer;
     seqPlayer = seq.playerBattleObject;
     seqElf = seq.elfBattleObject;
-    console.log("Use seq. now to access an active battle sequencer");
-}
-
-const debug_polar_inversion = () => {
-    rendererState.fader = new polarInversionRenderer();
-}
-const debug_polar_set = () => {
-
-    const radialRange = 100000;
-
-    const amountRange = 7;
-
-    const amount = (Math.random() * amountRange * 2) - amountRange;
-    const radius = Math.floor(Math.random() * radialRange * 2) - radialRange;
-
-    rendererState.fader.radiusSquared = radius;
-    rendererState.fader.amount = amount;
-
-    console.log(radius,amount);
+    console.log("You can now use seq, seqPlayer, and seqElf shorthand");
 }
 
 const getRandomSelections = (options,selectionCount,selectionMapper) => {

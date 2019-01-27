@@ -200,13 +200,13 @@ elves[5] = {
     song: "Greed",
     health: 200,
     getLoseSpeech: () => {
-        return "a golden elf\nwithout gold\nis not an elf at all\n\nit's not worth living\n*ded*"
+        return {text:"a golden elf\nwithout gold\nis not an elf at all\n\nit's not worth living\n*ded*"}
     },
     getWinSpeech: sequencer => {
         if(sequencer.elfBattleObject.lastMove === "nutcracker" && sequencer.playerBattleObject.lastMove === "take gold") {
-            return "don't say i didn't\nwarn you that this\nwould happen";
+            return {text:"don't say i didn't\nwarn you that this\nwould happen"};
         }
-        return "next time stay away\nfrom my lucky charms";
+        return {text:"next time stay away\nfrom my lucky charms"};
     },
     playerMoves: [
         moves["take gold"],

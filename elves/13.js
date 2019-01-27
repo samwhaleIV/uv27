@@ -421,10 +421,10 @@ elves[12] = {
     },
 
     getLoseSpeech: sequencer => {
-        return "welcome to hell.\n\nis this the end\nor is it only just\nthe beginning?"
+        return {text:"welcome to hell.\n\nis this the end\nor is it only just\nthe beginning?"}
     },
     getWinSpeech: sequencer => {
-        return "welcome to the void\nthere's only one way out"
+        return {text:"welcome to the void\nthere's only one way out"}
     },
 
     playerMoves: playerMoveSetsByDimensions[0],

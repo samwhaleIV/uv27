@@ -98,11 +98,17 @@ function BattleSequencer(renderer) {
         renderer.firstInputMask = "game over";
 
         let duration = endScreenLength;
-        if(this.elf.getWinSpeech) {
-            const speech = this.elf.getWinSpeech(this);
-            if(speech) {
-                this.showElfSpeech(speech,0,Infinity);
-                duration += this.getTextDuration(speech);
+        if(this.elf.getWinSpeech || this.elf.winSpeech) {
+            const speech = this.elf.winSpeech ? {text:this.elf.winSpeech} : this.elf.getWinSpeech(this);
+            if(speech.text) {
+                this.showElfSpeech(speech.text,0,Infinity);
+                duration += this.getTextDuration(speech.text);
+            }
+            if(speech.action) {
+                speech.action(this);//This is really only useful for setting elfRenderLayers
+            }
+            if(speech.animation) {
+                this.showAnimation(speech.animation);
             }
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
@@ -133,11 +139,17 @@ function BattleSequencer(renderer) {
         renderer.firstInputMask = "a job well done";
 
         let duration = endScreenLength;
-        if(this.elf.getLoseSpeech) {
-            const speech = this.elf.getLoseSpeech(this);
-            if(speech) {
-                this.showElfSpeech(speech,0,Infinity);
-                duration += this.getTextDuration(speech);
+        if(this.elf.getLoseSpeech || this.elf.loseSpeech) {
+            const speech = this.elf.loseSpeech ? {text:this.elf.loseSpeech} : this.elf.getLoseSpeech(this);
+            if(speech.text) {
+                this.showElfSpeech(speech.text,0,Infinity);
+                duration += this.getTextDuration(speech.text);
+            }
+            if(speech.action) {
+                speech.action(this);
+            }
+            if(speech.animation) {
+                this.showAnimation(speech.animation);
             }
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
@@ -176,6 +188,10 @@ function BattleSequencer(renderer) {
 
     this.setRenderLayer = (index,shown) => {
         this.elfRenderLayers[index] = shown;
+    }
+
+    this.toggleRenderLayer = index => {
+        this.elfRenderLayers[index] = !this.elfRenderLayers[index];
     }
 
     this.playerHasDied = false;
@@ -359,10 +375,14 @@ function BattleSequencer(renderer) {
                     console.error(`Error: Move '${processedMove.name ? processedMove.name : "<Missing name>"}' is missing a process method`);
                 }
             }
-            if(moveResult && moveResult.failed === true && !moveResult.text && !moveResult.events) {
-                moveResult = {
-                    failed: true,
-                    text: "but it failed"
+            if(moveResult && moveResult.failed === true) {
+                if(!moveResult.text && !moveResult.events) {
+                    moveResult = {
+                        failed: true,
+                        text: "but it failed"
+                    }
+                } else if(moveResult.events) {
+                    moveResult.events = [{text:"but it failed"},...moveResult.events];
                 }
             }
         }
@@ -614,6 +634,10 @@ function BattleSequencer(renderer) {
     this.activeAnimation = null;
     this.showAnimation = animation => {
         console.log("Battle sequencer: Showing animation",animation);
+        if(animationDictionary[animation.name].playOnce) {
+            animation.completed = false;
+            animation.startTime = performance.now();
+        }
         this.activeAnimation = animation;
     }
     this.clearAnimation = () => {

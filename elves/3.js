@@ -178,10 +178,10 @@ elves[2] = {
         sequencer.playerBattleObject.subText = ["5 coins"];
     },
     getLoseSpeech: () => {
-        return "took you long enough\n*ded*"
+        return {text:"took you long enough\n*ded*"}
     },
     getWinSpeech: () => {
-        return "well that's the\nlast time i give\nsomeone a gun"
+        return {text:"well that's the\nlast time i give\nsomeone a gun"}
     },
     getSpeech: sequencer => {
         if(sequencer.elfBattleObject.lastMove !== "chit chat") {
