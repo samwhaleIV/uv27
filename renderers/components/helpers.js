@@ -7,11 +7,13 @@ const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minSh
 
     const shadeRange = maxShade - minShade;
 
-    const horizontalGrain = Math.ceil(width / grainSize);
-    const verticalGrain = Math.ceil(height / grainSize);
+    let horizontalGrain = Math.ceil(width / grainSize);
+    let verticalGrain = Math.ceil(height / grainSize);
 
-    const xOffset = ((horizontalGrain * grainSize) - width) / 2;
-    const yOffset = ((verticalGrain * grainSize) - height) / 2;
+    const xOffset = Math.floor(((horizontalGrain * grainSize) - width) / 2);
+    const yOffset = Math.floor(((verticalGrain * grainSize) - height) / 2);
+
+    grainSize = Math.ceil(grainSize);
 
     for(let x = 0;x<horizontalGrain;x++) {
         for(let y = 0;y<verticalGrain;y++) {

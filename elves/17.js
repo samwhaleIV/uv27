@@ -142,7 +142,7 @@ const maniacLyrics = [
 
 addMove({
     name: "maniacal slash",
-    name: "target",
+    type: "target",
     process: (sequencer,user,target) => {
         let eventText = null;
         if(user.state.slashLyric < maniacLyrics.length) {
@@ -150,7 +150,7 @@ addMove({
         }
         return {
             text: eventText,
-            process: sequencer => {
+            action: sequencer => {
                 target.dropHealth(maniacalSlashDamage);
                 sequencer.playerBattleObject.state.forcedBloodLoss = true;
                 sequencer.updatePlayerMoves(getRogueElfPlayerMoves(sequencer));
@@ -179,7 +179,7 @@ addMove({
         if(Math.random() > 0.5) {
             return {
                 text: "your blood type was in stock",
-                process: () => user.addBlood(bloodBankGains)
+                action: () => user.addBlood(bloodBankGains)
             }
         } else {
             return {
@@ -247,14 +247,14 @@ addMove({
     type: "self",
     process: (sequencer,user) => {
         let eventText = null;
-        if(user.state.slashLyric < maniacLyrics.length) {
-            eventText = `'${maniacLyrics[user.state.slashLyric++]}'`;
+        if(sequencer.elfBattleObject.state.slashLyric < maniacLyrics.length) {
+            eventText = `'${maniacLyrics[sequencer.elfBattleObject.state.slashLyric++]}'`;
         }
         return {
             events: [
                 {
                     text: eventText,
-                    process: sequencer => {
+                    action: sequencer => {
                         user.dropBlood(bloodLossAmount);
                         sequencer.playerBattleObject.state.forcedBloodLoss = false;
                         sequencer.updatePlayerMoves(getRogueElfPlayerMoves(sequencer));
@@ -293,14 +293,22 @@ const getRogueElfPlayerMoves = sequencer => {
 const getRogueElfElfMove = sequencer => {
 
     if(sequencer.elfBattleObject.state.phasedOut) {
+        if(sequencer.elfBattleObject.state.inCombo) {
+            sequencer.elfBattleObject.state.inCombo = false;
+            updateComboSubText(sequencer);
+        }
         if(sequencer.elfBattleObject.state.health >= sequencer.elfBattleObject.state.maxHealth) {
             return moves["phase shift"];
         } else {
-            return moves["i hate santa"]; //This move heals lol
+            return moves["i hate santa"];
         }
     }
 
     if(sequencer.elfBattleObject.health <= 125) {
+        if(sequencer.elfBattleObject.state.inCombo) {
+            sequencer.elfBattleObject.state.inCombo = false;
+            updateComboSubText(sequencer);
+        }
         return moves["phase shift"];
     }
 
@@ -312,6 +320,12 @@ const getRogueElfElfMove = sequencer => {
                 return moves[moveOrder[1]];
             case moveOrder[1]:
                 return moves[moveOrder[2]];
+        }
+    }
+
+    if(sequencer.playerBattleObject.lastMove === "interference" && !sequencer.playerBattleObject.lastMoveFailed) {
+        if(Math.random() < 0.7) {
+            moves["maniacal slash"];
         }
     }
 
@@ -328,7 +342,7 @@ const updatePlayerBloodSubText = sequencer =>
     sequencer.playerBattleObject.subText[0] = getBloodSubText(sequencer.playerBattleObject.state.blood);
 
 const updateComboSubText = sequencer =>
-    sequencer.elfBattleObject.subText[2] = sequencer.elfBattleObject.state.inCombo ? `combo - ${sequencer.elfBattleObject.state.comboIndex+1} of 3` : "";
+    sequencer.elfBattleObject.subText[2] = sequencer.elfBattleObject.state.inCombo ? `combo stage - ${sequencer.elfBattleObject.state.comboIndex+1} of 3` : "";
 
 const updateBloodSubTexts = sequencer => {
     updateElfBloodSubText(sequencer);
@@ -411,13 +425,15 @@ const extraComboDamage = 40;
 
 const ihatesantaHealAmount = 100;
 
-const vampireBloodSwapAmount = 15;
-const elfmartSwordDamage = 100;
+const vampireBloodSwapAmount = 10;
+const elfmartSwordDamage = 150;
 
-const maniacalSlashDamage = 5;
-const bloodLossAmount = 15;
+const maniacalSlashDamage = 25;
+const bloodLossAmount = 20;
 
 const bloodBankGains = 15;
+
+const rogueElfBloodRegenAmount = 4;
 
 const getHealthRegenAmount = blood => Math.ceil(blood / 4);
 
@@ -455,6 +471,19 @@ elves[16] = {
                 }
 
                 const endEvents = [];
+
+                if(sequencer.elfBattleObject.state.blood < 100) {
+                    endEvents.push({
+                        text: "rogue elf regenerated some blood",
+                        action: () => {
+                            sequencer.elfBattleObject.state.blood += rogueElfBloodRegenAmount;
+                            if(sequencer.elfBattleObject.state.blood >= 100) {
+                                sequencer.elfBattleObject.state.blood = 100;
+                            }
+                            updateElfBloodSubText(sequencer);
+                        }
+                    });
+                }
 
                 if(sequencer.playerBattleObject.health < sequencer.playerBattleObject.maxHealth) {
                     const regenAmount = getHealthRegenAmount(sequencer.playerBattleObject.state.blood);
