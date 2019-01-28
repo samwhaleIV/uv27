@@ -515,7 +515,7 @@ function BattleSequencer(renderer) {
                         elfSpeech,0,
                         speechPersistence ? Infinity : this.getTextDuration(elfSpeech) * 1.33,
                         speechAnimation?()=>{
-                            this.clearAnimation();
+                            this.clearAnimation(speechAnimation.name);
                             this.returnInput();
                         }:this.returnInput
                     );
@@ -590,16 +590,16 @@ function BattleSequencer(renderer) {
                         event.speech,0,
                         this.getTextDuration(event.speech),
                         hasAnimation?()=>{
-                            if(!this.activeAnimation.persist || shouldEndCallback) {
-                                this.clearAnimation();
+                            if(!this.activeAnimations[this.activeAnimationLookup[event.animation.name]].persist || shouldEndCallback) {
+                                this.clearAnimation(event.animation.name);
                             }
                             callback();
                         }:callback
                     );
                 } else {
                     if(hasAnimation) {
-                        if(!this.activeAnimation.persist || shouldEndCallback) {
-                            this.clearAnimation();
+                        if(!this.activeAnimations[this.activeAnimationLookup[event.animation.name]].persist || shouldEndCallback) {
+                            this.clearAnimation(event.animation.name);
                         }
                     }
                     callback();
@@ -619,7 +619,7 @@ function BattleSequencer(renderer) {
                 event.speech,0,
                 event.persist?Infinity:this.getTextDuration(event.speech),
                 hasAnimation?()=>{
-                    this.clearAnimation();
+                    this.clearAnimation(event.animation.name);
                     callback();
                 }:callback
             );
@@ -631,20 +631,27 @@ function BattleSequencer(renderer) {
         }
     }
 
-    this.activeAnimation = null;
+    this.activeAnimations = [];
+    this.activeAnimationLookup = {};
     this.showAnimation = animation => {
         console.log("Battle sequencer: Showing animation",animation);
         if(animationDictionary[animation.name].playOnce) {
             animation.completed = false;
         }
         animation.startTime = performance.now();
-        this.activeAnimation = animation;
+        this.activeAnimationLookup[animation.name] = this.activeAnimations.length;
+        this.activeAnimations.push(animation);
     }
-    this.clearAnimation = () => {
-        if(this.activeAnimation) {
+    this.hasAnimation = name => this.activeAnimationLookup[name] >= 0;
+    this.clearAnimation = name => {
+        const lookupIndex = this.activeAnimationLookup[name];
+        if(lookupIndex >= 0) {
             console.log("Battle sequencer: Clearing animation",this.activeAnimation);
+            delete this.activeAnimationLookup[name];
+            this.activeAnimations = this.activeAnimations.filter((_,index)=>index!==lookupIndex);
+        } else {
+            console.log("Battle sequencer: Active animation not found",name);
         }
-        this.activeAnimation = null;
     }
 
     this.showingPersistentSpeech;

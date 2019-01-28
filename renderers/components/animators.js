@@ -24,7 +24,7 @@ const animationDictionary = {
     },
     henry: {
         realTime: true,
-        ratio: 26 / 40,
+        ratio: 26 / 42,
         smokeDuration: 1800,
 
         smokeFadeInTime: 800,

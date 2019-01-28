@@ -267,53 +267,48 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 }
             }
 
-            if(this.battleSequencer.activeAnimation) {
-
-                const animation = animationDictionary[this.battleSequencer.activeAnimation.name];
-                if(animation.playOnce) {
-
-                    if(!this.battleSequencer.activeAnimation.complete) {
-
-                        const timestampDifference = timestamp-this.battleSequencer.activeAnimation.startTime;
-
-                        if(animation.realTime) {
-
-                            if(timestampDifference >= animation.fullDuration) {
-                                this.battleSequencer.activeAnimation.complete = true;
-                                this.battleSequencer.activeAnimation.playing = false;                                    
+            if(this.battleSequencer.activeAnimations.length > 0) {
+                for(let i = 0;i<this.battleSequencer.activeAnimations.length;i++) {
+                    const activeAnimation = this.battleSequencer.activeAnimations[i];
+                    const animation = animationDictionary[activeAnimation.name];
+                    if(animation.playOnce) {
+                        if(!activeAnimation.complete) {
+                            const timestampDifference = timestamp-activeAnimation.startTime;
+                            if(animation.realTime) {
+    
+                                if(timestampDifference >= animation.fullDuration) {
+                                    activeAnimation.complete = true;
+                                    activeAnimation.playing = false;
+                                    this.battleSequencer.clearAnimation(animation.name);                                   
+                                } else {
+                                    animation.render(timestampDifference,elfX,elfY,this.elfWidth,this.elfHeight);
+                                }
                             } else {
-                                animation.render(timestampDifference,elfX,elfY,this.elfWidth,this.elfHeight);
-                            }
-
-                        } else {
-
-                            const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
-
-                            if(frameNumber >= animation.frameCount) {
-                                this.battleSequencer.activeAnimation.complete = true;
-                            } else {
-                                context.drawImage(
-                                    imageDictionary["animation-effects"],
-                                    animation.frameBounds[frameNumber],animation.y,
-                                    elfSourceWidth,elfSourceHeight,
-                                    elfX,elfY,this.elfWidth,this.elfHeight
-                                );
+                                const frameNumber = Math.floor(timestampDifference / animation.frameDuration);
+                                if(frameNumber >= animation.frameCount) {
+                                    activeAnimation.complete = true;
+                                } else {
+                                    context.drawImage(
+                                        imageDictionary["animation-effects"],
+                                        animation.frameBounds[frameNumber],animation.y,
+                                        elfSourceWidth,elfSourceHeight,
+                                        elfX,elfY,this.elfWidth,this.elfHeight
+                                    );
+                                }
                             }
                         }
-
-                    }
-
-                } else {
-                    if(animation.realTime) {
-                        animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight,this.battleSequencer.activeAnimation.startTime);
                     } else {
-                        const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
-                        context.drawImage(
-                            imageDictionary["animation-effects"],
-                            animation.frameBounds[frameNumber],animation.y,
-                            elfSourceWidth,elfSourceHeight,
-                            elfX,elfY,this.elfWidth,this.elfHeight
-                        );
+                        if(animation.realTime) {
+                            animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight,activeAnimation.startTime);
+                        } else {
+                            const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
+                            context.drawImage(
+                                imageDictionary["animation-effects"],
+                                animation.frameBounds[frameNumber],animation.y,
+                                elfSourceWidth,elfSourceHeight,
+                                elfX,elfY,this.elfWidth,this.elfHeight
+                            );
+                        }
                     }
                 }
             }
