@@ -213,8 +213,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         drawTextWhite(target.name,healthBar.x,healthBar.textY,this.healthBarTextSize);
     }
 
-    this.hoverColor = this.elf.darkHover ? "red" : "rgba(255,255,255,0.7)";
-    this.fillColor = this.elf.darkHover ? "rgba(30,30,30,0.95)" : "rgba(0,0,0,0.8)";
+    this.hoverColor = this.elf.darkHover ? this.elf.foregroundColor ? this.elf.foregroundColor : "red" : this.elf.foregroundColor ? this.elf.foregroundColor : "rgba(255,255,255,0.7)";
+    this.fillColor = this.elf.buttonColor ? this.elf.buttonColor : "rgba(0,0,0,0.8)";
 
     this.renderMethod = (context,timestamp,width,height) => {
 
@@ -223,7 +223,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         } else {
             context.fillStyle = "black";
             context.fillRect(0,0,width,height);
-        }
+        }   
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
             for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
@@ -305,7 +305,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
                 } else {
                     if(animation.realTime) {
-                        animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight);
+                        animation.render(timestamp,elfX,elfY,this.elfWidth,this.elfHeight,this.battleSequencer.activeAnimation.startTime);
                     } else {
                         const frameNumber = Math.floor(timestamp / animation.frameDuration) % animation.frameCount;
                         context.drawImage(

@@ -364,7 +364,8 @@ elves[7] = {
     name: "boney elf",
     background: "background-8",
     backgroundColor: "white",
-    darkHover: true,
+    foregroundColor: "rgb(255,66,134)",
+    buttonColor: "rgba(30,30,30,0.95)",
     health: 200,
     playerMoves: [
         moves["wimpy punch"],

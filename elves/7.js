@@ -2,6 +2,7 @@ elves[6] = {
     name: "war elf",
     background: "background-4",
     backgroundColor: "white",
+    foregroundColor: "red",
     health: 200,
     startText: "wrong questions drain your health - good luck",
     getPlayerMoves: () => {

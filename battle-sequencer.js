@@ -636,8 +636,8 @@ function BattleSequencer(renderer) {
         console.log("Battle sequencer: Showing animation",animation);
         if(animationDictionary[animation.name].playOnce) {
             animation.completed = false;
-            animation.startTime = performance.now();
         }
+        animation.startTime = performance.now();
         this.activeAnimation = animation;
     }
     this.clearAnimation = () => {
