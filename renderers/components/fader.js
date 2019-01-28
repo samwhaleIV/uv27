@@ -56,6 +56,7 @@ const getFader = function() {
                     rendererState.transitioning = true;
                     if(musicMuted) {
                         setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                        return;
                     }
                     if(rendererState.song) {
                         const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
