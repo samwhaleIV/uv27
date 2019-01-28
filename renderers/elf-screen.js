@@ -101,7 +101,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         y: healthBarY,
         x: !isBoss ? canvas.width - healthBarMargin - this.healthBarWidth : healthBarMargin,
         textY: healthBarTextY,
-        foregroundColor: this.elf.backgroundColor,
+        foregroundColor: this.elf.foregroundColor ? this.elf.foregroundColor : this.elf.backgroundColor,
         backgroundColor: "rgb(0,0,0)"
     };
 

@@ -200,6 +200,7 @@ const loadImages = callback => {
         "images/backgrounds/background-7.png",
         "images/backgrounds/background-8.png",
         "images/backgrounds/background-9.png",
+        "images/backgrounds/background-10.png",
     
         "images/elves-layer-0.png",
         "images/elves-layer-1.png",
