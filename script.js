@@ -69,14 +69,14 @@ const adjustFontPositions = () => {
 let soundsLoaded = false;
 let imagesLoaded = false;
 
+const loadSongOnDemand = fileName => {
+    addBufferSource(`audio/music/${fileName}.ogg`);
+}
+
 const loadNonEssentialMusic  = () => {
     const music = [
         "audio/music/win.ogg",
-        "audio/music/lose.ogg",
-        "audio/music/Wimpy Wimpy.ogg",
-        "audio/music/Greed.ogg",
-        "audio/music/Professional Boxer.ogg",
-        "audio/music/Magic.ogg"
+        "audio/music/lose.ogg"
     ];
     music.forEach(value => addBufferSource(value));
 }

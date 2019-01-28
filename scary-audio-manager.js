@@ -163,7 +163,7 @@ const addBufferSource = (fileName,callback,errorCallback) => {
             audioData,
             audioBuffer => {
                 audioBuffers[newName] = audioBuffer;
-                sendAudioBufferAddedCallback(fileName);
+                sendAudioBufferAddedCallback(newName);
                 console.log(`Audio manager: Added '${newName}' to audio buffers`);
                 if(callback) {
                     callback(fileName);
@@ -171,7 +171,7 @@ const addBufferSource = (fileName,callback,errorCallback) => {
             },
             () => {
                 failedBuffers[newName] = true;
-                sendAudioBufferAddedCallback(fileName);
+                sendAudioBufferAddedCallback(newName);
                 console.error(`Audio manager: Failure to decode '${fileName}' as an audio file`);
                 if(errorCallback) {
                     errorCallback(fileName);
@@ -199,7 +199,7 @@ const addBufferSource = (fileName,callback,errorCallback) => {
         } else {
             console.log(`Audio manager: Failure to fetch '${fileName}' (Status code: ${this.status})`);
             failedBuffers[newName] = true;
-            sendAudioBufferAddedCallback(fileName);
+            sendAudioBufferAddedCallback(newName);
             if(errorCallback) {
                 errorCallback(fileName);
             }

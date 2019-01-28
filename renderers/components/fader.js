@@ -68,6 +68,7 @@ const getFader = function() {
                                     audioBufferAddedCallback = null;
                                 }
                             }
+                            loadSongOnDemand(rendererState.song);
                         }
                     } else if(rendererState.song && rendererState.songIntro) {
                         const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
@@ -80,7 +81,8 @@ const getFader = function() {
                                     setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
                                     audioBufferAddedCallback = null;
                                 }
-                            }                            
+                            }
+                            loadSongOnDemand(rendererState.song);                          
                         } else if(songLoaded) {
                             audioBufferAddedCallback = name => {
                                 if(name === rendererState.songIntro) {
@@ -88,15 +90,16 @@ const getFader = function() {
                                     audioBufferAddedCallback = null;
                                 }
                             }
+                            loadSongOnDemand(rendererState.songIntro);
                         } else {
                             let hasSong = false;
                             let hasIntro = false;
                             audioBufferAddedCallback = name => {
                                 switch(name) {
-                                    case rendererState.songIntro:
+                                    case rendererState.song:
                                         hasSong = true;
                                         break;
-                                    case rendererState.song:
+                                    case rendererState.songIntro:
                                         hasIntro = true;
                                         break;
                                 }
@@ -105,6 +108,8 @@ const getFader = function() {
                                     audioBufferAddedCallback = null;
                                 }
                             }
+                            loadSongOnDemand(rendererState.song);
+                            loadSongOnDemand(rendererState.songIntro);
                         }
                     } else {
                         setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
