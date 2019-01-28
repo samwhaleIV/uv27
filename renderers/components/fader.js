@@ -53,6 +53,10 @@ const getFader = function() {
                 );
                 if(rendererState.fader) {
                     rendererState.transitioning = true;
+                    if(musicMuted) {
+                        setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                        return;
+                    }
                     drawLoadingText();
                     if(rendererState.song) {
                         const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];

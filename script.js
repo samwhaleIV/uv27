@@ -71,12 +71,12 @@ let imagesLoaded = false;
 
 const loadNonEssentialMusic  = () => {
     const music = [
+        "audio/music/win.ogg",
+        "audio/music/lose.ogg",
         "audio/music/Wimpy Wimpy.ogg",
         "audio/music/Greed.ogg",
         "audio/music/Professional Boxer.ogg",
-        "audio/music/Magic.ogg",
-        "audio/music/win.ogg",
-        "audio/music/lose.ogg"
+        "audio/music/Magic.ogg"
     ];
     music.forEach(value => addBufferSource(value));
 }
