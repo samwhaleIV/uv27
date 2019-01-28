@@ -136,12 +136,23 @@ const getFader = function() {
                         return;
                     }
                 }
-                noiseBlackOut(
-                    fadeIntensity,
-                    context,width,height,
-                    15 + (fadeIntensity * 40),
-                    255 - (fadeIntensity * 255)
-                );
+
+                let radius = Math.floor(500 - (fadeIntensity * 500));
+                if(radius < 0) {
+                    radius = 0;
+                }
+                if(backgroundStreamMode) {
+                    preRenderedInverseCircleBlack(width,height,radius);
+                } else {
+                    preRenderedInverseCircleWhite(width,height,radius);
+                    noiseBlackOut(
+                        fadeIntensity,
+                        context,width,height,
+                        15 + (fadeIntensity * 40),
+                        255 - (fadeIntensity * 255)
+                    );
+                }
+
 
                 if(fadeIntensity === 1 && rendererState.fader.delta === 1) {
                     rendererState.fader.delta = 0;

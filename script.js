@@ -1,16 +1,22 @@
 const drawDefaultLoadingText = function() {
     context.fillStyle = "white";
-    context.font = "20px Arial";
-    context.fillText("loading...",15,15);
+    context.font = "30px Arial";
+    context.fillText("loading...",15,38);
 }
+
 const drawLoadingText = function() {
+    context.fillStyle = "black";
+    context.fillRect(0,0,textTestData.width,textTestData.height);
     drawTextWhite("loading...",15,15,4);
 }
 
 drawDefaultLoadingText();
-
+let textTestData;
 const loadingImage = new Image();
 loadingImage.onload = () => {
+    textTestData = drawTextTest("loading...",4);
+    textTestData.width += 30;
+    textTestData.height += 30;
     rendererState = new SidescrollRenderer(loadingImage);
     startRenderer();
     loadImages(gameLoop);
@@ -157,6 +163,9 @@ const loadImages = callback => {
         "images/elves-layer-2.png",
         "images/elves-layer-3.png",
         "images/elves-layer-4.png",
+
+        "images/big-white-ass-circle.png",
+        "images/big-black-ass-circle.png",
 
         "images/end-screen.png",
 
