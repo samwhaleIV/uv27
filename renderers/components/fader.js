@@ -48,6 +48,7 @@ const getFader = function() {
         onoutEnd: () => {
             pauseRenderer();
             if(rendererState.fader.transitionRenderer) {
+                drawLoadingText();
                 rendererState = new rendererState.fader.transitionRenderer(
                     ...rendererState.fader.transitionParameters
                 );
@@ -55,9 +56,7 @@ const getFader = function() {
                     rendererState.transitioning = true;
                     if(musicMuted) {
                         setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
-                        return;
                     }
-                    drawLoadingText();
                     if(rendererState.song) {
                         const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
                         if(songLoaded) {
