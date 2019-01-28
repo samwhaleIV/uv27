@@ -3,6 +3,10 @@ const drawDefaultLoadingText = function() {
     context.font = "20px Arial";
     context.fillText("loading...",15,15);
 }
+const drawLoadingText = function() {
+    drawTextWhite("loading...",15,15,4);
+}
+
 drawDefaultLoadingText();
 
 const loadingImage = new Image();
@@ -11,6 +15,7 @@ loadingImage.onload = () => {
     startRenderer();
     loadImages(gameLoop);
     loadSounds(gameLoop);
+    loadNonEssentialMusic();
 }
 loadingImage.src = "images/loading-animations.png";
 
@@ -64,26 +69,26 @@ const adjustFontPositions = () => {
 let soundsLoaded = false;
 let imagesLoaded = false;
 
+const loadNonEssentialMusic  = () => {
+    const music = [
+        "audio/music/Wimpy Wimpy.ogg",
+        "audio/music/Greed.ogg",
+        "audio/music/Professional Boxer.ogg",
+        "audio/music/Magic.ogg",
+        "audio/music/win.ogg",
+        "audio/music/lose.ogg"
+    ];
+    music.forEach(value => addBufferSource(value));
+}
+
 const loadSounds = callback => {
     const sounds = [
         "audio/click.mp3",
-
         "audio/swish-1.mp3",
         "audio/swish-2.mp3",
-        
         "audio/clip.mp3",
         "audio/reverse-clip.mp3",
-
-        "audio/music/Menu Music.ogg",
-        //"audio/music/Wimpy Wimpy.ogg",
-
-        //"audio/music/Greed.ogg",
-        //"audio/music/Professional Boxer.ogg",
-        //"audio/music/Magic.ogg"
-
-        //"audio/music/win.ogg",
-        //"audio/music/lose.ogg"
-
+        "audio/music/Menu Music.ogg"
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {

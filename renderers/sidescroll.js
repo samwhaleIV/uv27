@@ -90,7 +90,7 @@ function SidescrollRenderer(image,endCallback) {
         }
 
         if(imageDictionary["fontspace"]) {
-            drawTextWhite("loading...",15,15,4);
+            drawLoadingText();
         } else {
             drawDefaultLoadingText();
         }

@@ -53,7 +53,59 @@ const getFader = function() {
                 );
                 if(rendererState.fader) {
                     rendererState.transitioning = true;
-                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                    drawLoadingText();
+                    if(rendererState.song) {
+                        const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
+                        if(songLoaded) {
+                            setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                        } else {
+                            audioBufferAddedCallback = name => {
+                                if(name === rendererState.song) {
+                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                                    audioBufferAddedCallback = null;
+                                }
+                            }
+                        }
+                    } else if(rendererState.song && rendererState.songIntro) {
+                        const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
+                        const introLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
+                        if(songLoaded && introLoaded) {
+                            setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                        } else if(introLoaded) {
+                            audioBufferAddedCallback = name => {
+                                if(name === rendererState.song) {
+                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                                    audioBufferAddedCallback = null;
+                                }
+                            }                            
+                        } else if(songLoaded) {
+                            audioBufferAddedCallback = name => {
+                                if(name === rendererState.songIntro) {
+                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                                    audioBufferAddedCallback = null;
+                                }
+                            }
+                        } else {
+                            let hasSong = false;
+                            let hasIntro = false;
+                            audioBufferAddedCallback = name => {
+                                switch(name) {
+                                    case rendererState.songIntro:
+                                        hasSong = true;
+                                        break;
+                                    case rendererState.song:
+                                        hasIntro = true;
+                                        break;
+                                }
+                                if(hasSong && hasIntro) {
+                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                                    audioBufferAddedCallback = null;
+                                }
+                            }
+                        }
+                    } else {
+                        setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                    }
                 }
             } else {
                 console.error("Error: Missing fader transition state");

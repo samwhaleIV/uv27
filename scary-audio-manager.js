@@ -15,6 +15,15 @@ const musicOutputNode = musicVolumeNode;
 const soundOutputNode = volumeNode;
 
 const audioBuffers = {};
+const failedBuffers = {};
+
+let audioBufferAddedCallback = null;
+const sendAudioBufferAddedCallback = name => {
+    if(audioBufferAddedCallback) {
+        audioBufferAddedCallback(name);
+    }
+}
+
 let musicNode = null, musicMuted = false, soundMuted = false;
 const toggleMusicMute = () => {
     if(musicMuted) {
@@ -144,21 +153,25 @@ const playSound = (name,duration) => {
 }
 
 const addBufferSource = (fileName,callback,errorCallback) => {
+    let newName = fileName.split("/").pop();
+    const newNameSplit = newName.split(".");
+    newName = newNameSplit[newNameSplit.length-2];
+
     const decode = audioData => {
+
         audioContext.decodeAudioData(
             audioData,
             audioBuffer => {
-                let newName = fileName.split("/").pop();
-                const newNameSplit = newName.split(".");
-                newName = newNameSplit[newNameSplit.length-2];
-
                 audioBuffers[newName] = audioBuffer;
+                sendAudioBufferAddedCallback(fileName);
                 console.log(`Audio manager: Added '${newName}' to audio buffers`);
                 if(callback) {
                     callback(fileName);
                 }
             },
             () => {
+                failedBuffers[newName] = true;
+                sendAudioBufferAddedCallback(fileName);
                 console.error(`Audio manager: Failure to decode '${fileName}' as an audio file`);
                 if(errorCallback) {
                     errorCallback(fileName);
@@ -185,6 +198,8 @@ const addBufferSource = (fileName,callback,errorCallback) => {
             reader.readAsArrayBuffer(this.response);
         } else {
             console.log(`Audio manager: Failure to fetch '${fileName}' (Status code: ${this.status})`);
+            failedBuffers[newName] = true;
+            sendAudioBufferAddedCallback(fileName);
             if(errorCallback) {
                 errorCallback(fileName);
             }
