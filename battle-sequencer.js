@@ -73,9 +73,7 @@ function BattleSequencer(renderer) {
             duration += this.persistentSpeechDuration;
         }
         if(!musicMuted) {
-            if(musicNode) {
-                stopMusic(0);
-            }
+            stopMusic();
             let songDuration = playMusic("lose",0,false) * 1000;
             if(songDuration > duration) {
                 duration = songDuration + postSongDelay;
@@ -114,9 +112,7 @@ function BattleSequencer(renderer) {
             duration += this.persistentSpeechDuration;
         }
         if(!musicMuted) {
-            if(musicNode) {
-                stopMusic(0);
-            }
+            stopMusic();
             let songDuration = playMusic("lose",0,false) * 1000;
             if(songDuration > duration) {
                 duration = songDuration + postSongDelay;
@@ -155,9 +151,7 @@ function BattleSequencer(renderer) {
             duration += this.persistentSpeechDuration;
         }
         if(!musicMuted) {
-            if(musicNode) {
-                stopMusic(0);
-            }
+            stopMusic();
             let songDuration = playMusic("win.ogg",0,false) * 1000;
             if(songDuration > duration) {
                 duration = songDuration + postSongDelay;
