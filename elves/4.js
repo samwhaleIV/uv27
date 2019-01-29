@@ -42,7 +42,8 @@ elves[3] = {
     name: "wizard elf",
     background: "background-1",
     backgroundColor: "purple",
-    song: "Magic",
+    song: "magic_loop",
+    songIntro: "magic_intro",
     health: 125,
     backgroundCycleTime: 45000,
     playerMoves: [

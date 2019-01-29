@@ -500,6 +500,8 @@ elves[9] = {
     name: "two headed elf",
     background: "background-3",
     backgroundColor: "red",
+    song: "two_loop",
+    songIntro: "two_intro",
     health: 250,
     getPlayerMoves: sequencer => {
         return selectionSetMoves[0];

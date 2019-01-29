@@ -103,8 +103,11 @@ const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
         musicNode.buffer = introBuffer;
         musicNode.loop = false;
         musicNode.onended = () => {
+            const m = audioContext.currentTime;
             if(musicNodes[introName]) {
-                deleteTrack(introName);
+                if(loopSyncTime === null) {
+                    loopSyncTime = m;
+                }
                 const loopMusicNode = audioContext.createBufferSource();
                 loopMusicNode.buffer = loopBuffer;
                 loopMusicNode.loop = withLoop;
@@ -113,14 +116,12 @@ const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
                 if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
                     loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
                 }
+
                 loopMusicNode.volumeControl.connect(musicOutputNode);
                 loopMusicNode.connect(loopMusicNode.volumeControl);
-
-                if(loopSyncTime === null) {
-                    loopSyncTime = audioContext.currentTime;
-                }
-    
                 loopMusicNode.start(loopSyncTime);
+
+                deleteTrack(introName);
                 musicNodes[loopName] = loopMusicNode;
             }
         }

@@ -54,7 +54,7 @@ function BattleSequencer(renderer) {
 
     this.elf = renderer.elf;
 
-    const endScreenLength = 4000;
+    const endScreenLength = 15000;
     const postSongDelay = 1000;
 
     this.battleOver = false;

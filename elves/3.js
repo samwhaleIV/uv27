@@ -163,7 +163,10 @@ addMove({
 });
 elves[2] = {
     name: "wimpy blue elf",
-    song: "Wimpy Wimpy",
+    
+    song: "wimpy_loop",
+    songIntro: "wimpy_intro",
+
     backgroundCycleTime: 35000,
     background: "background-1",
     backgroundColor: "blue",

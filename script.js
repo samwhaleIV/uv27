@@ -96,13 +96,15 @@ const loadSounds = callback => {
         "audio/reverse-clip.mp3",
         "audio/transform.mp3",
 
-        "audio/music/intro_a.ogg",
-        "audio/music/intro_b.ogg",
-        "audio/music/intro_base.ogg",
+        "audio/music/menu/intro_a.ogg",
+        "audio/music/menu/intro_b.ogg",
+        "audio/music/menu/intro_base.ogg",
 
-        "audio/music/loop_a.ogg",
-        "audio/music/loop_b.ogg",
-        "audio/music/loop_base.ogg"
+        "audio/music/menu/loop_a.ogg",
+        "audio/music/menu/loop_b.ogg",
+        "audio/music/menu/loop_base.ogg",
+        
+        "audio/squish.mp3"
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {

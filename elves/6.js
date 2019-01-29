@@ -109,16 +109,16 @@ addMove({
         }
         if(target.isPlayer) {
             return {
-                text: `you punched too hard and dropped ${difference} gold`
+                text: `she punched too hard and dropped ${difference} gold`
             }
         } else {
             return {
                 events: [
                     {
-                        text: `${user.name} is really angry about squirrel rights`
+                        text: `she is really angry about squirrel rights`
                     },
                     {
-                        text: `${target.name} punched too hard and dropped ${difference} gold`
+                        text: `she punched too hard and dropped ${difference} gold`
                     }
                 ]
             }
@@ -197,7 +197,8 @@ elves[5] = {
     name: "golden elfette",
     background: "background-3",
     backgroundColor: "yellow",
-    song: "Greed",
+    song: "greed_loop",
+    songIntro: "greed_intro",
     health: 200,
     getLoseSpeech: () => {
         return {text:"a golden elf\nwithout gold\nis not an elf at all\n\nit's not worth living\n*ded*"}

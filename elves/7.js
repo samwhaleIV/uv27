@@ -3,6 +3,8 @@ elves[6] = {
     background: "background-4",
     backgroundColor: "white",
     foregroundColor: "red",
+    song: "war_loop",
+    songIntro: "war_intro",
     health: 200,
     startText: "wrong questions drain your health - good luck",
     getPlayerMoves: () => {

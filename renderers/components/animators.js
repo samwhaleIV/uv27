@@ -112,9 +112,9 @@ const animationDictionary = {
             let animationProgress = timestamp / animationDictionary.headExplode.fullDuration;
             //limit to 0-1?
 
-            const particleCount = 100 + Math.floor(Math.random() * 20);
+            const particleCount = 100;
 
-            const radius = Math.pow(animationProgress*100,2);
+            const radius = Math.pow(animationProgress*150,2);
 
             //const particleInterval = ((radius + radius) * Math.PI) / particleCount;
             const angleStep = 360 / particleCount;
@@ -128,9 +128,16 @@ const animationDictionary = {
                 const particleX = (radius * Math.cos(angle)) + particleDeviationX;
                 const particleY = (radius* Math.sin(angle)) + particleDeviationY;
 
-                const bloodIntensity = 100 + Math.round(Math.random() * 50);
+                const bloodIntensity = 80 + Math.round(Math.random() * 40);
                 context.fillStyle = `rgb(${bloodIntensity},0,0)`;
-                context.fillRect(x+particleX-10,y+particleY-10,20,20);
+                if(i % 2 === 0) {
+                    context.beginPath();
+                    context.arc(x+particleX-5,y+particleY-5,10,0,2*Math.PI);
+                    context.fill();
+                } else {
+                    context.fillRect(x+particleX-10,y+particleY-10,20,20);
+                }
+
             }
         }
     }

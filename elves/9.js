@@ -1070,6 +1070,8 @@ const getRaceMoveSet = (sequencer,index) => {
 elves[8] = {
     name: "headless elf",
     background: "background-1",
+    song: "headless_loop",
+    songIntro: "headless_intro",
     backgroundColor: "orange",
     health: 200,
     getMove: sequencer => {

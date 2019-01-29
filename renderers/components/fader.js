@@ -58,20 +58,7 @@ const getFader = function() {
                         setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
                         return;
                     }
-                    if(rendererState.song) {
-                        const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
-                        if(songLoaded) {
-                            setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
-                        } else {
-                            audioBufferAddedCallback = name => {
-                                if(name === rendererState.song) {
-                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
-                                    audioBufferAddedCallback = null;
-                                }
-                            }
-                            loadSongOnDemand(rendererState.song);
-                        }
-                    } else if(rendererState.song && rendererState.songIntro) {
+                    if(rendererState.song && rendererState.songIntro) {
                         const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
                         const introLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
                         if(songLoaded && introLoaded) {
@@ -111,6 +98,19 @@ const getFader = function() {
                             }
                             loadSongOnDemand(rendererState.song);
                             loadSongOnDemand(rendererState.songIntro);
+                        }
+                    } else if(rendererState.song) {
+                        const songLoaded = audioBuffers[rendererState.song] || failedBuffers[rendererState.song];
+                        if(songLoaded) {
+                            setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                        } else {
+                            audioBufferAddedCallback = name => {
+                                if(name === rendererState.song) {
+                                    setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);
+                                    audioBufferAddedCallback = null;
+                                }
+                            }
+                            loadSongOnDemand(rendererState.song);
                         }
                     } else {
                         setTimeout(rendererState.fader.fadeIn,rendererState.fader.fadeInDelay);

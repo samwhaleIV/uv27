@@ -3,8 +3,11 @@ elves[17] = {
     background: "background-1",
     backgroundColor: "rgb(255,215,181)",
     health: 420,
-    defaultRenderLayers: [true,true,true,true,true],
-
+    defaultRenderLayers: [true,false,false,true,true],
+    setup: sequencer => {
+        sequencer.setRenderLayer(1,true);
+        sequencer.setRenderLayer(1,true);
+    },
     playerMoves: [
         {
             name: "toggle layer 1",

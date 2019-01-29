@@ -3,7 +3,9 @@ elves[1] = {
     background: "background-1",
     backgroundColor: "green",
 
-    song: "Wimpy Wimpy",
+    song: "wimpy_loop",
+    songIntro: "wimpy_intro",
+    
     backgroundCycleTime: 35000,
 
     health: 100,

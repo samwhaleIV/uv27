@@ -363,6 +363,10 @@ addMove({
 elves[7] = {
     name: "boney elf",
     background: "background-8",
+
+    song: "pos_loop",
+    songIntro: "pos_intro",
+
     backgroundColor: "white",
     foregroundColor: "rgb(255,66,134)",
     buttonColor: "rgba(30,30,30,0.95)",

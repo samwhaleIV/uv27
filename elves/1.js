@@ -3,7 +3,9 @@ elves[0] = {
     background: "background-1",
     backgroundColor: "red",
 
-    song: "Wimpy Wimpy",
+    song: "wimpy_loop",
+    songIntro: "wimpy_intro",
+    
     backgroundCycleTime: 35000,
 
     getMove: () => moves["cry"],
