@@ -1,3 +1,4 @@
+"use strict";
 const getTemperatureString = (temperature,prefix) =>
     `${prefix ? `${prefix} `:""}${formatDegrees(fixNumber(temperature,1))}`;
 const playerTemperaturePrefix = "you:     ";

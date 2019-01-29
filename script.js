@@ -1,3 +1,4 @@
+"use strict";
 const drawDefaultLoadingText = function() {
     context.fillStyle = "white";
     context.font = "30px Arial";

@@ -1,3 +1,4 @@
+"use strict";
 const animationDictionary = {
     crying: {
         realTime: true,

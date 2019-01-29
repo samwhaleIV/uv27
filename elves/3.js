@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     type: "self",
     name: "buy bullet - 5 coins",

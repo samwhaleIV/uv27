@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "water break",
     type: "self",

@@ -1,3 +1,4 @@
+"use strict";
 elves[19] = {
     name: "upside down elf",
     background: "background-3",

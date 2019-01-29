@@ -1,3 +1,4 @@
+"use strict";
 elves[21] = {
     name: "elfmas tree",
     background: "background-4",

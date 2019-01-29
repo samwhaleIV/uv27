@@ -1,3 +1,4 @@
+"use strict";
 const noComboChainText = "no combo chain";
 
 addMove({

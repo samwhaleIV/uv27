@@ -1,3 +1,4 @@
+"use strict";
 elves[18] = {
     name: "beach elf",
     background: "background-10",

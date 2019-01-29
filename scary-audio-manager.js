@@ -1,3 +1,4 @@
+"use strict";
 const audioContext = new AudioContext();
 
 const soundGain = 3 / 4;

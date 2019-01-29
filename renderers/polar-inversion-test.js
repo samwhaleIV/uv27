@@ -1,3 +1,4 @@
+"use strict";
 function polarInversionRenderer() {
 
     this.amount = 3.2929858549731463;

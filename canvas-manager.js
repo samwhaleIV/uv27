@@ -1,3 +1,4 @@
+"use strict";
 const canvas = document.getElementById("canvas");
 const getRelativeEventLocation = event => {
     return {

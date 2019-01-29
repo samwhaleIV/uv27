@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "i hate santa",
     type: "self",

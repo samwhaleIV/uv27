@@ -1,3 +1,4 @@
+"use strict";
 function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.elf = elves[elfID];

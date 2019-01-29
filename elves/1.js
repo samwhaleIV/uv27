@@ -1,3 +1,4 @@
+"use strict";
 elves[0] = {
     name: "wimpy red elf",
     background: "background-1",

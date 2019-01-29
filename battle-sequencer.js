@@ -1,3 +1,4 @@
+"use strict";
 function BattleSequencer(renderer) {
 
     this.renderer = renderer;
@@ -630,7 +631,7 @@ function BattleSequencer(renderer) {
     this.showAnimation = animation => {
         console.log("Battle sequencer: Showing animation",animation);
         if(animationDictionary[animation.name].playOnce) {
-            animation.completed = false;
+            animation.complete = false;
         }
         animation.startTime = performance.now();
         this.activeAnimationLookup[animation.name] = this.activeAnimations.length;
@@ -780,7 +781,7 @@ function BattleSequencer(renderer) {
             this.updatePlayerMoves(this.elf.getPlayerMoves(this));
         } else {
             this.elf.playerMoves = [moves["honorable suicide"]];
-            this.elf.getWinSpeech = () => "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
+            this.elf.winSpeech = "developer used lazy\n\ndeveloper laziness\nis super effective\n\nsomething something\nvv meta owo";
             this.updatePlayerMoves(this.elf.playerMoves);
         }
     } else {

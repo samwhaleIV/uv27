@@ -1,3 +1,4 @@
+"use strict";
 function SidescrollRenderer(image,endCallback) {
 
     const spriteWidth = 11;

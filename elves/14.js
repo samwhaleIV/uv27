@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "visit general store",
     type: "interface",

@@ -1,3 +1,4 @@
+"use strict";
 const getRaceProgressSubText = progress => `${progress} race points`
 addMove({
     name: "tie shoes",

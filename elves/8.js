@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "them bones",
     type: "target",

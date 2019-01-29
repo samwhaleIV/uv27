@@ -1,3 +1,4 @@
+"use strict";
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.getSongSegmentsForIndex = index => {

@@ -1,3 +1,4 @@
+"use strict";
 const getDoubleSpeech = (speech1,speech2) => `head one:\n${speech1}\n\nhead two:\n${speech2}`;
 
 const advanceSelectionScreen = sequencer => {

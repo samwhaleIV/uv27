@@ -1,3 +1,4 @@
+"use strict";
 const shuffleArrangements = "012301320213023103120321103210231230120313201302201320312103213023012310302130123120310232103201";
 const shuffleWithMask = items => {
     const arrangement = shuffleArrangements.substr(Math.floor(Math.random() * 24)*4,4);

@@ -1,3 +1,5 @@
+"use strict";
+
 const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minShade=0,maxShade=255) {
 
     const shadeRange = maxShade - minShade;

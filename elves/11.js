@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "tell me a joke",
     type: "option",

@@ -1,3 +1,4 @@
+"use strict";
 elves[17] = {
     name: "not red elfette",
     background: "background-1",

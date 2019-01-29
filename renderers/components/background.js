@@ -1,3 +1,4 @@
+"use strict";
 const defaultBackgroundCycleTime = 20000;
 function Background(name,color,cycleTime) {
     this.name = name;

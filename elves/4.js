@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     type: "target",
     name: "violent spell",

@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "glitch punch",
     type: "target",

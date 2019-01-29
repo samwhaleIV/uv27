@@ -1,3 +1,4 @@
+"use strict";
 addMove({
     name: "take gold",
     type: "target",
