@@ -4,3 +4,6 @@ elves[19] = {
     backgroundColor: "red",
     health: 450
 }
+const explodeElfHead = {
+    
+}

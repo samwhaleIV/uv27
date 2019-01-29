@@ -1,6 +1,64 @@
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
-    this.song = "Menu Music";
+    this.getSongSegmentsForIndex = index => {
+        const manifest = {
+            "intro_base":false,
+            "loop_base":false,
+            "intro_a":false,
+            "loop_a":false,
+            "intro_b":false,
+            "loop_b":false
+        };
+        if(index <= 9) {
+            manifest["intro_base"] = true;
+            manifest["loop_base"] = true;
+            manifest.index = 0;
+        } else if(index <= 19) {
+            manifest["intro_a"] = true;
+            manifest["loop_a"] = true;
+            manifest.index = 1;
+        } else {
+            manifest["intro_b"] = true;
+            manifest["loop_b"] = true;
+            manifest.index = 2;
+        }
+        return manifest;
+    }
+
+    this.currentSongIndex = -1;
+    this.updateSong = index => {
+        const updatedSongManifest = this.getSongSegmentsForIndex(index);
+        if(updatedSongManifest.index !== this.currentSongIndex) {
+            this.currentSongIndex = updatedSongManifest.index;
+            loopMuteManifest = {
+                "loop_base":{shouldPlay:updatedSongManifest["loop_base"]},
+                "loop_a":{shouldPlay:updatedSongManifest["loop_a"]},
+                "loop_b":{shouldPlay:updatedSongManifest["loop_b"]}
+            };
+            introMuteManifest = {
+                "intro_base":{shouldPlay:updatedSongManifest["intro_base"]},
+                "intro_a":{shouldPlay:updatedSongManifest["intro_a"]},
+                "intro_b":{shouldPlay:updatedSongManifest["intro_b"]}
+            }
+            for(let key in updatedSongManifest) {
+                if(updatedSongManifest[key]) {
+                    unmuteTrack(key);
+                } else {
+                    muteTrack(key);
+                }
+            }
+        }
+    }
+
+    this.songStartAction = () => {
+        console.log(introMuteManifest,loopMuteManifest);
+        const startTime = audioContext.currentTime;
+        playMusicWithIntro("loop_base","intro_base",true,startTime);
+        playMusicWithIntro("loop_a","intro_a",true,startTime);
+        playMusicWithIntro("loop_b","intro_b",true,startTime);
+    }
+    this.fader = getFader();
+
     const backgroundCycleTime = 40000;
 
     this.halfWidth = canvas.width / 2;
@@ -59,13 +117,12 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 this.hoverEffectIndex = null;
             }
         }
+        this.updateSong(this.currentIndex);
         this.currentIndexText = `elf ${this.currentIndex+1}`;
     }
     this.setElf();
 
     this.elfX = Math.round(this.halfWidth - (this.elfWidth / 2));
-
-    this.fader = getFader();
     this.buttonHeight = 40;
 
     const verticalSpacing = 10;

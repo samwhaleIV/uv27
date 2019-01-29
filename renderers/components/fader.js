@@ -22,6 +22,8 @@ const getFader = function() {
                 } else {
                     playMusic(rendererState.song);
                 }
+            } else if(rendererState.songStartAction) {
+                rendererState.songStartAction();
             }
         },
         fadeOut: (rendererGenerator,...parameters) => {
@@ -32,9 +34,7 @@ const getFader = function() {
             rendererState.fader.transitionParameters = parameters;
             const staticTime = rendererState.fader.time / 1000;
             playSound("swish-1",staticTime);
-            if(musicNode) {
-                stopMusic();
-            }
+            stopMusic();
         },
         oninEnd: () => {
             if(rendererState.fader) {

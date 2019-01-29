@@ -24,7 +24,7 @@ const sendAudioBufferAddedCallback = name => {
     }
 }
 
-let musicNode = null, musicMuted = false, soundMuted = false;
+let musicNodes = {}, musicMuted = false, soundMuted = false;
 const toggleMusicMute = () => {
     if(musicMuted) {
         unmuteMusic();
@@ -80,61 +80,105 @@ const unmuteMusic = () => {
     }
 }
 
-const playMusicWithIntro = (loopName,introName,withLoop=true) => {
-    if(musicNode) {
-        console.error("Error: Music is already playing");
+const muteTrack = name => {
+    if(musicNodes[name]) {
+        musicNodes[name].volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
+    }
+}
+const unmuteTrack = name => {
+    if(musicNodes[name]) {
+        musicNodes[name].volumeControl.gain.setValueAtTime(1,audioContext.currentTime);
+    }
+}
+
+let introMuteManifest = {};
+let loopMuteManifest = {};
+const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
+    const introBuffer = audioBuffers[introName];
+    const loopBuffer = audioBuffers[loopName];
+    if(!introBuffer || !loopBuffer) {
+        console.warn(`Audio manager: '${loopName}' or '${introName}' is missing from audio buffers. Did we fail to load it?`);
     } else {
-        const introBuffer = audioBuffers[introName];
-        const loopBuffer = audioBuffers[loopName];
-        if(!introBuffer || !loopBuffer) {
-            console.warn(`Audio manager: '${loopName}' or '${introName}' is missing from audio buffers. Did we fail to load it?`);
-        } else {
-            musicNode = audioContext.createBufferSource();
-            musicNode.buffer = introBuffer;
-            musicNode.loop = false;
-            musicNode.onended = event => {
-                musicNode = audioContext.createBufferSource();
-                musicNode.buffer = loopBuffer;
-                musicNode.loop = withLoop;
-                musicNode.connect(musicOutputNode);
-                musicNode.start();
+        const musicNode = audioContext.createBufferSource();
+        musicNode.buffer = introBuffer;
+        musicNode.loop = false;
+        musicNode.onended = () => {
+            if(musicNodes[introName]) {
+                deleteTrack(introName);
+                const loopMusicNode = audioContext.createBufferSource();
+                loopMusicNode.buffer = loopBuffer;
+                loopMusicNode.loop = withLoop;
+    
+                loopMusicNode.volumeControl = audioContext.createGain();
+                if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
+                    loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
+                }
+                loopMusicNode.volumeControl.connect(musicOutputNode);
+                loopMusicNode.connect(loopMusicNode.volumeControl);
+
+                if(loopSyncTime === null) {
+                    loopSyncTime = audioContext.currentTime;
+                }
+    
+                loopMusicNode.start(loopSyncTime);
+                musicNodes[loopName] = loopMusicNode;
             }
-            musicNode.connect(musicOutputNode);
+        }
+
+        musicNode.volumeControl = audioContext.createGain();
+        if(introMuteManifest[introName] && !introMuteManifest[introName].shouldPlay) {
+            musicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
+        }
+        musicNode.volumeControl.connect(musicOutputNode);
+        musicNode.connect(musicNode.volumeControl);
+
+        if(when) {
+            musicNode.start(when);
+        } else {
             musicNode.start();
         }
+
+        musicNodes[introName] = musicNode;
     }
 }
 
 const playMusic = (name,withLoop=true) => {
-    if(musicNode) {
-        console.error("Error: Music is already playing");
+    const buffer = audioBuffers[name];
+    if(!buffer) {
+        console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
+        if(!withLoop) {
+            return 0;
+        }
     } else {
-        const buffer = audioBuffers[name];
-        if(!buffer) {
-            console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
-            if(!withLoop) {
-                return 0;
-            }
-        } else {
-            musicNode = audioContext.createBufferSource();
-            musicNode.buffer = buffer;
-            musicNode.loop = withLoop;
-            musicNode.connect(musicOutputNode);
-            musicNode.start();
-            if(!withLoop) {
-                return buffer.duration;
-            }
+        const musicNode = audioContext.createBufferSource();
+        musicNode.buffer = buffer;
+        musicNode.loop = withLoop;
+
+        musicNode.volumeControl = audioContext.createGain();
+        musicNode.volumeControl.connect(musicOutputNode);
+        musicNode.connect(musicNode.volumeControl);
+
+        musicNode.start();
+        musicNodes[name] = musicNode;
+        if(!withLoop) {
+            return buffer.duration;
         }
     }
 }
+
+const deleteTrack = name => {
+    const node = musicNodes[name];
+    node.stop();
+    node.volumeControl.disconnect(musicOutputNode);
+    delete musicNodes[name];
+}
+
+let loopSyncTime = null;
 const stopMusic = () => {
-    if(musicNode) {
-        let oldMusicNode = musicNode;
-        musicNode = null;
-        oldMusicNode.stop();
-    } else {
-        console.warn("Warning: No music is playing and cannot be stopped again");
+    for(let key in musicNodes) {
+        deleteTrack(key);
     }
+    loopSyncTime = null;
 }
 
 const playSound = (name,duration) => {

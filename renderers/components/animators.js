@@ -99,6 +99,40 @@ const animationDictionary = {
             context.strokeRect(x,y,size,size);
         },
         playOnce: true
+    },
+    headExplode: {
+        fullDuration: 800,
+        playOnce: true,
+        realTime: true,
+        render: (timestamp,x,y,width,height) => {
+
+            x+=width/2;
+            y+=115;
+
+            let animationProgress = timestamp / animationDictionary.headExplode.fullDuration;
+            //limit to 0-1?
+
+            const particleCount = 100 + Math.floor(Math.random() * 20);
+
+            const radius = Math.pow(animationProgress*100,2);
+
+            //const particleInterval = ((radius + radius) * Math.PI) / particleCount;
+            const angleStep = 360 / particleCount;
+
+            for(let i = 0;i<particleCount;i++) {
+                const particleDeviationX = Math.round(Math.random() * 20)-10;
+                const particleDeviationY = Math.round(Math.random() * 20)-10;
+
+                const angle = Math.PI * (angleStep*i) / 180;
+
+                const particleX = (radius * Math.cos(angle)) + particleDeviationX;
+                const particleY = (radius* Math.sin(angle)) + particleDeviationY;
+
+                const bloodIntensity = 100 + Math.round(Math.random() * 50);
+                context.fillStyle = `rgb(${bloodIntensity},0,0)`;
+                context.fillRect(x+particleX-10,y+particleY-10,20,20);
+            }
+        }
     }
 }
 animationDictionary.henry.smokeRange = animationDictionary.henry.smokeMaxSize - animationDictionary.henry.smokeMinSize;

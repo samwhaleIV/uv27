@@ -95,7 +95,14 @@ const loadSounds = callback => {
         "audio/clip.mp3",
         "audio/reverse-clip.mp3",
         "audio/transform.mp3",
-        "audio/music/Menu Music.ogg"
+
+        "audio/music/intro_a.ogg",
+        "audio/music/intro_b.ogg",
+        "audio/music/intro_base.ogg",
+
+        "audio/music/loop_a.ogg",
+        "audio/music/loop_b.ogg",
+        "audio/music/loop_base.ogg"
     ];
     let loadedSounds = 0;
     const soundProcessed = () => {
@@ -278,12 +285,8 @@ const gameLoop = () => {
             getBattleScreen,
             elfIndex,currentIndex
         );
-        if(rendererState.song) {
-            if(rendererState.songIntro) {
-                playMusicWithIntro(rendererState.song,rendererState.songIntro);
-            } else {
-                playMusic(rendererState.song);
-            }
+        if(rendererState.songStartAction) {
+            rendererState.songStartAction();
         }
     }
     if(elfIndex === -1) {
