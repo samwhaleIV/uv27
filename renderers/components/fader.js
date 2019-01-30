@@ -18,10 +18,12 @@ const getFader = function() {
             const staticTime = rendererState.fader.time / 1000;
             playSound("swish-2",staticTime);
             if(rendererState.song) {
-                if(rendererState.songIntro) {
-                    playMusicWithIntro(rendererState.song,rendererState.songIntro);
-                } else {
-                    playMusic(rendererState.song);
+                if(!musicMuted) {
+                    if(rendererState.songIntro) {
+                        playMusicWithIntro(rendererState.song,rendererState.songIntro);
+                    } else {
+                        playMusic(rendererState.song);
+                    }
                 }
             } else if(rendererState.songStartAction) {
                 rendererState.songStartAction();

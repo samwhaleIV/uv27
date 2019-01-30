@@ -330,14 +330,13 @@ const debug_seq = () => {
 const getRandomSelections = (options,selectionCount,selectionMapper) => {
 
     const selections = new Array(selectionCount);
-    const selectionCountPlusOne = selectionCount + 1;
 
     for(let i = 0;i<selectionCount;i++) {
         const optionIndex = Math.floor(Math.random()*options.length);
         const option = options[optionIndex];
 
         options = [
-            ...options.slice(0,optionIndex),...options.slice(optionIndex+1,selectionCountPlusOne)
+            ...options.slice(0,optionIndex),...options.slice(optionIndex+1,selectionCount)
         ];
 
         if(selectionMapper) {

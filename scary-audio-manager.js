@@ -92,9 +92,11 @@ const unmuteTrack = name => {
     }
 }
 
+let startSyncTime = null;
+
 let introMuteManifest = {};
 let loopMuteManifest = {};
-const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
+const playMusicWithIntro = (loopName,introName,withLoop=true) => {
     const introBuffer = audioBuffers[introName];
     const loopBuffer = audioBuffers[loopName];
     if(!introBuffer || !loopBuffer) {
@@ -103,29 +105,6 @@ const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
         const musicNode = audioContext.createBufferSource();
         musicNode.buffer = introBuffer;
         musicNode.loop = false;
-        musicNode.onended = () => {
-            const m = audioContext.currentTime;
-            if(musicNodes[introName]) {
-                if(loopSyncTime === null) {
-                    loopSyncTime = m;
-                }
-                const loopMusicNode = audioContext.createBufferSource();
-                loopMusicNode.buffer = loopBuffer;
-                loopMusicNode.loop = withLoop;
-    
-                loopMusicNode.volumeControl = audioContext.createGain();
-                if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
-                    loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
-                }
-
-                loopMusicNode.volumeControl.connect(musicOutputNode);
-                loopMusicNode.connect(loopMusicNode.volumeControl);
-                loopMusicNode.start(loopSyncTime);
-
-                deleteTrack(introName);
-                musicNodes[loopName] = loopMusicNode;
-            }
-        }
 
         musicNode.volumeControl = audioContext.createGain();
         if(introMuteManifest[introName] && !introMuteManifest[introName].shouldPlay) {
@@ -134,13 +113,31 @@ const playMusicWithIntro = (loopName,introName,withLoop=true,when) => {
         musicNode.volumeControl.connect(musicOutputNode);
         musicNode.connect(musicNode.volumeControl);
 
-        if(when) {
-            musicNode.start(when);
-        } else {
-            musicNode.start();
+        if(startSyncTime === null) {
+            startSyncTime = audioContext.currentTime + 0.01;
         }
 
+        musicNode.start(startSyncTime);
         musicNodes[introName] = musicNode;
+
+        const loopMusicNode = audioContext.createBufferSource();
+        loopMusicNode.buffer = loopBuffer;
+        loopMusicNode.loop = withLoop;
+
+        loopMusicNode.volumeControl = audioContext.createGain();
+        if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
+            console.log("loop muted");
+            loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
+        }
+        loopMusicNode.volumeControl.connect(musicOutputNode);
+        loopMusicNode.connect(loopMusicNode.volumeControl);
+
+        const loopStartTime = startSyncTime+introBuffer.duration;
+        console.log("loop start time",loopStartTime);
+
+        loopMusicNode.start(loopStartTime);
+
+        musicNodes[loopName] = loopMusicNode;
     }
 }
 
@@ -175,12 +172,11 @@ const deleteTrack = name => {
     delete musicNodes[name];
 }
 
-let loopSyncTime = null;
 const stopMusic = () => {
     for(let key in musicNodes) {
         deleteTrack(key);
     }
-    loopSyncTime = null;
+    startSyncTime = null;
 }
 
 const playSound = (name,duration) => {

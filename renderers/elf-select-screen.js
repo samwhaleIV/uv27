@@ -53,10 +53,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.songStartAction = () => {
         console.log(introMuteManifest,loopMuteManifest);
-        const startTime = audioContext.currentTime;
-        playMusicWithIntro("loop_base","intro_base",true,startTime);
-        playMusicWithIntro("loop_a","intro_a",true,startTime);
-        playMusicWithIntro("loop_b","intro_b",true,startTime);
+        playMusicWithIntro("loop_base","intro_base",true);
+        playMusicWithIntro("loop_a","intro_a",true);
+        playMusicWithIntro("loop_b","intro_b",true);
     }
     this.fader = getFader();
 

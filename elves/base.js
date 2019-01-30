@@ -357,7 +357,7 @@ const moves = {
         name: "decent punch",
         process: (sequencer,user,target) => {
 
-            animation = null;
+            let animation = null;
             if(target.isElf) {
                 animation = {name:"punch"};
             }
@@ -386,7 +386,7 @@ const moves = {
         name: "wimpy punch",
         process: (sequencer,user,target) => {
 
-            animation = null;
+            let animation = null;
             if(target.isElf) {
                 animation = {name:"punch"};
             }
@@ -415,7 +415,7 @@ const moves = {
         name: "wimpier punch",
         process: (sequencer,user,target) => {
 
-            animation = null;
+            let animation = null;
             if(target.isElf) {
                 animation = {name:"punch"};
             }

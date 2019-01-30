@@ -643,7 +643,9 @@ function BattleSequencer(renderer) {
         if(lookupIndex >= 0) {
             console.log("Battle sequencer: Clearing animation",this.activeAnimation);
             delete this.activeAnimationLookup[name];
-            this.activeAnimations = this.activeAnimations.filter((_,index)=>index!==lookupIndex);
+            this.activeAnimations = [
+                ...activeAnimations.slice(0,lookupIndex),...activeAnimations.slice(lookupIndex+1,activeAnimations.length+1)
+            ];
         } else {
             console.log("Battle sequencer: Active animation not found",name);
         }
