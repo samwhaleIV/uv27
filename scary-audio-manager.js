@@ -117,7 +117,11 @@ const playMusicWithIntro = (loopName,introName,withLoop=true) => {
             startSyncTime = audioContext.currentTime + 0.01;
         }
 
-        musicNode.start(startSyncTime);
+        if(audioContext.currentTime > startSyncTime) {
+            musicNode.start(audioContext.currentTime,audioContext.currentTime-startSyncTime);
+        } else {
+            musicNode.start(startSyncTime);
+        }
         musicNodes[introName] = musicNode;
 
         const loopMusicNode = audioContext.createBufferSource();
