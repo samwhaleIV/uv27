@@ -123,7 +123,7 @@ const getFader = function() {
                 console.error("Error: Missing fader transition state");
             }
         },
-        process: timestamp => {
+        render: timestamp => {
             if(rendererState.fader.delta !== 0) {
                 let fadeIntensity;
                 if(rendererState.fader.delta > 0) {

@@ -51,7 +51,7 @@ window.onkeydown = event => {
             cycleSizeMode();
             break;
         case "KeyO":
-            debug_toggle_stream_mode();
+            backgroundStreamMode = !backgroundStreamMode;
             if(pictureModeElementTimeout) {
                 clearTimeout(pictureModeElementTimeout);
             }
@@ -60,6 +60,7 @@ window.onkeydown = event => {
                 pictureModeElement.textContent = "";
                 pictureModeElementTimeout = null;
             },600);
+            localStorage.setItem("backgroundStreamMode",backgroundStreamMode) 
             break;
     }
     if(paused || !rendererState) {
@@ -155,6 +156,10 @@ const context = canvas.getContext("2d");
 context.imageSmoothingEnabled = false;
 
 let rendererState, animationFrame, paused = false, backgroundStreamMode = false;
+
+if(localStorage.getItem("backgroundStreamMode") === "true") {
+    backgroundStreamMode = true;
+}
 
 const gamepadDeadzone = 0.5;
 const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
@@ -291,7 +296,7 @@ const processGamepad = gamepad => {
 }
 
 const render = timestamp => {
-    rendererState.renderMethod(timestamp);
+    rendererState.render(timestamp);
     if(!paused) {
         animationFrame = window.requestAnimationFrame(render);
         const gamepad = navigator.getGamepads()[0];
@@ -332,7 +337,7 @@ const forceRender = function() {
         console.error("Error: Missing renderer state; the renderer cannot render.");
         return;
     }
-    rendererState.renderMethod(
+    rendererState.render(
         context,performance.now()
     );
 }

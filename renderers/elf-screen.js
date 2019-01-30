@@ -215,7 +215,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.hoverColor = this.elf.darkHover ? this.elf.foregroundColor ? this.elf.foregroundColor : "red" : this.elf.foregroundColor ? this.elf.foregroundColor : "rgba(255,255,255,0.7)";
     this.fillColor = this.elf.buttonColor ? this.elf.buttonColor : "rgba(0,0,0,0.8)";
 
-    this.renderMethod = timestamp => {
+    this.render = timestamp => {
 
         if(rendererState.background) {
             rendererState.background.render(timestamp);
@@ -515,7 +515,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             drawTextWhite(this.noButtonText.text,this.noButtonText.x,this.noButtonText.y,this.noButtonText.scale);
         }
 
-        rendererState.fader.process(timestamp);
+        rendererState.fader.render(timestamp);
     }
 
     this.battleSequencer = new BattleSequencer(this);

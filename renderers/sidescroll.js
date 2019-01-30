@@ -56,7 +56,7 @@ function SidescrollRenderer(image,endCallback) {
         x:this.rightSprites[this.rightSprites.length-1].x,y:0
     }
 
-    this.renderMethod = timestamp => {
+    this.render = timestamp => {
         context.clearRect(0,0,fullWidth,fullHeight);
 
         let position;
@@ -98,6 +98,6 @@ function SidescrollRenderer(image,endCallback) {
             drawDefaultLoadingText();
         }
 
-        rendererState.fader.process(timestamp);
+        rendererState.fader.render(timestamp);
     }
 }

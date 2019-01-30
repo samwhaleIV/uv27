@@ -217,13 +217,6 @@ const loadImages = callback => {
 loadAnimationMetadata();
 adjustFontPositions();
 
-if(localStorage.getItem("soundMuted") === "true") {
-    muteSound();
-}
-if(localStorage.getItem("musicMuted") === "true") {
-    muteMusic();
-}
-
 let elfIndex = 0, highestIndex;
 
 const getWinSelectScreen = () => {
@@ -246,10 +239,17 @@ const getSelectScreen = index => {
     );
 }
 
+const getBonusScreen = () => {
+    rendererState.fader.fadeOut(
+        BonusScreenRenderer,
+        getSelectScreen
+    );
+}
+
 const getEndScreen = () => {
     rendererState.fader.fadeOut(
         EndScreenRenderer,
-        getSelectScreen
+        getBonusScreen
     );
 }
 
@@ -314,9 +314,6 @@ const debug_cheat_everything = () => {
 const debug_reset = () => {
     localStorage.clear();
     location.reload();
-}
-const debug_toggle_stream_mode = () => {
-    backgroundStreamMode = !backgroundStreamMode;
 }
 const debug_scroll_speed = seconds => {
     if(rendererState && rendererState.background) {

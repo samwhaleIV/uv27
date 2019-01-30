@@ -28,7 +28,7 @@ function EndScreenRenderer(endCallback) {
     this.transitioning = false;
 
     this.processClick = () => {
-        if(!transitioning) {
+        if(!this.transitioning) {
             playSound("click.mp3");
             this.endCallback();
         }
@@ -45,7 +45,7 @@ function EndScreenRenderer(endCallback) {
         }
     }
 
-    this.renderMethod = timestamp => {
+    this.render = timestamp => {
 
 
         context.drawImage(
@@ -65,7 +65,7 @@ function EndScreenRenderer(endCallback) {
         );
 
 
-        rendererState.fader.process(timestamp);
+        rendererState.fader.render(timestamp);
 
     }
 

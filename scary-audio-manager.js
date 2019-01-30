@@ -198,9 +198,7 @@ const addBufferSource = (fileName,callback,errorCallback) => {
     let newName = fileName.split("/").pop();
     const newNameSplit = newName.split(".");
     newName = newNameSplit[newNameSplit.length-2];
-
     const decode = audioData => {
-
         audioContext.decodeAudioData(
             audioData,
             audioBuffer => {
@@ -248,4 +246,10 @@ const addBufferSource = (fileName,callback,errorCallback) => {
         }
     }
     request.send();
+}
+if(localStorage.getItem("soundMuted") === "true") {
+    muteSound();
+}
+if(localStorage.getItem("musicMuted") === "true") {
+    muteMusic();
 }

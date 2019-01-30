@@ -20,7 +20,7 @@ function IntroductionRenderer(endCallback) {
 
     this.fader = getFader();
 
-    this.renderMethod = timestamp => {
+    this.render = timestamp => {
 
         if(this.startTime === null) {
             this.startTime = performance.now() + startTimeOffset;
@@ -55,7 +55,7 @@ function IntroductionRenderer(endCallback) {
             }
         }
 
-        rendererState.fader.process(timestamp);
+        rendererState.fader.render(timestamp);
 
     }
 }

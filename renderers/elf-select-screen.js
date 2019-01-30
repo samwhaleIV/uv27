@@ -423,7 +423,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         this.hoverEffectIndex = null;
     }
 
-    this.renderMethod = timestamp => {
+    this.render = timestamp => {
 
         this.background.renderNormal(timestamp);
 
@@ -570,6 +570,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         drawTextBlack(musicMuted ? "no music" : "music on",this.muteButton1TextX,this.muteButton1TextY,this.muteButtonTextScale);
         drawTextBlack(soundMuted ? "no sound" : "sound on",this.muteButton2TextX,this.muteButton2TextY,this.muteButtonTextScale);
 
-        rendererState.fader.process(timestamp);
+        rendererState.fader.render(timestamp);
     }
 }
