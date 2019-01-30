@@ -171,7 +171,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         runningYValue += this.playerInputsHeight + inputBoxMargin;
     }
 
-    this.drawHealthBar = (context,timestamp,healthBar,target) => {
+    this.drawHealthBar = (timestamp,healthBar,target) => {
 
         let xOffset = healthBar.x,yOffset = 0;
         if(target.jitterHealthBar && !this.battleSequencer.battleOver) {
@@ -225,12 +225,14 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }   
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
-            for(let i = 0;i<this.battleSequencer.playerBattleObject.subText.length;i++) {
+            let i = 0;
+            while(i < this.battleSequencer.playerBattleObject.subText.length) {
                 drawTextWhite(
                     this.battleSequencer.playerBattleObject.subText[i],
                     this.leftHealthBar.x,
                     this.subTextY + (i*20),this.subTextScale
                 );
+                i++;
             }
         }
 
@@ -255,8 +257,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 elfX += Math.round(Math.random() * 2) - 1;
                 elfY += Math.round(Math.random() * 2) - 1;
             }
-
-            for(let i = 0;i<this.battleSequencer.elfRenderLayers.length;i++) {
+            let i = 0;
+            while(i<this.battleSequencer.elfRenderLayers.length) {
                 if(this.battleSequencer.elfRenderLayers[i]) {
                     context.drawImage(
                         imageDictionary[`elves-layer-${i}`],
@@ -264,10 +266,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         elfX,elfY,this.elfWidth,this.elfHeight
                     );
                 }
+                i++;
             }
 
             if(this.battleSequencer.activeAnimations.length > 0) {
-                for(let i = 0;i<this.battleSequencer.activeAnimations.length;i++) {
+                let i = 0;
+                while(i < this.battleSequencer.activeAnimations.length) {
                     const activeAnimation = this.battleSequencer.activeAnimations[i];
                     const animation = animationDictionary[activeAnimation.name];
                     if(animation.playOnce) {
@@ -309,18 +313,19 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                             );
                         }
                     }
+                    i++;
                 }
             }
         }
 
         this.drawHealthBar(
-            context,timestamp,
+            timestamp,
             this.leftHealthBar,
             this.battleSequencer.playerBattleObject
         );
 
         this.drawHealthBar(
-            context,timestamp,
+            timestamp,
             this.rightHealthBar,
             this.battleSequencer.elfBattleObject
         );
@@ -353,18 +358,22 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 this.elfTextBubbleWidth,
                 this.elfTextBubbleHeight
             );
-            for(let i = 0;i<this.battleSequencer.elfSpeech.length;i++) {
+            let i = 0;
+            while(i < this.battleSequencer.elfSpeech.length) {
                 drawTextBlack(this.battleSequencer.elfSpeech[i],
                     this.elfTextBubbleX + 8,this.elfTextBubbleY + 8 + (i * 28),4
                 );
+                i++;
             }
         } else if(this.battleSequencer.elfBattleObject.subText !== null) {
-            for(let i = 0;i<this.battleSequencer.elfBattleObject.subText.length;i++) {
+            let i = 0;
+            while(i < this.battleSequencer.elfBattleObject.subText.length) {
                 drawTextWhite(
                     this.battleSequencer.elfBattleObject.subText[i],
                     this.rightHealthBar.x,
                     this.subTextY + (i*20),this.subTextScale
                 );
+                i++;
             }
         }
 
@@ -412,8 +421,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
             }
 
-
-            for(let i = 0;i<this.playerInputs.length;i++) {
+            let i = 0;
+            while(i<this.playerInputs.length) {
                 let xOffset = 0, inputText;
                 const input = this.playerInputs[i];
                 if(i !== 0) {
@@ -459,6 +468,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         this.playerInputTextScale
                     );
                 }
+                i++;
             }
         }
 
@@ -663,11 +673,13 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.getHitRegister = (x,y) => {
         if(this.playerInputs && x >= this.playerInputsX && x <= this.playerInputsX + this.playerInputsWidth) {
-            for(let i = 0;i<this.playerInputs.length;i++) {
+            let i = 0;
+            while(i<this.playerInputs.length) {
                 const yValues = this.playerInputsYValues[i];
                 if(y >= yValues.value && y <= yValues.value + this.playerInputsHeight) {
                     return i;
                 }
+                i++;
             }
         }
         return null;

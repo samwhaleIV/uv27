@@ -27,21 +27,17 @@ const noiseBlackOut = function(intensity,grainSize=30,minShade=0,maxShade=255) {
     }
 }
 
-const drawTextTest = function(text,scale,spacing=1) {
+const textScales = {};
+const drawTextTest = function(text,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
-    const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-
     for(let i = 0;i<text.length;i++) {
-        const character = fontDictionary[text.substr(i,1)];
-        if(!character) {
-            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
-        }
+        const character = fontDictionary[text[i]];
         const drawWidth = character.width * scale;
         xOffset += drawWidth;
         if(i < lastOffsetIndex) {
-            xOffset += spaceOffset;
+            xOffset += scale;
         }
     }
     return {
@@ -49,17 +45,13 @@ const drawTextTest = function(text,scale,spacing=1) {
         height: drawHeight
     }
 }
-
-const drawTextWhite = function(text,x,y,scale,spacing=1) {
+const drawTextWhite = function(text,x,y,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
-    const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-    for(let i = 0;i<text.length;i++) {
-        const character = fontDictionary[text.substr(i,1)];
-        if(!character) {
-            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
-        }
+    let i = 0;
+    while(i < text.length) {
+        const character = fontDictionary[text[i]];
         const drawWidth = character.width * scale;
         context.drawImage(
             imageDictionary["fontspace"],
@@ -69,8 +61,9 @@ const drawTextWhite = function(text,x,y,scale,spacing=1) {
         );
         xOffset += drawWidth;
         if(i < lastOffsetIndex) {
-            xOffset += spaceOffset;
+            xOffset += scale;
         }
+        i++;
     }
     return {
         width: xOffset,
@@ -78,17 +71,13 @@ const drawTextWhite = function(text,x,y,scale,spacing=1) {
     }
 }
 
-const drawTextBlack = function(text,x,y,scale,spacing=1) {
+const drawTextBlack = function(text,x,y,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
-    const spaceOffset = spacing * scale;
     const lastOffsetIndex = text.length-1;
-
-    for(let i = 0;i<text.length;i++) {
-        const character = fontDictionary[text.substr(i,1)];
-        if(!character) {
-            throw `${text.substr(i,1)} is invalid for render @ ${text}`;
-        }
+    let i = 0;
+    while(i < text.length) {
+        const character = fontDictionary[text[i]];
         const drawWidth = character.width * scale;
         context.drawImage(
             imageDictionary["fontspace-black"],
@@ -98,8 +87,9 @@ const drawTextBlack = function(text,x,y,scale,spacing=1) {
         );
         xOffset += drawWidth;
         if(i < lastOffsetIndex) {
-            xOffset += spaceOffset;
+            xOffset += scale;
         }
+        i++;
     }
     return {
         width: xOffset,

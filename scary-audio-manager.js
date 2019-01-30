@@ -136,13 +136,6 @@ const playMusicWithIntro = (loopName,introName,withLoop=true) => {
         loopMusicNode.connect(loopMusicNode.volumeControl);
 
         loopMusicNode.start(startSyncTime+introBuffer.duration);
-
-        setTimeout(()=>{
-            if(musicNodes[introName]) {
-                deleteTrack(introName);
-            }
-        },((startSyncTime+introBuffer.duration)*1000)+100);
-
         musicNodes[loopName] = loopMusicNode;
     }
 }
