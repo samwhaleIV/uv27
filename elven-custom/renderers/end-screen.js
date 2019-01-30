@@ -38,7 +38,7 @@ function EndScreenRenderer(endCallback) {
         switch(key) {
             case "Enter":
             case "Space":
-                if(!transitioning) {
+                if(!this.transitioning) {
                     this.endCallback();
                 }
                 break;
