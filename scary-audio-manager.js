@@ -117,6 +117,7 @@ const playMusicWithIntro = (loopName,introName,withLoop=true) => {
             startSyncTime = audioContext.currentTime + 0.01;
         }
 
+        //This works so long as we can process everything within introBuffer.duration - which should never happen
         if(audioContext.currentTime > startSyncTime) {
             musicNode.start(audioContext.currentTime,audioContext.currentTime-startSyncTime);
         } else {
