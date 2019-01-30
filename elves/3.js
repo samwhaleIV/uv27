@@ -162,32 +162,32 @@ addMove({
         }
     }
 });
-elves[2] = {
-    name: "wimpy blue elf",
+function WimpyBlueElf() {
+    this.name = "wimpy blue elf";
     
-    song: "wimpy_loop",
-    songIntro: "wimpy_intro",
+    this.song = "wimpy_loop";
+    this.songIntro = "wimpy_intro";
 
-    backgroundCycleTime: 35000,
-    background: "background-1",
-    backgroundColor: "blue",
-    health: 100,
-    startText: "you received an empty revolver",
-    startSpeech: {
+    this.backgroundCycleTime = 35000;
+    this.background = "background-1";
+    this.backgroundColor = "blue";
+    this.health = 100;
+    this.startText = "you received an empty revolver";
+    this.startSpeech = {
         failed: false,
         text: "here is a revolver\nlet's see if you know\nhow to use it\n\ninformation can be\nseen at the top left\n(in many battles)"
-    },
-    setup: sequencer => {
+    };
+    this.setup = sequencer => {
         sequencer.playerBattleObject.state.money = 5;
         sequencer.playerBattleObject.subText = ["5 coins"];
-    },
-    getLoseSpeech: () => {
+    };
+    this.getLoseSpeech = () => {
         return {text:"took you long enough\n*ded*"}
-    },
-    getWinSpeech: () => {
+    };
+    this.getWinSpeech = () => {
         return {text:"well that's the\nlast time i give\nsomeone a gun"}
-    },
-    getSpeech: sequencer => {
+    };
+    this.getSpeech = sequencer => {
         if(sequencer.elfBattleObject.lastMove !== "chit chat") {
             return null;
         }
@@ -241,14 +241,14 @@ elves[2] = {
             text: responses[responseIndex]
         };
     },
-    getMove: sequencer => {
+    this.getMove = sequencer => {
         if(sequencer.playerBattleObject.lastMove === "panhandle") {
             return sequencer.turnNumber % 2 === 1 ? moves["charity"] : moves["chit chat"];
         } else {
             return moves["chit chat"];
         }
-    },
-    getDefaultGlobalState: () => {
+    };
+    this.getDefaultGlobalState = () => {
         return {
             postTurnProcess: sequencer => {
                 if(sequencer.playerBattleObject.state.money < 5) {
@@ -263,11 +263,11 @@ elves[2] = {
                 }
             }
         }
-    },
-    playerMoves: [
+    };
+    this.playerMoves = [
         moves["buy bullet - 5 coins"],
         moves["load chamber"],
         moves["spin chamber"],
         moves["boom"]
-    ],
+    ];
 }

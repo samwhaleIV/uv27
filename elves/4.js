@@ -39,21 +39,21 @@ addMove({
         }
     }
 });
-elves[3] = {
-    name: "wizard elf",
-    background: "background-1",
-    backgroundColor: "purple",
-    song: "magic_loop",
-    songIntro: "magic_intro",
-    health: 125,
-    backgroundCycleTime: 45000,
-    playerMoves: [
+function WizardElf() {
+    this.name = "wizard elf";
+    this.background = "background-1";
+    this.backgroundColor = "purple";
+    this.song = "magic_loop";
+    this.songIntro = "magic_intro";
+    this.health = 125;
+    this.backgroundCycleTime = 45000;
+    this.playerMoves = [
         moves["decent punch"],
         moves["self punch"],
         moves["band aid"],
         moves["health swap"]
-    ],
-    getMove: sequencer => {
+    ];
+    this.getMove = sequencer => {
         if(sequencer.playerBattleObject.health === 15) {
             return moves["decent punch"];
         } else if(sequencer.playerBattleObject.health === 20) {
@@ -65,12 +65,12 @@ elves[3] = {
         } else {
             switch(sequencer.turnNumber % 3) {
                 case 0:
-                    return moves["decent punch"]
+                    return moves["decent punch"];
                 case 1:
-                    return moves["violent spell"]
+                    return moves["violent spell"];
                 case 2:
                     return moves["magic"];
             }
         }
-    }
+    };
 }

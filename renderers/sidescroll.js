@@ -35,6 +35,15 @@ function SidescrollRenderer(image,endCallback) {
 
     this.elfScale = 20;
 
+
+    const elfWidth = this.elfScale * spriteWidth;
+    const elfHeight = this.elfScale * spriteHeight;
+    const halfElfWidth = elfWidth / 2;
+    const halfElfHeight = elfHeight / 2;
+
+    const elfX = halfWidth-halfElfWidth;
+    const elfY = halfHeight-halfElfHeight;
+
     this.animationStartTime = 0;
     this.animationState = "walking-right";
 
@@ -47,8 +56,8 @@ function SidescrollRenderer(image,endCallback) {
         x:this.rightSprites[this.rightSprites.length-1].x,y:0
     }
 
-    this.renderMethod = (context,timestamp,width,height) => {
-        context.clearRect(0,0,width,height);
+    this.renderMethod = timestamp => {
+        context.clearRect(0,0,fullWidth,fullHeight);
 
         let position;
         switch(this.animationState) {
@@ -77,18 +86,11 @@ function SidescrollRenderer(image,endCallback) {
                 break;
         }
 
-        const elfWidth = this.elfScale * spriteWidth;
-        const elfHeight = this.elfScale * spriteHeight;
-
-        if(position) {
-            context.drawImage(
-                image,
-                position.x,position.y,spriteWidth,spriteHeight,
-                (width/2)-(elfWidth/2),(height/2)-(elfHeight/2),elfWidth,elfHeight
-            );
-        } else {
-            console.warn("Invalid position on loading screen");
-        }
+        context.drawImage(
+            image,
+            position.x,position.y,spriteWidth,spriteHeight,
+            elfX,elfY,elfWidth,elfHeight
+        );
 
         if(imageDictionary["fontspace"]) {
             drawLoadingText();
@@ -96,6 +98,6 @@ function SidescrollRenderer(image,endCallback) {
             drawDefaultLoadingText();
         }
 
-        rendererState.fader.process(context,timestamp,width,height);
+        rendererState.fader.process(timestamp);
     }
 }

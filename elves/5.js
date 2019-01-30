@@ -8,29 +8,29 @@ addMove({
         }
     }
 });
-elves[4] = {
-    name: "red elfette",
-    background: "background-1",
-    song: "boxer_loop",
-    songIntro: "boxer_intro",
-    backgroundColor: "red",
-    backgroundCycleTime: 45000,
-    health: 150,
-    playerMoves: [
+function RedElfette() {
+    this.name = "red elfette";
+    this.background = "background-1";
+    this.song = "boxer_loop";
+    this.songIntro = "boxer_intro";
+    this.backgroundColor = "red";
+    this.backgroundCycleTime = 45000;
+    this.health = 150;
+    this.playerMoves = [
         moves["protect"],
         moves["wimpy punch"],
         moves["punching vitamins"]
-    ],
-    getWinSpeech: () => {
+    ];
+    this.getWinSpeech = () => {
         return {text:"i told you i was\na good boxer\nsee ya around"}
-    },
-    getLoseSpeech: () => {
+    };
+    this.getLoseSpeech = () => {
         return {text:"this is...\nimpossible"}
-    },
-    startSpeech: {
+    };
+    this.startSpeech = {
         text: "i might not\n-look- like a\nboxer... but it's my\nmy strong passion\ni am the best"
-    },
-    getSpeech: sequencer => {
+    };
+    this.getSpeech = sequencer => {
         if(sequencer.turnNumber % 4 === 3) {
             if(sequencer.turnNumber % 2 === 0) {
                 return {
@@ -45,24 +45,24 @@ elves[4] = {
         return {
             text: null
         }
-    },
-    getMove: sequencer => {
+    };
+    this.getMove = sequencer => {
         if(sequencer.turnNumber % 4 === 3) {
             return moves["water break"];
         } else {
             return moves["decent punch"];
         }
-    },
-    getDefaultGlobalState: () => {
+    };
+    this.getDefaultGlobalState = () => {
         return {
             postTurnProcess: sequencer => {
                 sequencer.playerBattleObject.subText[0] = `turn ${sequencer.turnNumber + 1}`;
             }
         }
-    },
-    setup: sequencer => {
+    };
+    this.setup = sequencer => {
         sequencer.playerBattleObject.subText = [`turn ${sequencer.turnNumber + 1}`];
         sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
-        sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;
+        sequencer.elfBattleObject.movePreProcess = protectPreProcessElf;
     }
 }

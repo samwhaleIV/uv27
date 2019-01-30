@@ -194,29 +194,29 @@ addMove({
         }
     }
 });
-elves[5] = {
-    name: "golden elfette",
-    background: "background-3",
-    backgroundColor: "yellow",
-    song: "greed_loop",
-    songIntro: "greed_intro",
-    health: 200,
-    getLoseSpeech: () => {
+function GoldenElfette() {
+    this.name = "golden elfette";
+    this.background = "background-3";
+    this.backgroundColor = "yellow";
+    this.song = "greed_loop";
+    this.songIntro = "greed_intro";
+    this.health = 200;
+    this.getLoseSpeech = () => {
         return {text:"a golden elf\nwithout gold\nis not an elf at all\n\nit's not worth living\n*ded*"}
-    },
-    getWinSpeech: sequencer => {
+    };
+    this.getWinSpeech = sequencer => {
         if(sequencer.elfBattleObject.lastMove === "nutcracker" && sequencer.playerBattleObject.lastMove === "take gold") {
             return {text:"don't say i didn't\nwarn you that this\nwould happen"};
         }
         return {text:"next time stay away\nfrom my lucky charms"};
-    },
-    playerMoves: [
+    };
+    this.playerMoves = [
         moves["take gold"],
         moves["give gold"],
         moves["band aid 2.0"],
         moves["buy squirrel - 3 gold"]
-    ],
-    getMove: sequencer => {
+    ];
+    this.getMove = sequencer => {
         if(sequencer.elfBattleObject.state.puttingAnEndToThis) {
             return Math.random() < 0.5 ? moves["unfiscal punch"] : Math.random() > 0.5 ? moves["cry"] : moves["complain"];
         }
@@ -238,8 +238,8 @@ elves[5] = {
             }
             return elfMoves[Math.floor(Math.random() * elfMoves.length)];
         }
-    },
-    getSpeech: sequencer => {
+    };
+    this.getSpeech = sequencer => {
         if(sequencer.elfBattleObject.health === 0) {
             return {
                 text: null
@@ -330,8 +330,8 @@ elves[5] = {
                 };
             }
         }
-    },
-    setup: sequencer => {
+    };
+    this.setup = sequencer => {
         sequencer.playerBattleObject.subText = ["0 gold"];
         sequencer.elfBattleObject.subText = ["100 gold"];
 
@@ -347,8 +347,8 @@ elves[5] = {
             }
             return move;
         }
-    },
-    startSpeech: {
+    };
+    this.startSpeech = {
         text: "the only way to\nkill a golden\nelf is to obtain\nall their gold"
-    }
+    };
 }

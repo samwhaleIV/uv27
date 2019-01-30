@@ -1,7 +1,7 @@
 "use strict";
-elves[24] = {
-    name: "murder elf",
-    background: "background-2",
-    backgroundColor: "rgb(114,114,114)",
-    health: 900
+function MurderElf() {
+    this.name = "murder elf";
+    this.background = "background-2";
+    this.backgroundColor = "rgb(114;114;114)";
+    this.health = 900;
 }

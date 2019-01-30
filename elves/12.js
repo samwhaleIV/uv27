@@ -1,6 +1,4 @@
 "use strict";
-const noComboChainText = "no combo chain";
-
 addMove({
     name: "dodgy dodge",
     type: "self",
@@ -182,7 +180,6 @@ addMove({
 
     }
 });
-
 addMove({
     name: "lightweight champion",
     type: "target",
@@ -240,17 +237,19 @@ addMove({
     }
 });
 
-elves[11] = {
-    name: "legless elf",
-    background: "background-1",
-    backgroundColor: "pink",
-    health: 500,
+function LeglessElf() {
+    const noComboChainText = "no combo chain";
 
-    startSpeech: {
+    this.name = "legless elf";
+    this.background = "background-1";
+    this.backgroundColor = "pink";
+    this.health = 500;
+
+    this.startSpeech = {
         text: "i might not have legs\nbut i can throw stronger\npunches than any you've\nseen yet.\n\nbring it human swine."
-    },
+    };
 
-    getMove: sequencer => {
+    this.getMove = sequencer => {
         const skipNewHeal = sequencer.elfBattleObject.state.healStateJustBroke;
         if(skipNewHeal) {
             sequencer.elfBattleObject.state.healStateJustBroke = false;
@@ -282,16 +281,16 @@ elves[11] = {
         } else {
             return moves["lightweight champion"]
         }
-    },
+    };
 
-    getLoseSpeech: sequencer => {
+    this.getLoseSpeech = sequencer => {
         return {text:"looks like i'm bested\n\ni feel like i was\ndesigned with a\ndisadvantage *cough*\ni don't even have legs"};
-    },
-    getWinSpeech: sequencer => {
+    };
+    this.getWinSpeech = sequencer => {
         return {text:"i did this for red elfette\nher blood is\non your hands...\n\nnow yours is on mine."};
-    },
+    };
 
-    getSpeech: sequencer => {
+    this.getSpeech = sequencer => {
         const speeches = [
             "wanna go for a run\n\nha.. ha.. ha",
             "how's the weather\nup there?",
@@ -311,18 +310,18 @@ elves[11] = {
         return {
             text: speeches[sequencer.globalBattleState.speechIndex]
         }
-    },
+    };
 
-    getDefaultGlobalState: () => {
+    this.getDefaultGlobalState = () => {
         return {
             speechIndex: -1,
             postTurnProcess: sequencer => {
                 sequencer.playerBattleObject.state.dodging = false;
             }
         }
-    },
+    };
 
-    setup: sequencer => {
+    this.setup = sequencer => {
 
         sequencer.playerBattleObject.subText = [noComboChainText];
 
@@ -376,12 +375,12 @@ elves[11] = {
             }
             return move;
         }
-    },
+    };
 
-    playerMoves: [
+    this.playerMoves = [
         moves["krazy kick"],
         moves["dodgy dodge"],
         moves["uppercut"],
         moves["elfmart brand band aid"]
-    ]
+    ];
 }

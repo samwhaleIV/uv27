@@ -19,12 +19,10 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         this.songIntro = this.elf.songIntro;
     }
 
-    this.halfWidth = canvas.width / 2;
-
     this.elfHeight = 372;
     this.elfWidth = Math.round((elfSourceWidth / elfSourceHeight) * this.elfHeight);
 
-    this.elfCenterX = Math.round(this.halfWidth - (this.elfWidth / 2));
+    this.elfCenterX = Math.round(halfWidth - (this.elfWidth / 2));
     this.fader = getFader();
     this.background = !isBoss ? new Background(this.elf.background,this.elf.backgroundColor,backgroundCycleTime) : new BossBackground(backgroundCycleTime);
     this.elfX = this.elfCenterX;
@@ -37,7 +35,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.moveElf = (duration,newXPercent) => {
         this.elfMoveDuration = duration;
         this.elfMoveStart = this.elfX;
-        let elfMoveEnd = Math.floor((newXPercent * canvas.width) - (this.elfWidth / 2));
+        let elfMoveEnd = Math.floor((newXPercent * fullWidth) - (this.elfWidth / 2));
 
         this.elfMoveDistance = elfMoveEnd - this.elfMoveStart;
 
@@ -50,8 +48,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.playerInputs = null;
     this.playerInputsEnabled = false;
 
-    this.playerInputsWidth = Math.round(canvas.width * 0.5);
-    this.playerInputsX = Math.round(this.halfWidth - (this.playerInputsWidth / 2));
+    this.playerInputsWidth = Math.round(fullWidth * 0.5);
+    this.playerInputsX = Math.round(halfWidth - (this.playerInputsWidth / 2));
 
     let runningYValue = 394;
     const textMargin = 10;
@@ -68,7 +66,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.hoverEffectIndex = null;
 
     this.playerInputToggleAnimationTime = 200;
-    this.playerInputToggleDistance = canvas.width;
+    this.playerInputToggleDistance = fullWidth;
 
     this.startInputText = null;
 
@@ -80,7 +78,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     const healthBarMargin = 15;
 
-    this.healthBarWidth = !isBoss ? 250 : canvas.width - (healthBarMargin * 2);
+    this.healthBarWidth = !isBoss ? 250 : fullWidth - (healthBarMargin * 2);
     this.healthBarHeight = 24;
     const healthBarTop = 0;
     const healthBarTextMargin = 8;
@@ -100,13 +98,13 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.rightHealthBar = {
         y: healthBarY,
-        x: !isBoss ? canvas.width - healthBarMargin - this.healthBarWidth : healthBarMargin,
+        x: !isBoss ? fullWidth - healthBarMargin - this.healthBarWidth : healthBarMargin,
         textY: healthBarTextY,
         foregroundColor: this.elf.foregroundColor ? this.elf.foregroundColor : this.elf.backgroundColor,
         backgroundColor: "rgb(0,0,0)"
     };
 
-    this.bottomMessageWidth = canvas.width;
+    this.bottomMessageWidth = fullWidth;
     this.bottomMessageHeight = 40;
     this.bottomMessageX = 0;
     this.bottomMessageY = 332;
@@ -128,7 +126,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.elfTextBubbleWidth = !isBoss ? 400 : 450;
     this.elfTextBubbleHeight = 220;
-    this.elfTextBubbleX = !isBoss ? 270 : Math.round(this.halfWidth - (this.elfTextBubbleWidth / 2));
+    this.elfTextBubbleX = !isBoss ? 270 : Math.round(halfWidth - (this.elfTextBubbleWidth / 2));
     this.elfTextBubbleY = 82;
 
     if(isBoss) {
@@ -217,13 +215,13 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.hoverColor = this.elf.darkHover ? this.elf.foregroundColor ? this.elf.foregroundColor : "red" : this.elf.foregroundColor ? this.elf.foregroundColor : "rgba(255,255,255,0.7)";
     this.fillColor = this.elf.buttonColor ? this.elf.buttonColor : "rgba(0,0,0,0.8)";
 
-    this.renderMethod = (context,timestamp,width,height) => {
+    this.renderMethod = timestamp => {
 
         if(rendererState.background) {
-            rendererState.background.render(context,timestamp,width,height);
+            rendererState.background.render(timestamp);
         } else {
             context.fillStyle = "black";
-            context.fillRect(0,0,width,height);
+            context.fillRect(0,0,fullWidth,height);
         }   
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
@@ -341,7 +339,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             );
             drawTextBlack(
                 this.battleSequencer.bottomMessage,
-                Math.floor(this.halfWidth - (textResult.width / 2)),
+                Math.floor(halfWidth - (textResult.width / 2)),
                 this.bottomMessageTextY,
                 this.bottomMessageTextScale
             );
@@ -466,7 +464,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
         if(this.inEscapeMenu) {
             context.fillColor = "rgba(0,0,0,0.8)";
-            context.fillRect(0,0,width,height);
+            context.fillRect(0,0,fullWidth,fullHeight);
             switch(this.escapeMenuIndex) {
                 case 0:
                     context.fillStyle = this.hoverColor;
@@ -507,7 +505,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             drawTextWhite(this.noButtonText.text,this.noButtonText.x,this.noButtonText.y,this.noButtonText.scale);
         }
 
-        rendererState.fader.process(context,timestamp,width,height);
+        rendererState.fader.process(timestamp);
     }
 
     this.battleSequencer = new BattleSequencer(this);
@@ -522,29 +520,27 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     const escapeMenuTextTest = drawTextTest(this.escapeMenuText,this.escapeMenuTextScale);
 
-    this.escapeMenuTextX = Math.round(this.halfWidth - (escapeMenuTextTest.width/2));
+    this.escapeMenuTextX = Math.round(halfWidth - (escapeMenuTextTest.width/2));
 
     const escapeStuffYOffset = -50;
 
-    this.halfHeight = canvas.height / 2;
-
     const verticalEscapeMenuMargin = 20;
-    this.escapeMenuTextY = Math.ceil(this.halfHeight - escapeMenuTextTest.height - verticalEscapeMenuMargin) + escapeStuffYOffset;
+    this.escapeMenuTextY = Math.ceil(halfHeight - escapeMenuTextTest.height - verticalEscapeMenuMargin) + escapeStuffYOffset;
     
     const escapeMenuButtonWidth = 300;
     const escapeMenuButtonHeight = 100;
-    const escapeMenuButtonY = Math.floor(this.halfHeight + verticalEscapeMenuMargin) + escapeStuffYOffset;
+    const escapeMenuButtonY = Math.floor(halfHeight + verticalEscapeMenuMargin) + escapeStuffYOffset;
 
     this.escapeMenuYesButton = {
         width: escapeMenuButtonWidth,
         height: escapeMenuButtonHeight,
-        x: Math.ceil(this.halfWidth - escapeMenuButtonWidth - 5),
+        x: Math.ceil(halfWidth - escapeMenuButtonWidth - 5),
         y: escapeMenuButtonY
     };
     this.escapeMenuNoButton = {
         width: escapeMenuButtonWidth,
         height: escapeMenuButtonHeight,
-        x: Math.ceil(this.halfWidth + 5),
+        x: Math.ceil(halfWidth + 5),
         y: escapeMenuButtonY
     };
 

@@ -57,7 +57,6 @@ addMove({
         return null;
     }
 });
-
 addMove({
     name: "go back",
     type: "interface",
@@ -93,7 +92,6 @@ addMove({
     type: "interface",
     process: (sequencer,user) => moves["go back"].process(sequencer,user)
 });
-
 addMove({
     name: "buy treaty - 100 coins",
     type: "option",
@@ -213,7 +211,6 @@ addMove({
     type: "option",
     process: (sequencer,user,target) => moves["multiverse"].process(sequencer,user,target)
 });
-
 addMove({
     name: "high noon",
     type: "interface",
@@ -355,7 +352,6 @@ addMove({
         }
     }
 });
-
 addMove({
     name: "sling a thing",
     type: "target",
@@ -430,89 +426,6 @@ addMove({
         }
     }
 });
-
-const oldTimeyMoveTree = {
-    fistFight: sequencer => {
-        if(sequencer.playerBattleObject.state.ownsLove) {
-            return [
-                moves["big hug"],
-                moves["big hug"],
-                moves["big hug"],
-                moves["big hug"]
-            ]
-        }
-        const fightMoves = [
-            sequencer.playerBattleObject.state.isLit ? moves["drunken punch"] : moves["sober punch"],
-            moves["throw stool"]
-        ];
-        if(sequencer.playerBattleObject.state.ownsAThing) {
-            fightMoves.push(moves["sling a thing"]);
-        }
-        if(sequencer.playerBattleObject.state.ownsMatter) {
-            fightMoves.push(moves["mad matter"]);
-        }
-        return fightMoves;
-    },
-    home: [
-        moves["visit general store"],
-        moves["visit specific store"],
-        moves["visit saloon"]
-    ],
-    specificStore: [
-        moves["buy bullet - 5 coins"],
-        moves["buy treaty - 100 coins"],
-        moves["buy love - 999 coins"],
-        moves["leave"]
-    ],
-    generalStore: [
-        moves["buy matter - 1 coin"],
-        moves["buy a thing - 2 coins"],
-        moves["buying in and of itself"],
-        moves["leave"]
-    ],
-    saloon: [
-        moves["down some whiskey"],
-        moves["fist fight - win coins!"],
-        moves["gamble all your coins"],
-        moves["leave"]
-    ],
-    highNoon: sequencer => sequencer.playerBattleObject.ownsTreaty ?
-        [moves["retreat"],moves["peace treaty"]]:
-
-        [moves["retreat"],
-        moves["load chamber"],
-        moves["spin chamber"],
-        moves["boom"]
-    ]
-}
-
-const timeOfDayLookup = {
-    0:"midnight",
-    1:"1 in the black of night",
-    2:"2 in the black of night",
-    3:"3 in the black of night",
-    4:"4 in the morning",
-    5:"5 in the morning",
-    6:"6 in the morning",
-    7:"7 in the morning",
-    8:"8 in the morning",
-    9:"9 in the morning",
-    10:"10 in the late morning",
-    11:"11 in the late morning",
-    12:"high noon",
-    13:"1 in the afternoon",
-    14:"2 in the afternoon",
-    15:"3 in the early evening",
-    16:"4 in the evening",
-    17:"5 in the evening",
-    18:"6 in the evening",
-    19:"7 at night",
-    20:"8 at night",
-    21:"9 at night",
-    22:"10 at night",
-    23:"11 at night"
-};
-
 addMove({
     name: "drop em",
     type: "target",
@@ -595,12 +508,94 @@ addMove({
     }
 });
 
-elves[13] = {
-    name: "old timey elf",
-    background: "background-1",
-    backgroundColor: "rgb(183,164,145)",
+function OldTimeyElf() {
+    const oldTimeyMoveTree = {
+        fistFight: sequencer => {
+            if(sequencer.playerBattleObject.state.ownsLove) {
+                return [
+                    moves["big hug"],
+                    moves["big hug"],
+                    moves["big hug"],
+                    moves["big hug"]
+                ]
+            }
+            const fightMoves = [
+                sequencer.playerBattleObject.state.isLit ? moves["drunken punch"] : moves["sober punch"],
+                moves["throw stool"]
+            ];
+            if(sequencer.playerBattleObject.state.ownsAThing) {
+                fightMoves.push(moves["sling a thing"]);
+            }
+            if(sequencer.playerBattleObject.state.ownsMatter) {
+                fightMoves.push(moves["mad matter"]);
+            }
+            return fightMoves;
+        },
+        home: [
+            moves["visit general store"],
+            moves["visit specific store"],
+            moves["visit saloon"]
+        ],
+        specificStore: [
+            moves["buy bullet - 5 coins"],
+            moves["buy treaty - 100 coins"],
+            moves["buy love - 999 coins"],
+            moves["leave"]
+        ],
+        generalStore: [
+            moves["buy matter - 1 coin"],
+            moves["buy a thing - 2 coins"],
+            moves["buying in and of itself"],
+            moves["leave"]
+        ],
+        saloon: [
+            moves["down some whiskey"],
+            moves["fist fight - win coins!"],
+            moves["gamble all your coins"],
+            moves["leave"]
+        ],
+        highNoon: sequencer => sequencer.playerBattleObject.ownsTreaty ?
+            [moves["retreat"],moves["peace treaty"]]:
+    
+            [moves["retreat"],
+            moves["load chamber"],
+            moves["spin chamber"],
+            moves["boom"]
+        ]
+    }
+    
+    const timeOfDayLookup = {
+        0:"midnight",
+        1:"1 in the black of night",
+        2:"2 in the black of night",
+        3:"3 in the black of night",
+        4:"4 in the morning",
+        5:"5 in the morning",
+        6:"6 in the morning",
+        7:"7 in the morning",
+        8:"8 in the morning",
+        9:"9 in the morning",
+        10:"10 in the late morning",
+        11:"11 in the late morning",
+        12:"high noon",
+        13:"1 in the afternoon",
+        14:"2 in the afternoon",
+        15:"3 in the early evening",
+        16:"4 in the evening",
+        17:"5 in the evening",
+        18:"6 in the evening",
+        19:"7 at night",
+        20:"8 at night",
+        21:"9 at night",
+        22:"10 at night",
+        23:"11 at night"
+    };
 
-    getMove: sequencer => {
+    this.name = "old timey elf";
+    this.background = "background-1";
+    this.backgroundColor = "rgb(183,164,145)";
+
+    this.getMove = sequencer => {
         if(sequencer.globalBattleState.playerInterfaced) {
             return null;
         }
@@ -617,17 +612,17 @@ elves[13] = {
             return moves[movePool[Math.floor(Math.random()*movePool.length)]];
         }
         return null;
-    },
+    };
     
-    health: 200,
+    this.health = 200;
 
-    startSpeech: {
+    this.startSpeech = {
         text: "howdy...\nthat's a cool gun...\n\nseen it somewhere\nbefore\n\ni'll be at the saloon"
-    },
+    };
 
-    startText: "you dust off your old revolver",
+    this.startText = "you dust off your old revolver";
 
-    setup: sequencer => {
+    this.setup = sequencer => {
         sequencer.elfBattleObject.subText = [timeOfDayLookup[
             sequencer.globalBattleState.time
         ]];
@@ -643,9 +638,9 @@ elves[13] = {
                 sequencer.globalBattleState.subTexts[key] = ["<coin schema - this is an error>"];
             }
         );
-    },
+    };
 
-    getDefaultGlobalState: () => {
+    this.getDefaultGlobalState = () => {
         return {
             time: 6,
             timeFreeze: false,
@@ -826,7 +821,7 @@ elves[13] = {
 
             }
         }
-    },
+    };
 
-    playerMoves: [...oldTimeyMoveTree.home,moves["stall"]]
+    this.playerMoves = [...oldTimeyMoveTree.home,moves["stall"]];
 }

@@ -11,11 +11,19 @@
 </head>
 <body>
     <canvas id="canvas" width="750" height="650"></canvas>
+
+    <script>
+    let startKeys = Object.keys(this);
+    startKeys = startKeys.reduce((pv,cv)=>{pv[cv]=true;return pv},{});
+    </script>
+
     <p id="picture-mode-element"></p>
 
     <script src="canvas-manager.js"></script>
+    <script src="renderers/components/constants.js"></script>
+
     <script src="scary-audio-manager.js"></script>
-    
+
     <script src="renderers/components/helpers.js"></script>
     <script src="renderers/components/fader.js"></script>
     <script src="renderers/components/background.js"></script>
@@ -59,5 +67,19 @@
 
     <script src="battle-sequencer.js"></script>
     <script src="script.js"></script>
+
+    <script>
+    (function(){
+        const endKeys = Object.keys(this);
+        console.log("New keys count",endKeys.length - startKeys.length);
+        console.log("New keys",endKeys.filter(endKey => {
+            if(!startKeys[endKey]) {
+                return true;
+            } else {
+                return false;
+            }
+        }));
+    })();
+    </script>
 </body>
 </html>

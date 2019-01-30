@@ -7,44 +7,44 @@ function Background(name,color,cycleTime) {
 
     this.staticY = 372;
     this.staticHeight = 278;
-    this.staticTopHeight = canvas.height - this.staticHeight;
+    this.staticTopHeight = fullHeight - this.staticHeight;
 
-    this.renderNormal = (context,timestamp,width,height) => {
+    this.renderNormal = timestamp => {
 
-        let horizontalOffset = 0, inverseOffset = width;
+        let horizontalOffset = 0, inverseOffset = fullWidth;
 
         if(!backgroundStreamMode) {
-            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
+            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * fullWidth);
             inverseOffset -= horizontalOffset;
         }
 
         context.drawImage(
             imageDictionary[this.name],
-            horizontalOffset,0,inverseOffset,height,
-            0,0,inverseOffset,height
+            horizontalOffset,0,inverseOffset,fullHeight,
+            0,0,inverseOffset,fullHeight
         );
 
         if(!backgroundStreamMode) {
             context.drawImage(
                 imageDictionary[this.name],
-                0,0,horizontalOffset,height,
-                inverseOffset,0,horizontalOffset,height
+                0,0,horizontalOffset,fullHeight,
+                inverseOffset,0,horizontalOffset,fullHeight
             );
         }
 
         context.save();
         context.globalCompositeOperation = "multiply";
         context.fillStyle = this.color;
-        context.fillRect(0,0,width,height);
+        context.fillRect(0,0,fullWidth,fullHeight);
         context.restore();
     }
 
-    this.render = (context,timestamp,width,height) => {
+    this.render = timestamp => {
 
-        let horizontalOffset = 0, inverseOffset = width;
+        let horizontalOffset = 0, inverseOffset = fullWidth;
 
         if(!backgroundStreamMode) {
-            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * width);
+            horizontalOffset = (((timestamp % this.cycleTime) / this.cycleTime) * fullWidth);
             inverseOffset -= horizontalOffset;
         }
 
@@ -66,18 +66,18 @@ function Background(name,color,cycleTime) {
         context.drawImage(
             imageDictionary[this.name],
             0,this.staticY,
-            width,this.staticHeight,
+            fullWidth,this.staticHeight,
             0,this.staticY,
-            width,this.staticHeight
+            fullWidth,this.staticHeight
         );
 
         context.save();
         context.globalCompositeOperation = "multiply";
         context.fillStyle = this.color;
-        context.fillRect(0,0,width,height);
+        context.fillRect(0,0,fullWidth,fullHeight);
         context.restore();
 
         context.fillStyle = "rgba(0,0,0,0.7)";
-        context.fillRect(0,0,width,this.staticTopHeight);
+        context.fillRect(0,0,fullWidth,this.staticTopHeight);
     }
 }

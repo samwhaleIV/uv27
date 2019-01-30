@@ -93,7 +93,6 @@ const unmuteTrack = name => {
 }
 
 let startSyncTime = null;
-
 let introMuteManifest = {};
 let loopMuteManifest = {};
 const playMusicWithIntro = (loopName,introName,withLoop=true) => {
@@ -131,16 +130,18 @@ const playMusicWithIntro = (loopName,introName,withLoop=true) => {
 
         loopMusicNode.volumeControl = audioContext.createGain();
         if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
-            console.log("loop muted");
             loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
         }
         loopMusicNode.volumeControl.connect(musicOutputNode);
         loopMusicNode.connect(loopMusicNode.volumeControl);
 
-        const loopStartTime = startSyncTime+introBuffer.duration;
-        console.log("loop start time",loopStartTime);
+        loopMusicNode.start(startSyncTime+introBuffer.duration);
 
-        loopMusicNode.start(loopStartTime);
+        setTimeout(()=>{
+            if(musicNodes[introName]) {
+                deleteTrack(introName);
+            }
+        },((startSyncTime+introBuffer.duration)*1000)+100);
 
         musicNodes[loopName] = loopMusicNode;
     }
@@ -171,6 +172,7 @@ const playMusic = (name,withLoop=true) => {
 }
 
 const deleteTrack = name => {
+    console.log(`Audio manager: Deleted track '${name}'`);
     const node = musicNodes[name];
     node.stop();
     node.volumeControl.disconnect(musicOutputNode);

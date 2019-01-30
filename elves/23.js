@@ -1,8 +1,8 @@
 "use strict";
-elves[22] = {
-    name: "corrupt elf",
-    background: "background-6",
-    backgroundColor: "white",
-    foregroundColor: "rgb(255,236,0)",
-    health: 700
+function CorruptElf() {
+    this.name = "corrupt elf";
+    this.background = "background-6";
+    this.backgroundColor = "white";
+    this.foregroundColor = "rgb(255;236;0)";
+    this.health = 700;
 }

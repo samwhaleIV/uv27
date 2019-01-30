@@ -24,6 +24,28 @@ const turboTextWordByWord = (sequencer,text,postText=null,postSpeech=null) => {
     return events;
 }
 
+const getRandomSelections = (options,selectionCount,selectionMapper) => {
+
+    const selections = new Array(selectionCount);
+
+    for(let i = 0;i<selectionCount;i++) {
+        const optionIndex = Math.floor(Math.random()*options.length);
+        const option = options[optionIndex];
+
+        options = [
+            ...options.slice(0,optionIndex),...options.slice(optionIndex+1,selectionCount)
+        ];
+
+        if(selectionMapper) {
+            selections[i] = selectionMapper(option);
+        } else {
+            selections[i] = option;
+        }
+        
+    }
+    return selections;
+}
+
 const turboTextIncremental = (sequencer,introText,text) => {
     const events = [{
         text: introText
@@ -71,7 +93,6 @@ const getOptionMove = (moveName,questionID,optionID) => {
         }
     }
 }
-
 const getSelectionMove = (name,...options) => {
     const optionMovesDictionary = {};
     const justMoves = [];
@@ -104,7 +125,6 @@ const getSelectionMove = (name,...options) => {
         optionMoves: optionMoves
     }
 }
-
 const selectionPostProcessor = sequencer => {
     if(sequencer.globalBattleState.endSelection) {
         const optionObject = sequencer.globalBattleState.options[
@@ -128,7 +148,6 @@ const selectionPostProcessor = sequencer => {
     }
     return null;
 }
-
 const protectPreProcessPlayer = (sequencer,move) => {
     if(move.name === "protect") {
         if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
@@ -143,8 +162,7 @@ const protectPreProcessPlayer = (sequencer,move) => {
     }
     return move;
 }
-
-const protectPressProcessElf = (sequencer,move) => {
+const protectPreProcessElf = (sequencer,move) => {
     if(move.type === "target" && sequencer.playerBattleObject.state.isProtected &&
         sequencer.turnNumber == sequencer.playerBattleObject.state.protectTurn) {
 
@@ -153,7 +171,6 @@ const protectPressProcessElf = (sequencer,move) => {
     }
     return move;
 }
-
 const addMove = move => {
     if(moves[move.name]) {
         console.error(`Error: Duplicated move name @ '${move.name}'!`);
@@ -161,8 +178,6 @@ const addMove = move => {
     }
     moves[move.name] = move;
 }
-
-const elves = [];
 const moves = {
     "nothing": {   
         type: "self",

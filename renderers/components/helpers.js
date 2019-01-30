@@ -1,14 +1,14 @@
 "use strict";
 
-const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minShade=0,maxShade=255) {
+const noiseBlackOut = function(intensity,grainSize=30,minShade=0,maxShade=255) {
 
     const shadeRange = maxShade - minShade;
 
-    let horizontalGrain = Math.ceil(width / grainSize);
-    let verticalGrain = Math.ceil(height / grainSize);
+    let horizontalGrain = Math.ceil(fullWidth / grainSize);
+    let verticalGrain = Math.ceil(fullHeight / grainSize);
 
-    const xOffset = Math.floor(((horizontalGrain * grainSize) - width) / 2);
-    const yOffset = Math.floor(((verticalGrain * grainSize) - height) / 2);
+    const xOffset = Math.floor(((horizontalGrain * grainSize) - fullWidth) / 2);
+    const yOffset = Math.floor(((verticalGrain * grainSize) - fullHeight) / 2);
 
     grainSize = Math.ceil(grainSize);
 
@@ -25,11 +25,6 @@ const noiseBlackOut = function(intensity,context,width,height,grainSize=30,minSh
             );
         }
     }
-}
-
-const basicFadeOut = function(intensity,context,width,height) {
-    context.fillStyle = `rgba(0,0,0,${intensity})`;
-    context.fillRect(0,0,width,height);
 }
 
 const drawTextTest = function(text,scale,spacing=1) {
@@ -112,64 +107,30 @@ const drawTextBlack = function(text,x,y,scale,spacing=1) {
     }
 }
 
-const preRenderedInverseCircleBlack = function(width,height,radius) {
-    context.fillStyle = "black";
+const preRenderedInverseCircle = function(diameter,color) {
+    context.fillStyle = color;
 
-    const diameter = radius * 2;
-    height -= diameter;
-    height = height / 2;
-    context.fillRect(0,0,width,height);
-    context.fillRect(0,height + diameter,width,height);
+    const height = (fullHeight - diameter) / 2;
+    context.fillRect(0,0,fullWidth,height);
+    context.fillRect(0,height + diameter,fullWidth,height);
 
-    width -= diameter;
-    width = width / 2;
+    const width = (fullWidth - diameter) / 2;
+
     context.fillRect(0,height,width,diameter);
     context.fillRect(width+diameter,height,width,diameter);
 
-    context.drawImage(imageDictionary["big-black-ass-circle"],width,height,diameter,diameter);
+    context.drawImage(imageDictionary[`big-${color}-ass-circle`],width,height,diameter,diameter);
 }
 
-const preRenderedInverseCircleWhite = function(width,height,radius) {
+
+const drawDefaultLoadingText = function() {
     context.fillStyle = "white";
-
-    const diameter = radius * 2;
-    height -= diameter;
-    height = height / 2;
-    context.fillRect(0,0,width,height);
-    context.fillRect(0,height + diameter,width,height);
-
-    width -= diameter;
-    width = width / 2;
-    context.fillRect(0,height,width,diameter);
-    context.fillRect(width+diameter,height,width,diameter);
-
-    context.drawImage(imageDictionary["big-white-ass-circle"],width,height,diameter,diameter);
+    context.font = "30px Arial";
+    context.fillText("loading...",15,38);
 }
 
-const drawInverseCircleWithOffset = function(
-    x,y,width,height,radius=100,xOffset=0,yOffset=0,color="black"
-) {
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(
-        Math.floor((x+xOffset) + (width / 2)),
-        Math.floor((y+yOffset) + (height / 2)),
-        radius,0,Math.PI * 2
-    );
-    context.rect(width,0,-width,height);
-    context.fill();
-}
-
-const drawInverseCircleCenter = function(
-    x,y,width,height,radius=100,color="black"
-) {
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(
-        Math.floor(x + (width / 2)),
-        Math.floor(y + (height / 2)),
-        radius,0,Math.PI * 2
-    );
-    context.rect(width,0,-width,height);
-    context.fill();
+const drawLoadingText = function() {
+    context.fillStyle = "black";
+    context.fillRect(0,0,textTestData.width,textTestData.height);
+    drawTextWhite("loading...",15,15,4);
 }

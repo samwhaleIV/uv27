@@ -39,9 +39,9 @@ function BossBackground(cycleTime) {
     this.fragmentRadius = 50;
 
     this.globalYOffset = 29;
-    this.render = (context,timestamp,width,height) => {
+    this.render = timestamp => {
 
-        this.background.renderNormal(context,timestamp,width,height);
+        this.background.renderNormal(timestamp);
 
         context.drawImage(imageDictionary["boss-layer-background"],0,this.globalYOffset);
 

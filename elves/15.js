@@ -1,55 +1,4 @@
 "use strict";
-const getTemperatureString = (temperature,prefix) =>
-    `${prefix ? `${prefix} `:""}${formatDegrees(fixNumber(temperature,1))}`;
-const playerTemperaturePrefix = "you:     ";
-const worldTemperaturePrefix = "world:";
-
-const startingTemperature = 100;
-const fakeFreezingPoint = 50;
-const bodyTemperature = 98.6;
-
-const cookiesTemperature = 350;
-const overheatTemperature = 105;
-const hypothermiaTemperature = 95;
-
-const playerHeatRiseFactor = 0.6;
-const baseTemperatureRiseFactor = 1.015;
-const neutralCoolingFactor = 0.5;
-
-const formatDegrees = degrees => `${degrees} degree${degrees !== 1 ?"s":""} f`;
-
-const updatePlayerTemperatureSubtext = sequencer => {
-    sequencer.playerBattleObject.subText[0] =
-    getTemperatureString(
-        sequencer.playerBattleObject.state.temperature,playerTemperaturePrefix
-    );
-}
-const updateWorldTemperatureSubText = sequencer => {
-    sequencer.playerBattleObject.subText[1] =
-    getTemperatureString(
-        sequencer.globalBattleState.temperature,worldTemperaturePrefix
-    );
-    const colorByTemperature = getColorByTemperature(
-        sequencer.globalBattleState.temperature
-    );
-    sequencer.renderer.background.color = colorByTemperature;
-    sequencer.renderer.rightHealthBar.foregroundColor = colorByTemperature;
-}
-const updateTemperatureSubTexts = sequencer => {
-    updatePlayerTemperatureSubtext(sequencer);
-    updateWorldTemperatureSubText(sequencer);
-}
-const updateAntifreezeSubText = sequencer => {
-    const count = sequencer.globalBattleState.antifreezeCount;
-    sequencer.elfBattleObject.subText[0] =
-        `${count} antifreeze${count !== 1 ? "s":""}`;
-}
-
-const fixNumber = (number,fractionDigits) => {
-    const factor = Math.pow(10,fractionDigits);
-    return Math.round(number * factor) / factor;
-}
-
 addMove({
     name: "fiery fist",
     type: "target",
@@ -57,7 +6,6 @@ addMove({
         const baseDamage = 15;
         const damagePerDegree = 0.25;
         const damageFactor = 1 / damagePerDegree;
-
         if(sequencer.globalBattleState.temperature >= startingTemperature) {
             let damage = baseDamage + Math.floor((sequencer.globalBattleState.temperature - startingTemperature) / damageFactor);
             const events = [{
@@ -266,98 +214,150 @@ addMove({
         }
     }
 });
+function ScorchedElf() {
+    const getTemperatureString = (temperature,prefix) =>
+        `${prefix ? `${prefix} `:""}${formatDegrees(fixNumber(temperature,1))}`;
 
-const clampAtMax = (number,max) => {
-    if(number > max) {
-        return max;
+    const playerTemperaturePrefix = "you:     ";
+    const worldTemperaturePrefix = "world:";
+
+    const startingTemperature = 100;
+    const fakeFreezingPoint = 50;
+    const bodyTemperature = 98.6;
+
+    const cookiesTemperature = 350;
+    const overheatTemperature = 105;
+    const hypothermiaTemperature = 95;
+
+    const playerHeatRiseFactor = 0.6;
+    const baseTemperatureRiseFactor = 1.015;
+    const neutralCoolingFactor = 0.5;
+
+    const formatDegrees = degrees => `${degrees} degree${degrees !== 1 ?"s":""} f`;
+
+    const updatePlayerTemperatureSubtext = sequencer => {
+        sequencer.playerBattleObject.subText[0] =
+        getTemperatureString(
+            sequencer.playerBattleObject.state.temperature,playerTemperaturePrefix
+        );
     }
-    return number;
-}
-const clampAtMin = (number,min) => {
-    if(number < min) {
-        return min;
+    const updateWorldTemperatureSubText = sequencer => {
+        sequencer.playerBattleObject.subText[1] =
+        getTemperatureString(
+            sequencer.globalBattleState.temperature,worldTemperaturePrefix
+        );
+        const colorByTemperature = getColorByTemperature(
+            sequencer.globalBattleState.temperature
+        );
+        sequencer.renderer.background.color = colorByTemperature;
+        sequencer.renderer.rightHealthBar.foregroundColor = colorByTemperature;
     }
-    return number;
-}
-const clampAll = (number,min,max,withRound) => {
-    if(withRound) {
-        number = Math.round(number);
+    const updateTemperatureSubTexts = sequencer => {
+        updatePlayerTemperatureSubtext(sequencer);
+        updateWorldTemperatureSubText(sequencer);
     }
-    number = clampAtMax(number,max);
-    number = clampAtMin(number,min);
-    return number;
-}
-
-const downMixColor = (red,green,blue) => {
-    return `rgba(${clampAll(red*255,0,255,true)},${clampAll(green*255,0,255,true)},${clampAll(blue*255,0,255,true)},1)`;
-}
-const colorTemperatureData = {};
-(()=>{
-    const fullBlueTemperature = 30;
-    const fullOrangeTemperature = startingTemperature;
-
-    const centerPoint = (fullBlueTemperature + fullOrangeTemperature) / 2;
-
-    colorTemperatureData.centerPoint = centerPoint;
-    colorTemperatureData.orangeRange = fullOrangeTemperature - centerPoint;
-    colorTemperatureData.blueRange = centerPoint - fullBlueTemperature;
-})();
-
-const getColorByTemperature = temperature => {
-    if(temperature > colorTemperatureData.centerPoint) {
-        const normalizer =
-            (temperature - colorTemperatureData.centerPoint) / colorTemperatureData.orangeRange
-
-        const blue = 1 - normalizer;
-        const red = 1;
-        const green = (red + blue) / 2;
-
-        return downMixColor(red,green,blue);
-
-    } else if(temperature < colorTemperatureData.centerPoint) {
-        const normalizer =
-            (temperature - colorTemperatureData.centerPoint) / colorTemperatureData.blueRange;
-
-        const blue = 1;
-        const red = normalizer + 1;
-        const green = (red + blue) / 2
-
-        return downMixColor(red,green,blue);
-
-    } else {
-        return "rgba(255,255,255,1)";
+    const updateAntifreezeSubText = sequencer => {
+        const count = sequencer.globalBattleState.antifreezeCount;
+        sequencer.elfBattleObject.subText[0] =
+            `${count} antifreeze${count !== 1 ? "s":""}`;
     }
-}
 
-elves[14] = {
-    name: "scorched elf",
-    background: "background-9",
-    backgroundColor: getColorByTemperature(startingTemperature),
-    health: 200,
+    const fixNumber = (number,fractionDigits) => {
+        const factor = Math.pow(10,fractionDigits);
+        return Math.round(number * factor) / factor;
+    }
 
-    startSpeech: {
+
+    const clampAtMax = (number,max) => {
+        if(number > max) {
+            return max;
+        }
+        return number;
+    }
+    const clampAtMin = (number,min) => {
+        if(number < min) {
+            return min;
+        }
+        return number;
+    }
+    const clampAll = (number,min,max,withRound) => {
+        if(withRound) {
+            number = Math.round(number);
+        }
+        number = clampAtMax(number,max);
+        number = clampAtMin(number,min);
+        return number;
+    }
+
+    const downMixColor = (red,green,blue) => {
+        return `rgba(${clampAll(red*255,0,255,true)},${clampAll(green*255,0,255,true)},${clampAll(blue*255,0,255,true)},1)`;
+    }
+    const colorTemperatureData = {};
+    (()=>{
+        const fullBlueTemperature = 30;
+        const fullOrangeTemperature = startingTemperature;
+
+        const centerPoint = (fullBlueTemperature + fullOrangeTemperature) / 2;
+
+        colorTemperatureData.centerPoint = centerPoint;
+        colorTemperatureData.orangeRange = fullOrangeTemperature - centerPoint;
+        colorTemperatureData.blueRange = centerPoint - fullBlueTemperature;
+    })();
+
+    const getColorByTemperature = temperature => {
+        if(temperature > colorTemperatureData.centerPoint) {
+            const normalizer =
+                (temperature - colorTemperatureData.centerPoint) / colorTemperatureData.orangeRange
+
+            const blue = 1 - normalizer;
+            const red = 1;
+            const green = (red + blue) / 2;
+
+            return downMixColor(red,green,blue);
+
+        } else if(temperature < colorTemperatureData.centerPoint) {
+            const normalizer =
+                (temperature - colorTemperatureData.centerPoint) / colorTemperatureData.blueRange;
+
+            const blue = 1;
+            const red = normalizer + 1;
+            const green = (red + blue) / 2
+
+            return downMixColor(red,green,blue);
+
+        } else {
+            return "rgba(255,255,255,1)";
+        }
+    }
+
+    this.name = "scorched elf";
+    this.background = "background-9";
+    this.backgroundColor = getColorByTemperature(startingTemperature);
+    this.health = 200;
+
+    this.startSpeech = {
         text: "originally this\nwasn't hell...\nbut management made\nsome changes...\n\nps - only antifreeze can\nmelt ice here - not heat"
-    },
+    };
 
-    startText: `keep your temperature below ${formatDegrees(overheatTemperature)}`,
+    this.startText = `keep your temperature below ${formatDegrees(overheatTemperature)}`;
 
-    playerMoves: [
+    this.playerMoves = [
         moves["glacial blast"],
         moves["decent punch"],
         moves["icy band aid"],
         moves["consume ice cubes"]
-    ],
+    ];
 
-    setup: sequencer => {
+    this.setup = sequencer => {
         sequencer.playerBattleObject.state.temperature = bodyTemperature;
         sequencer.playerBattleObject.subText = new Array(2);
         updateTemperatureSubTexts(sequencer);
 
         sequencer.elfBattleObject.subText = new Array(1);
         updateAntifreezeSubText(sequencer);
-    },
+    };
 
-    getMove: sequencer => {
+    this.getMove = sequencer => {
         
         if(sequencer.globalBattleState.temperature >= cookiesTemperature && !sequencer.elfBattleObject.state.bakedCookies) {
             sequencer.elfBattleObject.state.bakedCookies = true;
@@ -375,9 +375,9 @@ elves[14] = {
         }
 
         return Math.random() > 0.5 ? (Math.random() > 0.33 ? moves[punchMove] : moves["antifreeze"]) : moves["global warming"];
-    },
+    };
 
-    getDefaultGlobalState: () => {
+    this.getDefaultGlobalState = () => {
         return {
             temperature: startingTemperature,
             antifreezeCount: 0,

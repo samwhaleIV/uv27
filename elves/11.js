@@ -63,206 +63,205 @@ addMove({
     }
 });
 
-const defaultJesterElfMoves = [
-    moves["rap battle"],
-    moves["tell me a joke"],
-    moves["castles?"],
-    moves["dragons?"]
-];
-
-const rapBattleList = [];
-const addRapBattleEntry = (elfText,playerText,...options) => {
-    const speech = `${elfText}\n<your line>\n${playerText}`;
-    const entryIndex = `rap-segment-${rapBattleList.length}`;
-
-    const processor = sequencer => {
-        const responses = [];
-        const responseQualities = [];
-        for(let i = 0;i<options.length;i++) {
-            const option = options[i];
-            if(option.historyRequired) {
-                const hasRapChoice = rapChoicesContains(sequencer,option.name);
-                if(hasRapChoice) {
-                    responses.push(`'${option.name}'`);
+function JesterElf() {
+    const defaultJesterElfMoves = [
+        moves["rap battle"],
+        moves["tell me a joke"],
+        moves["castles?"],
+        moves["dragons?"]
+    ];
+    
+    const rapBattleList = [];
+    const addRapBattleEntry = (elfText,playerText,...options) => {
+        const speech = `${elfText}\n<your line>\n${playerText}`;
+        const entryIndex = `rap-segment-${rapBattleList.length}`;
+    
+        const processor = sequencer => {
+            const responses = [];
+            const responseQualities = [];
+            for(let i = 0;i<options.length;i++) {
+                const option = options[i];
+                if(option.historyRequired) {
+                    const hasRapChoice = rapChoicesContains(sequencer,option.name);
+                    if(hasRapChoice) {
+                        responses.push(`'${option.name}'`);
+                        responseQualities.push(option.quality || "meh");
+                    }
+                } else {
+                    responses.push(option.name);
                     responseQualities.push(option.quality || "meh");
                 }
-            } else {
-                responses.push(option.name);
-                responseQualities.push(option.quality || "meh");
             }
-        }
-        return [speech,getStaticRadioSet(responses,entryIndex),entryIndex,responseQualities]
-    };
-
-    rapBattleList.push(processor);
-
-}
-
-addRapBattleEntry(
-    "humans suck.\nthey are uck.",
-    "f**k you. you're a-",
-    {name:"smuck",quality:"perfect"},
-    {name:"camel",quality:"terrible"},
-    {name:"jester",quality:"bad"}
-);
-addRapBattleEntry(
-    "i'm an elf. on a shelf.\nyou're just ann.\nwho's a man.",
-    "i might be ann\nbut can an elf",
-    {name:"read a book?",quality:"bad"},
-    {name:"kill yourself?",quality:"perfect"},
-    {name:"f**k thyself?",quality:"perfect"},
-    {name:"kill a crook?",quality:"bad"}
-);
-addRapBattleEntry(
-    "yo mama so human\nshe john von neumann",
-    "yo mama so winter\nshe-",
-    {name:"wears a warm coat",quality:"terrible"},
-    {name:"got a new man",quality:"decent"},
-    {name:"splinters",quality:"meh"},
-    {name:"a printer",quality:"perfect"}
-);
-addRapBattleEntry(
-    "your face so long\nit look like a bong",
-    "your ear so long\nyou look-",
-    {name:"big and strong",quality:"perfect",historyRequired:true},
-    {name:"like a thong",quality:"decent"},
-    {name:"like a cat",quality:"terrible"},
-    {name:"kinda weird",quality:"terrible"}
-);
-addRapBattleEntry(
-    "you remind me of\na starbucks order",
-    "what? brew?\nstarbucks would\ncall you-",
-    {name:"tall and large",quality:"perfect",historyRequired:true},
-    {name:"decaffeinated",quality:"bad"},
-    {name:"hipster trash",quality:"terrible"},
-    {name:"valued customer",quality:"terrible"}
-);
-addRapBattleEntry(
-    "hey! i am not!",
-    "hay is for horses\nbut you are-",
-    {name:"neigh",quality:"bad"},
-    {name:"mine",quality:"terrible"},
-    {name:"hot as f**k",quality:"perfect",historyRequired:true},
-    {name:"jester elf",quality:"terrible"}
-);
-addRapBattleEntry(
-    "you present. a nice\naccent.",
-    "yeah? so? go get-",
-    {name:"ready for a hug",quality:"bad"},
-    {name:"bent",quality:"perfect"},
-    {name:"ice cream",quality:"terrible"},
-    {name:"snacks",quality:"meh"}
-);
-addRapBattleEntry(
-    "here's a trick.\nit's a kick.",
-    "that was slick...\nunlike my-",
-    {name:"yardstick",quality:"decent"},
-    {name:"chopstick abilities",quality:"decent"},
-    {name:"brick",quality:"perfect",historyRequired:true},
-    {name:"d**k",quality:"naugthy"}
-);
-addRapBattleEntry(
-    "i will break you.\nyou will hobble.",
-    "you can try. but i have-",
-    {name:"cobble",quality:"perfect",historyRequired:true},
-    {name:"insurance",quality:"bad"},
-    {name:"compassion",quality:"bad"},
-    {name:"pain medications",quality:"terrible"}
-);
-addRapBattleEntry(
-    "your fate is sealed.\ni'm the king.",
-    "save your hate.\ni bring-",
-    {name:"wings",quality:"perfect",historyRequired:true},
-    {name:"cards against humanity",quality:"bad"},
-    {name:"free food",quality:"bad"},
-    {name:"love",quality:"terrible"}
-);
-addRapBattleEntry(
-    "i know braille\nand you are frail",
-    "i am frail but\ni brought-",
-    {name:"a strong fist",quality:"bad"},
-    {name:"scales",quality:"perfect",historyRequired:true},
-    {name:"strongly worded letters",quality:"terrible"}
-);
-addRapBattleEntry(
-    "i boast skillz.\nyou host bloat.",
-    "at least i'm not-",
-    {name:"toasted goats",quality:"perfect",historyRequired:true},
-    {name:"a f*****g boat",quality:"decent"},
-    {name:"glorified clown",quality:"terrible"},
-    {name:"about to die",quality:"bad"}
-);
-
-const castleFragments = ["big and strong","tall and large","brick","cobble"];
-const dragonFragments = ["wings","hot as f**k","scales","toasted goats"];
-
-const inverseCastleFragments = {};
-const inverseDragonFragments = {};
-
-(() => {
-    let i;
-    for(i = 0;i<castleFragments.length;i++) {
-        const key = castleFragments[i];
-        inverseCastleFragments[key] = i;
-    }
-    for(i = 0;i<dragonFragments.length;i++) {
-        const key = dragonFragments[i];
-        inverseDragonFragments[key] = i;
-    }
-})();
-
-const rapChoicesContains = (sequencer,text) => {
-    let isCastleOption;
-    if(inverseCastleFragments[text] >= 0) {
-        isCastleOption = true;
-    } else if(inverseDragonFragments[text] >= 0) {
-        isCastleOption = false;
-    } else {
-        return false;
-    }
-
-    const index1 = isCastleOption ?
-    inverseCastleFragments[text]:
-    inverseDragonFragments[text];
-
-    const index2 = isCastleOption ? 0 : 1;
-    const index3 = 1;
+            return [speech,getStaticRadioSet(responses,entryIndex),entryIndex,responseQualities]
+        };
     
-    return sequencer.globalBattleState.rapChoicesDictionary[index1][index2][index3];
-}
-const rapBattleOptionsDictionary = () => {
-    const dictionary = [];
-    let endLength;
-
-    if(dragonFragments.length > castleFragments.length) {
-        endLength = dragonFragments.length;
-    } else {
-        endLength = castleFragments.length;
+        rapBattleList.push(processor);
+    
     }
-    for(let i = 0;i<endLength;i++) {
-
-        const leftHand = i < castleFragments.length ? [castleFragments[i],false] : null;
-        const rightHand = i < dragonFragments.length ? [dragonFragments[i],false] : null;
-
-        dictionary.push(
-            [leftHand,rightHand]
-        );
+    
+    addRapBattleEntry(
+        "humans suck.\nthey are uck.",
+        "f**k you. you're a-",
+        {name:"smuck",quality:"perfect"},
+        {name:"camel",quality:"terrible"},
+        {name:"jester",quality:"bad"}
+    );
+    addRapBattleEntry(
+        "i'm an elf. on a shelf.\nyou're just ann.\nwho's a man.",
+        "i might be ann\nbut can an elf",
+        {name:"read a book?",quality:"bad"},
+        {name:"kill yourself?",quality:"perfect"},
+        {name:"f**k thyself?",quality:"perfect"},
+        {name:"kill a crook?",quality:"bad"}
+    );
+    addRapBattleEntry(
+        "yo mama so human\nshe john von neumann",
+        "yo mama so winter\nshe-",
+        {name:"wears a warm coat",quality:"terrible"},
+        {name:"got a new man",quality:"decent"},
+        {name:"splinters",quality:"meh"},
+        {name:"a printer",quality:"perfect"}
+    );
+    addRapBattleEntry(
+        "your face so long\nit look like a bong",
+        "your ear so long\nyou look-",
+        {name:"big and strong",quality:"perfect",historyRequired:true},
+        {name:"like a thong",quality:"decent"},
+        {name:"like a cat",quality:"terrible"},
+        {name:"kinda weird",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "you remind me of\na starbucks order",
+        "what? brew?\nstarbucks would\ncall you-",
+        {name:"tall and large",quality:"perfect",historyRequired:true},
+        {name:"decaffeinated",quality:"bad"},
+        {name:"hipster trash",quality:"terrible"},
+        {name:"valued customer",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "hey! i am not!",
+        "hay is for horses\nbut you are-",
+        {name:"neigh",quality:"bad"},
+        {name:"mine",quality:"terrible"},
+        {name:"hot as f**k",quality:"perfect",historyRequired:true},
+        {name:"jester elf",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "you present. a nice\naccent.",
+        "yeah? so? go get-",
+        {name:"ready for a hug",quality:"bad"},
+        {name:"bent",quality:"perfect"},
+        {name:"ice cream",quality:"terrible"},
+        {name:"snacks",quality:"meh"}
+    );
+    addRapBattleEntry(
+        "here's a trick.\nit's a kick.",
+        "that was slick...\nunlike my-",
+        {name:"yardstick",quality:"decent"},
+        {name:"chopstick abilities",quality:"decent"},
+        {name:"brick",quality:"perfect",historyRequired:true},
+        {name:"d**k",quality:"naugthy"}
+    );
+    addRapBattleEntry(
+        "i will break you.\nyou will hobble.",
+        "you can try. but i have-",
+        {name:"cobble",quality:"perfect",historyRequired:true},
+        {name:"insurance",quality:"bad"},
+        {name:"compassion",quality:"bad"},
+        {name:"pain medications",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "your fate is sealed.\ni'm the king.",
+        "save your hate.\ni bring-",
+        {name:"wings",quality:"perfect",historyRequired:true},
+        {name:"cards against humanity",quality:"bad"},
+        {name:"free food",quality:"bad"},
+        {name:"love",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "i know braille\nand you are frail",
+        "i am frail but\ni brought-",
+        {name:"a strong fist",quality:"bad"},
+        {name:"scales",quality:"perfect",historyRequired:true},
+        {name:"strongly worded letters",quality:"terrible"}
+    );
+    addRapBattleEntry(
+        "i boast skillz.\nyou host bloat.",
+        "at least i'm not-",
+        {name:"toasted goats",quality:"perfect",historyRequired:true},
+        {name:"a f*****g boat",quality:"decent"},
+        {name:"glorified clown",quality:"terrible"},
+        {name:"about to die",quality:"bad"}
+    );
+    
+    const castleFragments = ["big and strong","tall and large","brick","cobble"];
+    const dragonFragments = ["wings","hot as f**k","scales","toasted goats"];
+    
+    const inverseCastleFragments = {};
+    const inverseDragonFragments = {};
+    
+    (() => {
+        let i;
+        for(i = 0;i<castleFragments.length;i++) {
+            const key = castleFragments[i];
+            inverseCastleFragments[key] = i;
+        }
+        for(i = 0;i<dragonFragments.length;i++) {
+            const key = dragonFragments[i];
+            inverseDragonFragments[key] = i;
+        }
+    })();
+    
+    const rapChoicesContains = (sequencer,text) => {
+        let isCastleOption;
+        if(inverseCastleFragments[text] >= 0) {
+            isCastleOption = true;
+        } else if(inverseDragonFragments[text] >= 0) {
+            isCastleOption = false;
+        } else {
+            return false;
+        }
+    
+        const index1 = isCastleOption ?
+        inverseCastleFragments[text]:
+        inverseDragonFragments[text];
+    
+        const index2 = isCastleOption ? 0 : 1;
+        const index3 = 1;
+        
+        return sequencer.globalBattleState.rapChoicesDictionary[index1][index2][index3];
     }
-    return dictionary;
-}
+    const rapBattleOptionsDictionary = () => {
+        const dictionary = [];
+        let endLength;
+    
+        if(dragonFragments.length > castleFragments.length) {
+            endLength = dragonFragments.length;
+        } else {
+            endLength = castleFragments.length;
+        }
+        for(let i = 0;i<endLength;i++) {
+    
+            const leftHand = i < castleFragments.length ? [castleFragments[i],false] : null;
+            const rightHand = i < dragonFragments.length ? [dragonFragments[i],false] : null;
+    
+            dictionary.push(
+                [leftHand,rightHand]
+            );
+        }
+        return dictionary;
+    }
+    const getQualityReport = quality => `this was a ${quality} response`;
 
-
-const getQualityReport = quality => `this was a ${quality} response`;
-elves[10] = {
-    name: "jester elf",
-    background: "background-7",
-    backgroundColor: "rgb(278,0,255)",
-    health: 300,
-    startSpeech: {
+    this.name = "jester elf";
+    this.background = "background-7";
+    this.backgroundColor = "rgb(278,0,255)";
+    this.health = 300;
+    this.startSpeech = {
         text: "oh - hello\nyou're 'jest' in time\n\n(ps - i am very biased\nto things i've said\nbefore especially\nin rap battles)"
-    },
-    elfDeadText: "jester elf died from pun suicide",
-    getDefaultGlobalState: () => {
+    };
+    this.elfDeadText = "jester elf died from pun suicide";
+    this.getDefaultGlobalState = () => {
         return {
             rapChoicesDictionary: rapBattleOptionsDictionary(),
             jokeIndex: 0,
@@ -413,6 +412,6 @@ elves[10] = {
                 }
             }
         }
-    },
-    playerMoves: defaultJesterElfMoves
+    };
+    this.playerMoves = defaultJesterElfMoves;
 }

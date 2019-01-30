@@ -20,7 +20,7 @@ function IntroductionRenderer(endCallback) {
 
     this.fader = getFader();
 
-    this.renderMethod = (context,timestamp,width,height) => {
+    this.renderMethod = timestamp => {
 
         if(this.startTime === null) {
             this.startTime = performance.now() + startTimeOffset;
@@ -29,9 +29,7 @@ function IntroductionRenderer(endCallback) {
 
         }
 
-        context.clearRect(0,0,width,height);
-
-
+        context.clearRect(0,0,fullWidth,fullHeight);
 
         const timeDelta = timestamp - this.startTime;
         const progress = timeDelta / this.fadeIn;
@@ -57,7 +55,7 @@ function IntroductionRenderer(endCallback) {
             }
         }
 
-        rendererState.fader.process(context,timestamp,width,height);
+        rendererState.fader.process(timestamp);
 
     }
 }

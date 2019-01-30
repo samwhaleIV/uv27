@@ -291,9 +291,7 @@ const processGamepad = gamepad => {
 }
 
 const render = timestamp => {
-    rendererState.renderMethod(
-        context,timestamp,canvas.width,canvas.height
-    );
+    rendererState.renderMethod(timestamp);
     if(!paused) {
         animationFrame = window.requestAnimationFrame(render);
         const gamepad = navigator.getGamepads()[0];

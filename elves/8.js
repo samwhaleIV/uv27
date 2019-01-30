@@ -361,24 +361,24 @@ addMove({
         }
     }
 });
-elves[7] = {
-    name: "boney elf",
-    background: "background-8",
+function BoneyElf() {
+    this.name = "boney elf";
+    this.background = "background-8";
 
-    song: "pos_loop",
-    songIntro: "pos_intro",
+    this.song = "pos_loop";
+    this.songIntro = "pos_intro";
 
-    backgroundColor: "white",
-    foregroundColor: "rgb(255,66,134)",
-    buttonColor: "rgba(30,30,30,0.95)",
-    health: 200,
-    playerMoves: [
+    this.backgroundColor = "white";
+    this.foregroundColor = "rgb(255,66,134)";
+    this.buttonColor = "rgba(30,30,30,0.95)";
+    this.health = 200;
+    this.playerMoves = [
         moves["wimpy punch"],
         moves["sarcophagus"],
         moves["big hug"],
         moves["violence"]
-    ],
-    getMove: sequencer => {
+    ];
+    this.getMove = sequencer => {
         if(sequencer.elfBattleObject.state.isLit) {
             const litMoves = ["drunken punch","drunken punch","them bones","drunken rant","cry"];
             if(sequencer.elfBattleObject.state.isSuperLit) {
@@ -397,15 +397,15 @@ elves[7] = {
                 return moves[userPoisonedMoves[Math.floor(Math.random()*userPoisonedMoves.length)]];
             }
         }
-    },
-    updateBoneCountDisplay: sequencer => {
+    };
+    this.updateBoneCountDisplay = sequencer => {
         sequencer.elfBattleObject.subText[0] = `${
             sequencer.globalBattleState.bonePileCount
         } bone pile${
             sequencer.globalBattleState.bonePileCount !== 1 ? "s" : ""
         }`;
-    },
-    getDefaultGlobalState: () => {
+    };
+    this.getDefaultGlobalState = () => {
         return {
             bonePileCount: 0,
             postTurnProcess: sequencer => {
@@ -481,22 +481,22 @@ elves[7] = {
                 }
             }
         }
-    },
-    getWinSpeech: sequencer => {
+    };
+    this.getWinSpeech = sequencer => {
         if(sequencer.playerBattleObject.state.alchoholOD) {
             return {text:"rip\nshouldn't drink so much"};
         } else {
             return {text:"looks like you've been...\nb o n e d"};
         }
-    },
-    getLoseSpeech: sequencer => {
+    };
+    this.getLoseSpeech = sequencer => {
         if(sequencer.elfBattleObject.state.alchoholOD) {
             return {text:"errrr\nderrr...\nblurbbb..\n\n*ded*"};
         } else {
             return {text:"damn...\ni've been... boned"};
         }
-    },
-    setup: sequencer => {
+    };
+    this.setup = sequencer => {
         sequencer.elfBattleObject.subText = [""];
         elves[7].updateBoneCountDisplay(sequencer);
         sequencer.playerBattleObject.movePreProcess = (sequencer,move) => {
@@ -510,4 +510,3 @@ elves[7] = {
 
     }
 }
-

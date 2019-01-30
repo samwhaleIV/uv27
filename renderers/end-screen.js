@@ -12,7 +12,6 @@ function EndScreenRenderer(endCallback) {
 
     this.textMargin = 15;
 
-
     const topTextTestResult = drawTextTest(
         this.topText,this.textScale
     );
@@ -20,12 +19,10 @@ function EndScreenRenderer(endCallback) {
         this.bottomText,this.textScale
     );
 
-    const halfWidth = canvas.width / 2;
-
     this.bottomTextX = Math.round(halfWidth - (bottomTextTestResult.width / 2));
     this.topTextX = Math.round(halfWidth - (topTextTestResult.width / 2));
 
-    this.bottomTextY = canvas.height - this.textMargin - bottomTextTestResult.height;
+    this.bottomTextY = fullHeight - this.textMargin - bottomTextTestResult.height;
     this.topTextY = this.textMargin;
 
     this.transitioning = false;
@@ -48,12 +45,12 @@ function EndScreenRenderer(endCallback) {
         }
     }
 
-    this.renderMethod = (context,timestamp,width,height) => {
+    this.renderMethod = timestamp => {
 
 
         context.drawImage(
             imageDictionary["end-screen"],
-            0,0,width,height
+            0,0,fullWidth,fullHeight
         );
 
         drawTextWhite(
@@ -68,7 +65,7 @@ function EndScreenRenderer(endCallback) {
         );
 
 
-        rendererState.fader.process(context,timestamp,width,height);
+        rendererState.fader.process(timestamp);
 
     }
 

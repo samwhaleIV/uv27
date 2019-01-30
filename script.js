@@ -1,14 +1,32 @@
 "use strict";
-const drawDefaultLoadingText = function() {
-    context.fillStyle = "white";
-    context.font = "30px Arial";
-    context.fillText("loading...",15,38);
+const timeouts = {};
+const setSkippableTimeout = (handler,timeout,...args) => {
+    const handle = setTimeout((...args)=>{
+
+        handler.apply(this,args);
+        delete timeouts[handle];
+
+    },timeout,...args);
+
+    timeouts[handle] = {
+        handler: handler,
+        args: args
+    }
+
+    return handle;
 }
 
-const drawLoadingText = function() {
-    context.fillStyle = "black";
-    context.fillRect(0,0,textTestData.width,textTestData.height);
-    drawTextWhite("loading...",15,15,4);
+const clearSkippableTimeout = (handle,suppress) => {
+    clearTimeout(handle);
+
+    const timeout = timeouts[handle];
+
+    if(!suppress) {
+        timeout.handler.apply(
+            this,timeout.args
+        );
+    }
+    delete timeouts[handle];
 }
 
 drawDefaultLoadingText();
@@ -20,6 +38,7 @@ loadingImage.onload = () => {
     textTestData.height += 30;
     rendererState = new SidescrollRenderer(loadingImage);
     startRenderer();
+    loadElves();
     loadImages(gameLoop);
     loadSounds(gameLoop);
     loadNonEssentialMusic();
@@ -53,14 +72,6 @@ const fontDictionary = {
 
 const elfSourceWidth = 11;
 const elfSourceHeight = 24;
-
-const processElvesMeta = () => {
-    for(let i = 0;i<27;i++) {
-        if(elves[i]) {
-            elves[i].x = i * elfSourceWidth;
-        }
-    }
-}
 
 const adjustFontPositions = () => {
     const innerSpace = 1;
@@ -141,8 +152,6 @@ const loadAnimationMetadata = () => {
 
         animation.y = height;
         animation.frameBounds = frameBounds;
-        //width - elfSourceWidth
-        //height - elfSourceHeight
     }
 }
 
@@ -207,7 +216,6 @@ const loadImages = callback => {
 
 loadAnimationMetadata();
 adjustFontPositions();
-processElvesMeta();
 
 if(localStorage.getItem("soundMuted") === "true") {
     muteSound();
@@ -310,7 +318,6 @@ const debug_reset = () => {
 const debug_toggle_stream_mode = () => {
     backgroundStreamMode = !backgroundStreamMode;
 }
-
 const debug_scroll_speed = seconds => {
     if(rendererState && rendererState.background) {
         console.log("The default scroll speed is 20 seconds");
@@ -319,32 +326,42 @@ const debug_scroll_speed = seconds => {
     }
 }
 
-let seq, seqPlayer, seqElf;
-const debug_seq = () => {
-    seq = rendererState.battleSequencer;
-    seqPlayer = seq.playerBattleObject;
-    seqElf = seq.elfBattleObject;
-    console.log("You can now use seq, seqPlayer, and seqElf shorthand");
-}
-
-const getRandomSelections = (options,selectionCount,selectionMapper) => {
-
-    const selections = new Array(selectionCount);
-
-    for(let i = 0;i<selectionCount;i++) {
-        const optionIndex = Math.floor(Math.random()*options.length);
-        const option = options[optionIndex];
-
-        options = [
-            ...options.slice(0,optionIndex),...options.slice(optionIndex+1,selectionCount)
-        ];
-
-        if(selectionMapper) {
-            selections[i] = selectionMapper(option);
-        } else {
-            selections[i] = option;
-        }
-        
+const elves = [];
+const loadElves = () => {
+    const start = performance.now();
+    const elfConstructors = [
+        WimpyRedElf,
+        WimpyGreenElf,
+        WimpyBlueElf,
+        WizardElf,
+        RedElfette,
+        GoldenElfette,
+        WarElf,
+        BoneyElf,
+        HeadlessElf,
+        TwoHeadedElf,
+        JesterElf,
+        LeglessElf,
+        PhaseShiftElf,
+        OldTimeyElf,
+        ScorchedElf,
+        InvisibleElf,
+        RogueElf,
+        NotRedElfette,
+        BeachElf,
+        UpsideDownElf,
+        TinyArmElf,
+        ElfmasTree,
+        CorruptElf,
+        DarkElf,
+        MurderElf,
+        MurderedElf,
+        TheBossElf,
+    ];
+    for(let i = 0;i<elfConstructors.length;i++) {
+        elves[i] = new elfConstructors[i]();
+        elves[i].x = i * elfSourceWidth;
     }
-    return selections;
+    const end = performance.now();
+    console.log(`Script: Loaded elf objects in ${(end-start)/1000} seconds`);
 }

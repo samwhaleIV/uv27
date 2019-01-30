@@ -1,22 +1,22 @@
 "use strict";
-elves[1] = {
-    name: "wimpy green elf",
-    background: "background-1",
-    backgroundColor: "green",
+function WimpyGreenElf() {
+    this.name = "wimpy green elf" ;
+    this.background = "background-1" ;
+    this.backgroundColor = "green" ;
 
-    song: "wimpy_loop",
-    songIntro: "wimpy_intro",
+    this.song = "wimpy_loop" ;
+    this.songIntro = "wimpy_intro" ;
     
-    backgroundCycleTime: 35000,
+    this.backgroundCycleTime = 35000 ;
 
-    health: 100,
-    startText: "this battle will be harder so no crying",
-    playerMoves: [
+    this.health = 100 ;
+    this.startText = "this battle will be harder so no crying" ;
+    this.playerMoves = [
         moves["wimpy punch"],
         moves["cry"],
         moves["nothing"]
-    ],
-    getMove: sequencer => {
+    ] ;
+    this.getMove = sequencer => {
         if(sequencer.elfBattleObject.health <= 20) {
             return moves["i love santa"];
         } else if(sequencer.playerBattleObject.health < 50) {
@@ -24,8 +24,8 @@ elves[1] = {
         }else {
             return moves["wimpier punch"];
         }
-    },
-    getSpeech: sequencer => {
+    } ;
+    this.getSpeech = sequencer => {
         if(sequencer.playerBattleObject.lastMove === "cry") {
             if(!sequencer.globalBattleState.turnsCrying) {
                 sequencer.globalBattleState.turnsCrying = 0;
@@ -75,8 +75,8 @@ elves[1] = {
         return {
             text: null
         }
-    },
-    getDefaultGlobalState: () => {
+    } ;
+    this.getDefaultGlobalState = () => {
         return {
             postTurnProcess: sequencer => {
                 if(sequencer.globalBattleState.turnsCrying) {
@@ -88,10 +88,10 @@ elves[1] = {
                     }
                 }
                 return {};
-            },
+            }
         }
-    },
-    startSpeech: {
+    } ;
+    this.startSpeech = {
         text: "hello i am green elf\nplz be nice\ni come in piece"
     }
 }

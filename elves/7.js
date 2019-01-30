@@ -1,23 +1,23 @@
 "use strict";
-elves[6] = {
-    name: "war elf",
-    background: "background-4",
-    backgroundColor: "white",
-    foregroundColor: "red",
-    song: "war_loop",
-    songIntro: "war_intro",
-    health: 200,
-    startText: "wrong questions drain your health - good luck",
-    getPlayerMoves: () => {
+function WarElf() {
+    this.name = "war elf";
+    this.background = "background-4";
+    this.backgroundColor = "white";
+    this.foregroundColor = "red";
+    this.song = "war_loop";
+    this.songIntro = "war_intro";
+    this.health = 200;
+    this.startText = "wrong questions drain your health - good luck";
+    this.getPlayerMoves = () => {
         return getRadioSet([
             "absolutely nothing","doing the dishes","dying honorably","losing children"
         ],"question1");
-    },
-    startSpeech: {
+    };
+    this.startSpeech = {
         text: "you've got a lot to do\nso i won't waste\nyour time :)\n\nnow tell me..\nwar... war...\nwhat is it good for?",
         persist: true
-    },
-    getSpeech: sequencer => {
+    };
+    this.getSpeech = sequencer => {
         let lines = "";
         switch(sequencer.turnNumber) {
             case 0:

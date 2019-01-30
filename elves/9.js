@@ -1,5 +1,4 @@
 "use strict";
-const getRaceProgressSubText = progress => `${progress} race points`
 addMove({
     name: "tie shoes",
     type: "self",
@@ -987,95 +986,96 @@ addMove({
         }
     }
 });
-const getRaceMoveSet = (sequencer,index) => {
-    const moveSets = [
-        ["stay on path","steady pace","peaceful pace","rapid pace"],//Progress
-        Math.random() < 0.9 ? ["break ankle","trip elf","poke bear","distracting thoughts","go turbo","self destruct"] : ["stall","cry"],//Other
-        Math.random() < 0.95 ? ["find shortcut","call an uber","drive piano","pedal to the metal","trash talk"] : ["magic"] //Other 2
-    ];
-    const getMoveSet = () => {
-        return [
-            moves[moveSets[0][Math.floor(Math.random()*moveSets[0].length)]],
-            moves[moveSets[1][Math.floor(Math.random()*moveSets[1].length)]],
-            moves[moveSets[2][Math.floor(Math.random()*moveSets[2].length)]]
+function HeadlessElf() {
+    const getRaceProgressSubText = progress => `${progress} race points`;
+    const getRaceMoveSet = (sequencer,index) => {
+        const moveSets = [
+            ["stay on path","steady pace","peaceful pace","rapid pace"],//Progress
+            Math.random() < 0.9 ? ["break ankle","trip elf","poke bear","distracting thoughts","go turbo","self destruct"] : ["stall","cry"],//Other
+            Math.random() < 0.95 ? ["find shortcut","call an uber","drive piano","pedal to the metal","trash talk"] : ["magic"] //Other 2
         ];
-    }
-    const raceMoves = [
-        () => {
-            const theseMoves = [//0
-                sequencer.playerBattleObject.state.tiedShoes ?
-                    moves["untie shoes"]: moves["tie shoes"],
-                    
-                sequencer.playerBattleObject.state.tiedShoes ?
-                    moves[sequencer.playerBattleObject.state.tookDrugs ? "take more drugs" : "take drugs"] : moves["go barefoot"],
-
-                moves["ready up"],
-
-                sequencer.playerBattleObject.state.broughtWater ?
-                    moves["stall"] : moves["bring water"]
-            ]
-            return theseMoves;
-        },
-        () => sequencer.playerBattleObject.state.isNapping? [//1
-            moves["wake up"],
-            moves["zzzzzzz"],
-            ]:[
-            moves["start running"],
-            moves["take a nap"],
-            sequencer.playerBattleObject.state.tookDrugs ?
-                moves["take more drugs"] : moves["take drugs"]
-        ],
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        getMoveSet,
-        () => [//10
-            moves["rip clothes off"],
-            moves["overheat and die"]
-        ],
-        () => {//11
-            const theseMoves = [moves["stay on path"],moves["sportsmanship"]];
-            if(!sequencer.playerBattleObject.state.tookDrugs) {
-                theseMoves.push(moves["reconsider taking drugs"]);
-            }
-            return theseMoves;
-        },
-        () => {//12
-            const theseMoves = [
-                moves["try to stay strong"],
-                sequencer.playerBattleObject.state.broughtWater ? moves["drink water"] : moves["find pond"]
+        const getMoveSet = () => {
+            return [
+                moves[moveSets[0][Math.floor(Math.random()*moveSets[0].length)]],
+                moves[moveSets[1][Math.floor(Math.random()*moveSets[1].length)]],
+                moves[moveSets[2][Math.floor(Math.random()*moveSets[2].length)]]
             ];
-            return theseMoves;
-        },
-        () => {//13
-            const lastMoves = [moves["finish race"]];
-            if(sequencer.playerBattleObject.state.tookDrugs) {
-                lastMoves.push(moves["admit drug use"]);
-            }
-            return lastMoves;
-        },
-        () => [//14
-            moves["decent punch"],
-            moves["punching vitamins"],
-            moves["protect"],
-            moves["band aid"]
-        ]
-    ];
-    return raceMoves[index]();
-}
+        }
+        const raceMoves = [
+            () => {
+                const theseMoves = [//0
+                    sequencer.playerBattleObject.state.tiedShoes ?
+                        moves["untie shoes"]: moves["tie shoes"],
+                        
+                    sequencer.playerBattleObject.state.tiedShoes ?
+                        moves[sequencer.playerBattleObject.state.tookDrugs ? "take more drugs" : "take drugs"] : moves["go barefoot"],
+    
+                    moves["ready up"],
+    
+                    sequencer.playerBattleObject.state.broughtWater ?
+                        moves["stall"] : moves["bring water"]
+                ]
+                return theseMoves;
+            },
+            () => sequencer.playerBattleObject.state.isNapping? [//1
+                moves["wake up"],
+                moves["zzzzzzz"],
+                ]:[
+                moves["start running"],
+                moves["take a nap"],
+                sequencer.playerBattleObject.state.tookDrugs ?
+                    moves["take more drugs"] : moves["take drugs"]
+            ],
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            getMoveSet,
+            () => [//10
+                moves["rip clothes off"],
+                moves["overheat and die"]
+            ],
+            () => {//11
+                const theseMoves = [moves["stay on path"],moves["sportsmanship"]];
+                if(!sequencer.playerBattleObject.state.tookDrugs) {
+                    theseMoves.push(moves["reconsider taking drugs"]);
+                }
+                return theseMoves;
+            },
+            () => {//12
+                const theseMoves = [
+                    moves["try to stay strong"],
+                    sequencer.playerBattleObject.state.broughtWater ? moves["drink water"] : moves["find pond"]
+                ];
+                return theseMoves;
+            },
+            () => {//13
+                const lastMoves = [moves["finish race"]];
+                if(sequencer.playerBattleObject.state.tookDrugs) {
+                    lastMoves.push(moves["admit drug use"]);
+                }
+                return lastMoves;
+            },
+            () => [//14
+                moves["decent punch"],
+                moves["punching vitamins"],
+                moves["protect"],
+                moves["band aid"]
+            ]
+        ];
+        return raceMoves[index]();
+    }
 
-elves[8] = {
-    name: "headless elf",
-    background: "background-1",
-    song: "headless_loop",
-    songIntro: "headless_intro",
-    backgroundColor: "orange",
-    health: 200,
-    getMove: sequencer => {
+    this.name = "headless elf";
+    this.background = "background-1";
+    this.song = "headless_loop";
+    this.songIntro = "headless_intro";
+    this.backgroundColor = "orange";
+    this.health = 200;
+    this.getMove = sequencer => {
         if(sequencer.playerBattleObject.reachedFinish) {
             return sequencer.playerBattleObject.trippedElf ? moves["trash talk"] : moves["congrats"]
         } else {
@@ -1094,8 +1094,8 @@ elves[8] = {
             }
         }
     },
-    getPlayerMoves: sequencer => getRaceMoveSet(sequencer,0),
-    setup: sequencer => {
+    this.getPlayerMoves = sequencer => getRaceMoveSet(sequencer,0);
+    this.setup = sequencer => {
 
         sequencer.playerBattleObject.state.raceProgress = 0;
         sequencer.elfBattleObject.state.raceProgress = 0;
@@ -1104,13 +1104,13 @@ elves[8] = {
         sequencer.elfBattleObject.subText = [getRaceProgressSubText(0),"untied shoes"];
 
         sequencer.playerBattleObject.movePreProcess = protectPreProcessPlayer;
-        sequencer.elfBattleObject.movePreProcess = protectPressProcessElf;
+        sequencer.elfBattleObject.movePreProcess = protectPreProcessElf;
     },
-    startText: "no drugs. no exceptions.",
-    startSpeech: {
+    this.startText = "no drugs. no exceptions.",
+    this.startSpeech = {
         text: "ever beat a headless elf\nin a foot race?\n\nps - drugs are against\nthe rules of racing"
-    },
-    getDefaultGlobalState: () => {
+    };
+    this.getDefaultGlobalState = () => {
         return {
             stage: "readying to go",
             postTurnProcess: sequencer => {

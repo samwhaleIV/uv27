@@ -52,7 +52,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     }
 
     this.songStartAction = () => {
-        console.log(introMuteManifest,loopMuteManifest);
         playMusicWithIntro("loop_base","intro_base",true);
         playMusicWithIntro("loop_a","intro_a",true);
         playMusicWithIntro("loop_b","intro_b",true);
@@ -60,8 +59,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.fader = getFader();
 
     const backgroundCycleTime = 40000;
-
-    this.halfWidth = canvas.width / 2;
 
     this.endCallback = endCallback;
     this.highestElfIndex = highestElfIndex || 0;
@@ -96,7 +93,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         this.elf = elves[this.currentIndex];
         const testDrawResult = drawTextTest(this.elf.name,this.textScale);
         this.text = this.elf.name;
-        this.textX = Math.round(this.halfWidth - (testDrawResult.width / 2));
+        this.textX = Math.round(halfWidth - (testDrawResult.width / 2));
         this.textHeight = testDrawResult.height;
         this.background.name = this.elf.background;
         if(this.currentIndex === this.highestElfIndex) {
@@ -122,7 +119,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     }
     this.setElf();
 
-    this.elfX = Math.round(this.halfWidth - (this.elfWidth / 2));
+    this.elfX = Math.round(halfWidth - (this.elfWidth / 2));
     this.buttonHeight = 40;
 
     const verticalSpacing = 10;
@@ -131,7 +128,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         this.textHeight + this.elfHeight +
         this.buttonHeight + (verticalSpacing * 2);
 
-    this.textY = Math.floor((canvas.height / 2) - (totalHeight / 2)) - 45;
+    this.textY = Math.floor(halfHeight - (totalHeight/2)) - 45;
     this.elfY = this.textY + verticalSpacing + this.textHeight;
     this.buttonY = this.elfY + verticalSpacing + this.elfHeight;
 
@@ -194,7 +191,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     const spacedWidth = this.buttonWidth + buttonSpacing;
     const totalWidth = (spacedWidth * 3) - buttonSpacing;
 
-    this.leftButtonX = Math.round(this.halfWidth - (totalWidth / 2));
+    this.leftButtonX = Math.round(halfWidth - (totalWidth / 2));
     this.centerButtonX = this.leftButtonX + spacedWidth;
     this.rightButtonX = this.centerButtonX + spacedWidth;
     
@@ -233,8 +230,8 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.muteButtonTextScale = 2;
 
-    this.muteButton1X = Math.ceil(this.halfWidth - this.muteButtonWidth - halfMuteButtonMargin);
-    this.muteButton1Y = canvas.height - this.muteButtonHeight - muteButtonMargin;
+    this.muteButton1X = Math.ceil(halfWidth - this.muteButtonWidth - halfMuteButtonMargin);
+    this.muteButton1Y = fullHeight - this.muteButtonHeight - muteButtonMargin;
     this.muteButton1Text = musicMuted ? "no music" : "music on";
 
     const muteButton1TextTest = drawTextTest(this.muteButton1Text,this.muteButtonTextScale);
@@ -242,7 +239,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.muteButton1TextY = this.muteButton1Y + Math.floor(muteButtonHalfHeight - (muteButton1TextTest.height / 2));
 
 
-    this.muteButton2X = Math.floor(this.halfWidth + halfMuteButtonMargin);
+    this.muteButton2X = Math.floor(halfWidth + halfMuteButtonMargin);
     this.muteButton2Y = this.muteButton1Y;
     this.muteButton2Text = soundMuted ? "no sound" : "sound on";
 
@@ -426,9 +423,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         this.hoverEffectIndex = null;
     }
 
-    this.renderMethod = (context,timestamp,width,height) => {
+    this.renderMethod = timestamp => {
 
-        this.background.renderNormal(context,timestamp,width,height);
+        this.background.renderNormal(timestamp);
 
         if(this.elf.defaultRenderLayers) {
             for(let i = 0;i<this.elf.defaultRenderLayers.length;i++) {
@@ -573,6 +570,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         drawTextBlack(musicMuted ? "no music" : "music on",this.muteButton1TextX,this.muteButton1TextY,this.muteButtonTextScale);
         drawTextBlack(soundMuted ? "no sound" : "sound on",this.muteButton2TextX,this.muteButton2TextY,this.muteButtonTextScale);
 
-        rendererState.fader.process(context,timestamp,width,height);
+        rendererState.fader.process(timestamp);
     }
 }

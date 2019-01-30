@@ -1,17 +1,17 @@
 "use strict";
-elves[0] = {
-    name: "wimpy red elf",
-    background: "background-1",
-    backgroundColor: "red",
+function WimpyRedElf() {
+    this.name = "wimpy red elf";
+    this.background = "background-1";
+    this.backgroundColor = "red";
 
-    song: "wimpy_loop",
-    songIntro: "wimpy_intro",
+    this.song = "wimpy_loop";
+    this.songIntro = "wimpy_intro";
     
-    backgroundCycleTime: 35000,
+    this.backgroundCycleTime = 35000;
 
-    getMove: () => moves["cry"],
+    this.getMove = () => moves["cry"];
 
-    getSpeech: sequencer => {
+    this.getSpeech = sequencer => {
         const elfBattleObject = sequencer.elfBattleObject;
 
         const speeches = ["i never learned to fight","stop this plz","i am just a poor elf"];
@@ -24,17 +24,17 @@ elves[0] = {
             text: speeches[elfBattleObject.state.speechIndex] + "\n*crying sounds*",
             animation:{name:"crying"}
         }
-    },
-    playerMoves: [
+    };
+    this.playerMoves = [
         moves["nothing"],moves["also nothing"],moves["honorable suicide"],moves["senseless murder"]
-    ],
-    health: 100,
+    ];
+    this.health = 100;
 
-    winSpeech: "bye\nthanks for stopping by\ncome again some time",
+    this.winSpeech = "bye\nthanks for stopping by\ncome again some time";
 
-    getLoseSpeech: () => {
+    this.getLoseSpeech = () => {
         return {
-            text:"*cue famous last words*\ni am one but we are many\n*dies*",
+            text: "*cue famous last words*\ni am one but we are many\n*dies*",
             action: sequencer => {
                 if(sequencer.elfBattleObject.state.isCrying) {
                     sequencer.showAnimation({name:"crying"});

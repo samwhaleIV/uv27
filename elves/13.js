@@ -89,17 +89,6 @@ addMove({
         }
     }
 });
-const getAnimalMove = name => {
-    return {
-        name: name,
-        type: "self",
-        process: (sequencer,user) => {
-            return {
-                text: `a ${name}? huh. weird.`
-            }
-        }
-    }
-}
 addMove({
     name: "trapezoid",
     type: "target",
@@ -374,63 +363,73 @@ addMove({
             }
         }
     }
-})
+});
+function PhaseShiftElf() {
+    const getAnimalMove = name => {
+        return {
+            name: name,
+            type: "self",
+            process: (sequencer,user) => {
+                return {
+                    text: `a ${name}? huh. weird.`
+                }
+            }
+        }
+    }
+    addMove(getAnimalMove("lizard"));
+    addMove(getAnimalMove("hungry hungry potato"));
 
-addMove(getAnimalMove("lizard"));
-addMove(getAnimalMove("hungry hungry potato"));
+    const playerMoveSetsByDimensions = [
+        [
+            moves["glitch punch"],
+            moves["dimensional shift"],
+            moves["ghost buster"],
+            moves["boo"]
+        ],
+        [
+            moves["glitch punch"],
+            moves["dimensional shift"],
+            moves["phase shift"],
+            moves["punching vitamins?"]
+        ],
+        [
+            moves["glitch punch"],
+            moves["dimensional shift"],
+            moves["multiverse"],
+            moves["health swap"]
+        ]
+    ];
 
-const playerMoveSetsByDimensions = [
-    [
-        moves["glitch punch"],
-        moves["dimensional shift"],
-        moves["ghost buster"],
-        moves["boo"]
-    ],
-    [
-        moves["glitch punch"],
-        moves["dimensional shift"],
-        moves["phase shift"],
-        moves["punching vitamins?"]
-    ],
-    [
-        moves["glitch punch"],
-        moves["dimensional shift"],
-        moves["multiverse"],
-        moves["health swap"]
-    ]
-]
+    this.name = "phase shift elf";
+    this.background = "background-5";
+    this.backgroundColor = "white";
+    this.foregroundColor = "red";
+    this.health = 100;
 
-elves[12] = {
-    name: "phase shift elf",
-    background: "background-5",
-    backgroundColor: "white",
-    foregroundColor: "red",
-    health: 100,
-
-    getSpeech: sequencer => {
+    this.getSpeech = sequencer => {
         if(sequencer.playerBattleObject.lastMove === "phase shift" && sequencer.playerBattleObject.state.phasedOut) {
             return {
                 text: "what scares a ghost\nthe most?\n\nat most it's\njust another ghost"
             }
         }
         return null;
-    },
+    };
 
-    startText: "everyone's moves are bound by their dimension",
+    this.startText = "everyone's moves are bound by their dimension";
 
-    startSpeech: {
+    this.startSpeech = {
         text: "a lone ghost in a vacuum\ndestroys itself\n\nwell played player"
-    },
+    };
 
-    getLoseSpeech: sequencer => {
+    this.getLoseSpeech = sequencer => {
         return {text:"welcome to hell.\n\nis this the end\nor is it only just\nthe beginning?"}
-    },
-    getWinSpeech: sequencer => {
+    };
+    this.getWinSpeech = sequencer => {
         return {text:"welcome to the void\nthere's only one way out"}
-    },
+    };
 
-    playerMoves: playerMoveSetsByDimensions[0],
-    getMove: sequencer => {
+    this.playerMoves = playerMoveSetsByDimensions[0];
+    this.getMove = sequencer => {
         if(sequencer.elfBattleObject.health <= 25) {
             return moves["rebirth"];
         }
@@ -464,9 +463,9 @@ elves[12] = {
             const move = moves[moveName];
             return move;
         }
-    },
+    };
     
-    setup: sequencer => {
+    this.setup = sequencer => {
         sequencer.playerBattleObject.state.dimensionIndex = 0;
         sequencer.elfBattleObject.state.dimensionIndex = 0;
 
@@ -480,9 +479,9 @@ elves[12] = {
 
         sequencer.playerBattleObject.state.phasedOut = false;
         sequencer.elfBattleObject.state.phasedOut = false;
-    },
+    };
 
-    getDefaultGlobalState: () => {
+    this.getDefaultGlobalState = () => {
         return {
             dimensionCount: 3,
             postTurnProcess: sequencer => {

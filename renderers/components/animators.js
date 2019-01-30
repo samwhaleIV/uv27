@@ -133,7 +133,7 @@ const animationDictionary = {
                 context.fillStyle = `rgb(${bloodIntensity},0,0)`;
                 if(i % 2 === 0) {
                     context.beginPath();
-                    context.arc(x+particleX-5,y+particleY-5,10,0,2*Math.PI);
+                    context.arc(x+particleX-5,y+particleY-5,10,0,PI2);
                     context.fill();
                 } else {
                     context.fillRect(x+particleX-10,y+particleY-10,20,20);

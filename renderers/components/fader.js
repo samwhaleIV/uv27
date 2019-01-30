@@ -123,7 +123,7 @@ const getFader = function() {
                 console.error("Error: Missing fader transition state");
             }
         },
-        process: (context,timestamp,width,height) => {
+        process: timestamp => {
             if(rendererState.fader.delta !== 0) {
                 let fadeIntensity;
                 if(rendererState.fader.delta > 0) {
@@ -140,17 +140,16 @@ const getFader = function() {
                     }
                 }
 
-                let radius = Math.floor(500 - (fadeIntensity * 500));
-                if(radius < 0) {
-                    radius = 0;
+                let diameter = Math.floor(1000 - (fadeIntensity * 1000));
+                if(diameter < 0) {
+                    diameter = 0;
                 }
                 if(backgroundStreamMode) {
-                    preRenderedInverseCircleBlack(width,height,radius);
+                    preRenderedInverseCircle(diameter,"black");
                 } else {
-                    preRenderedInverseCircleWhite(width,height,radius);
+                    preRenderedInverseCircle(diameter,"white");
                     noiseBlackOut(
                         fadeIntensity,
-                        context,width,height,
                         15 + (fadeIntensity * 40),
                         255 - (fadeIntensity * 255)
                     );

@@ -1,7 +1,7 @@
 "use strict";
-elves[26] = {
-    name: "the boss elf",
-    background: "background-1",
-    backgroundColor: "red",
-    health: 1000
+function TheBossElf() {
+    this.name = "the boss elf";
+    this.background = "background-1";
+    this.backgroundColor = "red";
+    this.health = 1000;
 }

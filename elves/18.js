@@ -1,15 +1,15 @@
 "use strict";
-elves[17] = {
-    name: "not red elfette",
-    background: "background-1",
-    backgroundColor: "rgb(255,215,181)",
-    health: 420,
-    defaultRenderLayers: [true,false,false,true,true],
-    setup: sequencer => {
+function NotRedElfette() {
+    this.name = "not red elfette";
+    this.background = "background-1";
+    this.backgroundColor = "rgb(255,215,181)";
+    this.health = 420;
+    this.defaultRenderLayers = [true,false,false,true,true];
+    this.setup = sequencer => {
         sequencer.setRenderLayer(1,true);
         sequencer.setRenderLayer(1,true);
-    },
-    playerMoves: [
+    };
+    this.playerMoves = [
         {
             name: "toggle layer 1",
             type: "interface",
@@ -54,5 +54,5 @@ elves[17] = {
                 };
             }
         }
-    ]
+    ];
 }
