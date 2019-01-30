@@ -25,16 +25,19 @@ function FaderStaticEffect() {
         }
     }
     const preRenderedInverseCircle = function(diameter,color) {
+
         context.fillStyle = color;
     
         const height = (fullHeight - diameter) / 2;
-        context.fillRect(0,0,fullWidth,height);
-        context.fillRect(0,height + diameter,fullWidth,height);
-    
         const width = (fullWidth - diameter) / 2;
-    
-        context.fillRect(0,height,width,diameter);
-        context.fillRect(width+diameter,height,width,diameter);
+
+        context.beginPath();
+        context.rect(0,0,fullWidth,height+1);
+        context.rect(0,height + diameter,fullWidth,height);
+
+        context.rect(0,height,width,diameter);
+        context.rect((width+diameter)-1,height,width+1,diameter);
+        context.fill();
     
         context.drawImage(imageDictionary[`big-${color}-ass-circle`],width,height,diameter,diameter);
     }    
