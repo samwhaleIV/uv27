@@ -16,8 +16,13 @@ loadingImage.onload = () => {
 loadingImage.src = "elven-custom/images/loading-animations.png";
 
 drawDefaultLoadingText();
+
 SetFaderOutSound("swish-1");
 SetFaderInSound("swish-2");
+
+SetFaderDelay(400);
+SetFaderDuration(600);
+
 SetPageTitle("You Versus 27 Elves");
 SetFaderEffectsRenderer(new FaderStaticEffect());
 

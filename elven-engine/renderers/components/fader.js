@@ -11,12 +11,20 @@ const SetFaderOutSound = soundName => {
 const SetFaderEffectsRenderer = renderer => {
     faderEffectsRenderer = renderer;
 }
+let faderTime = 0;
+let faderDelay = 0;
+const SetFaderDuration = time => {
+    faderTime = time;
+}
+const SetFaderDelay = time => {
+    faderDelay = time;
+}
 const getFader = function() {
     const fader = {
         delta: 0,
-        time: 600,
+        time: faderTime,
         start: null,
-        fadeInDelay: 400,
+        fadeInDelay: faderDelay,
         transitionParameters: null,
         transitionRenderer: null,
         inMethod: null,
