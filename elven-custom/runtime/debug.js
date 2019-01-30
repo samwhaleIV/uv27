@@ -1,3 +1,4 @@
+"use strict";
 const debug_cheat_everything = () => {
     localStorage.setItem("elfIndex",26);
     location.reload();

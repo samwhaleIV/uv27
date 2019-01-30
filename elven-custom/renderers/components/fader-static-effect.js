@@ -1,3 +1,4 @@
+"use strict";
 function FaderStaticEffect() {
     const noiseBlackOut = function(intensity,grainSize=30,minShade=0,maxShade=255) {
         const shadeRange = maxShade - minShade;
