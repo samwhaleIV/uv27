@@ -76,8 +76,10 @@ const getFader = function() {
             pauseRenderer();
             if(rendererState.fader.transitionRenderer) {
                 drawLoadingText();
-                rendererState = new rendererState.fader.transitionRenderer(
-                    ...rendererState.fader.transitionParameters
+                setRendererState(
+                    new rendererState.fader.transitionRenderer(
+                        ...rendererState.fader.transitionParameters
+                    )
                 );
                 if(rendererState.fader) {
                     rendererState.transitioning = true;

@@ -2,6 +2,7 @@
 function BonusScreenRenderer(endCallback) {
     this.endCallback = endCallback;
     this.fader = getFader();
+
     this.processClick = () => {
         if(!this.transitioning) {
             playSound("click.mp3");

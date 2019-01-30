@@ -17,19 +17,92 @@ const touchEnabled = event => {
 const SetPageTitle = title => {
     document.title = title;
 }
-
-canvas.onpointerup = event => {
-    if(touchEnabled(event) && event.button === 0 && rendererState.processClick) {
-        const relativeEventLocation = getRelativeEventLocation(
-            event
-        );
-        rendererState.processClick(
-            relativeEventLocation.x,
-            relativeEventLocation.y
-        );
+const keyEventModes = {
+    downOnly: Symbol("downOnly"),
+    none: Symbol("none"),
+    upAndDown: Symbol("upAndDown")
+}
+const pointerEventModes = {
+    upOnly: Symbol("upOnly"),
+    none: Symbol("none"),
+    upAndDown: Symbol("upAndDown")
+}
+const keyEventTypes = {
+    keyDown: Symbol("keyDown"),
+    keyUp: Symbol("keyUp"),
+}
+const pointerEventTypes = {
+    pointerUp: Symbol("pointerUp"),
+    pointerDown: Symbol("pointerDown")
+}
+let pointerEventMode = keyEventModes.none;
+let keyEventMode = pointerEventModes.none;
+const routeKeyEvent = (event,type) => {
+    switch(keyEventMode) {
+        case keyEventModes.none:
+            break;
+        case keyEventModes.downOnly:
+            if(type === keyEventTypes.keyDown) {
+                rendererState.processKey(event.code);
+            }
+            break;
+        case keyEventModes.upAndDown:
+            switch(type) {
+                case keyEventTypes.keyDown:
+                    rendererState.processKey(event.code);
+                    break;
+                case keyEventTypes.keyUp:
+                    rendererState.processKeyUp(event.code);
+                    break;
+            }
+            break;
     }
 }
-
+const routePointerEvent = (event,type) => {
+    const relativeEventLocation = getRelativeEventLocation(
+        event
+    );
+    lastRelativeX = relativeEventLocation.x;
+    lastRelativeY = relativeEventLocation.y;
+    switch(pointerEventMode) {
+        case pointerEventModes.none:
+            break;
+        case pointerEventModes.upOnly:
+            if(type === pointerEventTypes.pointerUp) {
+                rendererState.processClick(
+                    relativeEventLocation.x,
+                    relativeEventLocation.y
+                );
+            }
+            break;
+        case pointerEventModes.upAndDown:
+            switch(type) {
+                case pointerEventTypes.pointerUp:
+                    rendererState.processClickEnd(
+                        relativeEventLocation.x,
+                        relativeEventLocation.y
+                    );
+                    break;
+                case pointerEventTypes.pointerDown:
+                    rendererState.processClick(
+                        relativeEventLocation.x,
+                        relativeEventLocation.y
+                    );
+                    break;
+            }
+            break;
+    }
+}
+canvas.onpointerup = event => {
+    if(touchEnabled(event) && event.button === 0) {
+        routePointerEvent(event,pointerEventTypes.pointerUp);
+    }
+}
+canvas.onpointerdown = event => {
+    if(touchEnabled(event) && event.button === 0) {
+        routePointerEvent(event,pointerEventTypes.pointerDown);
+    }
+}
 let lastRelativeX = -1, lastRelativeY = -1;
 const processMouseMove = event => {
     if(touchEnabled(event)) {
@@ -46,8 +119,6 @@ const processMouseMove = event => {
         }
     }
 }
-
-canvas.onpointerdown = processMouseMove;
 canvas.onpointermove = processMouseMove;
 window.onkeydown = event => {
     switch(event.code) {
@@ -70,9 +141,13 @@ window.onkeydown = event => {
     if(paused || !rendererState) {
         return;
     }
-    if(rendererState.processKey) {
-        rendererState.processKey(event.code);
+    routeKeyEvent(event,keyEventTypes.keyDown);
+}
+window.onkeyup = event => {
+    if(paused || !rendererState) {
+        return;
     }
+    routeKeyEvent(event,keyEventTypes.keyUp);
 }
 
 const pictureModeElement = document.getElementById("picture-mode-element");
@@ -165,140 +240,6 @@ if(localStorage.getItem("backgroundStreamMode") === "true") {
     backgroundStreamMode = true;
 }
 
-const gamepadDeadzone = 0.5;
-const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
-const applyDeadZone = value => {
-    if(value < 0) {
-        value = value + gamepadDeadzone;
-        if(value > 0) {
-            value = 0;
-        } else {
-            value *= deadzoneNormalizer;
-        }
-    } else {
-        value = value - gamepadDeadzone;
-        if(value < 0) {
-            value = 0;
-        } else {
-            value *= deadzoneNormalizer;
-        }
-    }
-    return value;
-}
-
-const fakeButtonPressEvent = {pressed:true};
-const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 325;
-const processButton = (name,action,button,timestamp,isAxis) => {
-    if(button.pressed) {
-        if(!buttonStates[name]) {
-            buttonStates[name] = {timestamp:timestamp};
-            action();
-        } else if(timestamp >= buttonStates[name].timestamp + (isAxis ? axisRolloverTimeout : buttonRollverTimeout)) {
-            buttonStates[name].timestamp = timestamp;
-            action();
-        }
-    } else {
-        delete buttonStates[name];
-    }
-};
-
-const processGamepad = gamepad => {
-
-    processButton("LeftBumper",()=>{
-        window.onkeydown({code:"LeftBumper"});
-    },gamepad.buttons[4],gamepad.timestamp);
-
-    processButton("RightBumper",()=>{
-        window.onkeydown({code:"RightBumper"});
-    },gamepad.buttons[5],gamepad.timestamp);
-
-    processButton("a",()=>{
-        window.onkeydown({code:"Enter"});
-    },gamepad.buttons[0],gamepad.timestamp);
-
-    processButton("y",()=>{
-        window.onkeydown({code:"KeyP"});
-    },gamepad.buttons[3],gamepad.timestamp);
-
-    processButton("b",()=>{
-        window.onkeydown({code:"Escape"});
-    },gamepad.buttons[1],gamepad.timestamp);
-
-    processButton("up",()=>{
-        window.onkeydown({code:"KeyW"});
-    },gamepad.buttons[12],gamepad.timestamp);
-
-    processButton("down",()=>{
-        window.onkeydown({code:"KeyS"});
-    },gamepad.buttons[13],gamepad.timestamp);
-
-    processButton("left",()=>{
-        window.onkeydown({code:"KeyA"});
-    },gamepad.buttons[14],gamepad.timestamp);
-
-    processButton("right",()=>{
-        window.onkeydown({code:"KeyD"});
-    },gamepad.buttons[15],gamepad.timestamp);
-
-    processButton("start",()=>{
-        window.onkeydown({code:"Enter"});
-    },gamepad.buttons[9],gamepad.timestamp);
-
-    const leftXAxis = applyDeadZone(gamepad.axes[0]);
-    const leftYAxis = applyDeadZone(gamepad.axes[1]);
-
-    if(leftXAxis > 0) {
-        processButton("leftXAxis",()=>{
-            window.onkeydown({code:"KeyD"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else if(leftXAxis < 0) {
-        processButton("leftXAxis",()=>{
-            window.onkeydown({code:"KeyA"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else {
-        delete buttonStates["leftXAxis"];
-    }
-
-    if(leftYAxis > 0) {
-        processButton("leftYAxis",()=>{
-            window.onkeydown({code:"KeyS"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else if(leftYAxis < 0) {
-        processButton("leftYAxis",()=>{
-            window.onkeydown({code:"KeyW"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else {
-        delete buttonStates["leftYAxis"];
-    }
-
-    const rightXAxis = applyDeadZone(gamepad.axes[2]);
-    const rightYAxis = applyDeadZone(gamepad.axes[3]);
-
-    if(rightXAxis > 0) {
-        processButton("rightXAxis",()=>{
-            window.onkeydown({code:"KeyD"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else if(rightXAxis < 0) {
-        processButton("rightXAxis",()=>{
-            window.onkeydown({code:"KeyA"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else {
-        delete buttonStates["rightXAxis"];
-    }
-
-    if(rightYAxis > 0) {
-        processButton("rightYAxis",()=>{
-            window.onkeydown({code:"KeyS"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else if(rightYAxis < 0) {
-        processButton("rightYAxis",()=>{
-            window.onkeydown({code:"KeyW"});
-        },fakeButtonPressEvent,gamepad.timestamp,true);
-    } else {
-        delete buttonStates["rightYAxis"];
-    }
-}
-
 const render = timestamp => {
     rendererState.render(timestamp);
     if(!paused) {
@@ -328,6 +269,30 @@ const startRenderer = function() {
     }
     animationFrame = window.requestAnimationFrame(render);
     console.log("Canvas handler: Renderer started");
+}
+
+const setRendererState = newRendererState => {
+    rendererState = newRendererState;
+    if(rendererState.processKey) {
+        if(rendererState.processKeyUp) {
+            keyEventMode = keyEventModes.upAndDown;
+        } else {
+            keyEventMode = keyEventModes.downOnly;
+        }
+    } else {
+        console.warn("Canvas handler: This renderer state is possibly misconfigured for key events");
+        keyEventMode = keyEventModes.none;
+    }
+    if(rendererState.processClick) {
+        if(rendererState.processClickEnd) {
+            pointerEventMode = pointerEventModes.upAndDown;
+        } else {
+            pointerEventMode = pointerEventModes.upOnly;
+        }
+    } else {
+        console.warn("Canvas handler: This renderer state is possibly misconfigured for pointer events");
+        pointerEventMode = pointerEventModes.none;
+    }
 }
 
 const pauseRenderer = function() {

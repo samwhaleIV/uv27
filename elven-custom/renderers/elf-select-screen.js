@@ -256,7 +256,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.replayButtonTextX = this.replayButtonX + Math.floor((this.replayButtonWidth / 2) - (replayButtonTextWidth / 2));
     this.replayButtonTextY = this.muteButton1TextY;
 
-    
     this.processClick = (x,y) => {
         if(this.transitioning) {
             return;

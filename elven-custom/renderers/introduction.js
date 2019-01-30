@@ -1,5 +1,6 @@
 "use strict";
 function IntroductionRenderer(endCallback) {
+    this.endCallback = endCallback;
 
     this.messages = [
         "i bring terrible news",
@@ -13,6 +14,30 @@ function IntroductionRenderer(endCallback) {
         "good luck"
     ];
 
+    this.processClick = () => {
+        if(!this.transitioning) {
+            playSound("click.mp3");
+            if(this.endTimeout !== null) {
+                clearTimeout(this.endTimeout);
+            }
+            this.endCallback();
+        }
+    }
+
+    this.processKey = key => {
+        switch(key) {
+            case "Enter":
+            case "Space":
+                if(!this.transitioning) {
+                    if(this.endTimeout !== null) {
+                        clearTimeout(this.endTimeout);
+                    }
+                    this.endCallback();
+                }
+                break;
+        }
+    }
+
     const startTimeOffset = 2500;
     this.fadeIn = 2000;
     this.fadeRange = 0.5;
@@ -20,12 +45,14 @@ function IntroductionRenderer(endCallback) {
 
     this.fader = getFader();
 
+    this.endTimeout = null;
+
     this.render = timestamp => {
 
         if(this.startTime === null) {
             this.startTime = performance.now() + startTimeOffset;
             const timeout = (this.messages.length+1)*this.fadeIn + (startTimeOffset*0.75);
-            setTimeout(endCallback,timeout);
+            this.endTimeout = setTimeout(endCallback,timeout);
 
         }
 

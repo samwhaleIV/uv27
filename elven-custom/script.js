@@ -1,7 +1,7 @@
 "use strict";
 const loadingImage = new Image();
 loadingImage.onload = () => {
-    rendererState = new SidescrollRenderer(loadingImage);
+    setRendererState(new SidescrollRenderer(loadingImage));
     startRenderer();
     loadElves();
     const loadCallback = () => {
@@ -95,9 +95,9 @@ const gameLoop = () => {
     }
 
     if(elfIndex === -1) {
-        rendererState = new IntroductionRenderer(
+        setRendererState(new IntroductionRenderer(
             getSelectScreen
-        );
+        ));
     } else {
         const lastCurrentIndex = localStorage.getItem("lastCurrentIndex");
         const parsedIndex = Number(lastCurrentIndex);
@@ -105,10 +105,10 @@ const gameLoop = () => {
         if(parsedIndex === 0 || !isNaN(parsedIndex)) {
             currentIndex = parsedIndex;
         }
-        rendererState = new ElfSelectScreenRenderer(
+        setRendererState(new ElfSelectScreenRenderer(
             getBattleScreen,
             elfIndex,currentIndex
-        );
+        ));
         if(rendererState.songStartAction) {
             rendererState.songStartAction();
         }
