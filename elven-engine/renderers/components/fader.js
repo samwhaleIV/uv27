@@ -1,4 +1,16 @@
 "use strict";
+let faderInSound = null;
+let faderOutSound = null;
+let faderEffectsRenderer = null;
+const SetFaderInSound = soundName => {
+    faderInSound = soundName;
+}
+const SetFaderOutSound = soundName => {
+    faderOutSound = soundName;
+}
+const SetFaderEffectsRenderer = renderer => {
+    faderEffectsRenderer = renderer;
+}
 const getFader = function() {
     const fader = {
         delta: 0,
@@ -16,7 +28,9 @@ const getFader = function() {
                 rendererState.fader.inMethod = exitMethod;
             }
             const staticTime = rendererState.fader.time / 1000;
-            playSound("swish-2",staticTime);
+            if(faderInSound) {
+                playSound("swish-2",staticTime);
+            }
             if(rendererState.song) {
                 if(!musicMuted) {
                     if(rendererState.songIntro) {
@@ -36,7 +50,9 @@ const getFader = function() {
             rendererState.fader.transitionRenderer = rendererGenerator;
             rendererState.fader.transitionParameters = parameters;
             const staticTime = rendererState.fader.time / 1000;
-            playSound("swish-1",staticTime);
+            if(faderOutSound) {
+                playSound("swish-1",staticTime);
+            }
             stopMusic();
         },
         oninEnd: () => {
@@ -140,21 +156,9 @@ const getFader = function() {
                     }
                 }
 
-                let diameter = Math.floor(1000 - (fadeIntensity * 1000));
-                if(diameter < 0) {
-                    diameter = 0;
+                if(faderEffectsRenderer) {
+                    faderEffectsRenderer.render(fadeIntensity);
                 }
-                if(backgroundStreamMode) {
-                    preRenderedInverseCircle(diameter,"black");
-                } else {
-                    preRenderedInverseCircle(diameter,"white");
-                    noiseBlackOut(
-                        fadeIntensity,
-                        15 + (fadeIntensity * 40),
-                        255 - (fadeIntensity * 255)
-                    );
-                }
-
 
                 if(fadeIntensity === 1 && rendererState.fader.delta === 1) {
                     rendererState.fader.delta = 0;

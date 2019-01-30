@@ -1,33 +1,35 @@
 "use strict";
-
-const noiseBlackOut = function(intensity,grainSize=30,minShade=0,maxShade=255) {
-
-    const shadeRange = maxShade - minShade;
-
-    let horizontalGrain = Math.ceil(fullWidth / grainSize);
-    let verticalGrain = Math.ceil(fullHeight / grainSize);
-
-    const xOffset = Math.floor(((horizontalGrain * grainSize) - fullWidth) / 2);
-    const yOffset = Math.floor(((verticalGrain * grainSize) - fullHeight) / 2);
-
-    grainSize = Math.ceil(grainSize);
-
-    for(let x = 0;x<horizontalGrain;x++) {
-        for(let y = 0;y<verticalGrain;y++) {
-            const grainShade = Math.floor(Math.random() * shadeRange) + minShade;
-            const color = `rgba(${grainShade},${grainShade},${grainShade},${intensity})`;
-            context.fillStyle = color;
-            context.fillRect(
-                (x*grainSize)-xOffset,
-                (y*grainSize)-yOffset,
-                grainSize,
-                grainSize
-            );
-        }
+const fontDictionary = {
+    " ":{width:1},'a':{width:3},'b':{width:3},
+    'c':{width:3},'d':{width:3},'e':{width:3},
+    'f':{width:3},'g':{width:3},'h':{width:3},
+    'i':{width:3},'j':{width:3},'k':{width:3},
+    'l':{width:3},'m':{width:5},'n':{width:3},
+    'o':{width:3},'p':{width:3},'q':{width:3},
+    'r':{width:3},'s':{width:3},'t':{width:3},
+    'u':{width:3},'v':{width:3},'w':{width:5},
+    'x':{width:3},'y':{width:3},'z':{width:3},
+    '0':{width:3},'1':{width:3},'2':{width:3},
+    '3':{width:3},'4':{width:3},'5':{width:3},
+    '6':{width:3},'7':{width:3},'8':{width:3},
+    '9':{width:3},"*":{width:3},"'":{width:1},
+    ".":{width:1},":":{width:1},"-":{width:3},
+    "!":{width:1},"?":{width:3},"(":{width:2},
+    ")":{width:2},"+":{width:3},":":{width:1},
+    ">":{width:3},"<":{width:3},"[":{width:2},
+    "]":{width:2},"=":{width:3},
+}
+const adjustFontPositions = () => {
+    const innerSpace = 1;
+    const values = " abcdefghijklmnopqrstuvwxyz0123456789*'.:-!?()+:><[]=";
+    let totalWidth = 0;
+    for(let i = 0;i<values.length;i++) {
+        const value = values.substr(i,1);
+        fontDictionary[value].x = totalWidth;
+        totalWidth += fontDictionary[value].width + innerSpace;
     }
 }
-
-const textScales = {};
+adjustFontPositions();
 const drawTextTest = function(text,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
@@ -97,26 +99,14 @@ const drawTextBlack = function(text,x,y,scale) {
     }
 }
 
-const preRenderedInverseCircle = function(diameter,color) {
-    context.fillStyle = color;
-
-    const height = (fullHeight - diameter) / 2;
-    context.fillRect(0,0,fullWidth,height);
-    context.fillRect(0,height + diameter,fullWidth,height);
-
-    const width = (fullWidth - diameter) / 2;
-
-    context.fillRect(0,height,width,diameter);
-    context.fillRect(width+diameter,height,width,diameter);
-
-    context.drawImage(imageDictionary[`big-${color}-ass-circle`],width,height,diameter,diameter);
-}
-
+const textTestData = drawTextTest("loading...",4);
+textTestData.width += 30;
+textTestData.height += 30;
 
 const drawDefaultLoadingText = function() {
     context.fillStyle = "white";
-    context.font = "30px Arial";
-    context.fillText("loading...",15,38);
+    context.font = "20px Arial";
+    context.fillText("loading...",15,24);
 }
 
 const drawLoadingText = function() {

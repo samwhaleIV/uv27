@@ -1,4 +1,27 @@
 "use strict";
+const loadElfAnimationMetadata = () => {
+    const animationDictionaryKeys = Object.keys(animationDictionary);
+    for(let i = 0;i<animationDictionaryKeys.length;i++) {
+        const animation = animationDictionary[animationDictionaryKeys[i]];
+
+        if(animation.index < 0 || animation.realTime) {
+            continue;
+        }
+
+        const height = animation.index * elfSourceHeight;
+
+        const frameBounds = [];
+        for(let x = 0;x<animation.frameCount;x++) {
+            frameBounds.push(x*elfSourceWidth);
+        }
+
+        animation.frameDuration = 1000 / animation.frameRate;
+        animation.fullDuration = animation.frameDuration * animation.frameCount;
+
+        animation.y = height;
+        animation.frameBounds = frameBounds;
+    }
+}
 const animationDictionary = {
     crying: {
         realTime: true,
@@ -33,6 +56,9 @@ const animationDictionary = {
 
         smokeMaxSize: 60,
         smokeMinSize: 40,
+
+        smokeRange: 20,
+
         smokeCount: 120,
         areaOverflow: 50,
         halfAreaOverflow: 25,
@@ -143,4 +169,4 @@ const animationDictionary = {
         }
     }
 }
-animationDictionary.henry.smokeRange = animationDictionary.henry.smokeMaxSize - animationDictionary.henry.smokeMinSize;
+loadElfAnimationMetadata();

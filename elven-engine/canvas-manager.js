@@ -14,6 +14,10 @@ const touchEnabled = event => {
     return !paused && event.isPrimary && rendererState;
 }
 
+const SetPageTitle = title => {
+    document.title = title;
+}
+
 canvas.onpointerup = event => {
     if(touchEnabled(event) && event.button === 0 && rendererState.processClick) {
         const relativeEventLocation = getRelativeEventLocation(

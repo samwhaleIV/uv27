@@ -31,16 +31,15 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         const updatedSongManifest = this.getSongSegmentsForIndex(index);
         if(updatedSongManifest.index !== this.currentSongIndex) {
             this.currentSongIndex = updatedSongManifest.index;
-            loopMuteManifest = {
-                "loop_base":{shouldPlay:updatedSongManifest["loop_base"]},
-                "loop_a":{shouldPlay:updatedSongManifest["loop_a"]},
-                "loop_b":{shouldPlay:updatedSongManifest["loop_b"]}
-            };
-            introMuteManifest = {
-                "intro_base":{shouldPlay:updatedSongManifest["intro_base"]},
-                "intro_a":{shouldPlay:updatedSongManifest["intro_a"]},
-                "intro_b":{shouldPlay:updatedSongManifest["intro_b"]}
-            }
+
+            loopMuteManifest["loop_base"] = {shouldPlay:updatedSongManifest["loop_base"]};
+            loopMuteManifest["loop_a"] = {shouldPlay:updatedSongManifest["loop_a"]};
+            loopMuteManifest["loop_b"] = {shouldPlay:updatedSongManifest["loop_b"]};
+
+            introMuteManifest["intro_base"] = {shouldPlay:updatedSongManifest["intro_base"]};
+            introMuteManifest["intro_a"] = {shouldPlay:updatedSongManifest["intro_a"]};
+            introMuteManifest["intro_b"] = {shouldPlay:updatedSongManifest["intro_b"]};
+
             for(let key in updatedSongManifest) {
                 if(updatedSongManifest[key]) {
                     unmuteTrack(key);
