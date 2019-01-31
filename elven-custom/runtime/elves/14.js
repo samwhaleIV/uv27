@@ -390,7 +390,7 @@ function OldTimeyElf() {
                     {
                         text: `${user.name} passed ${target.name} the whiskey`
                     },
-                    ...moves["drink alchohol"].process(sequencer,target,user)
+                    ...moves["drink alchohol"].process(sequencer,target,user).events
                 ]
             }
         }

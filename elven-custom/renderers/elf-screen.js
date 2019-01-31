@@ -221,7 +221,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             rendererState.background.render(timestamp);
         } else {
             context.fillStyle = "black";
-            context.fillRect(0,0,fullWidth,height);
+            context.fillRect(0,0,fullWidth,fullHeight);
         }   
 
         if(this.battleSequencer.playerBattleObject.subText !== null) {
