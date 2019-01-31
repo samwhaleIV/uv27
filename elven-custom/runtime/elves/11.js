@@ -1,68 +1,4 @@
 "use strict";
-addMove({
-    name: "tell me a joke",
-    type: "option",
-    process: sequencer => {
-        const jokes = [
-            ["why did the chicken\ncross the road?","to get to the other side"],
-            ["two elves walk into a bar\nwhat do they drink?","elf beer"],
-            ["they say i have a way with\nwords...","well of course.\nthey're all left to right"],
-            ["i can never find my keys","i left them in my house"],
-            ["knock knock","who's there","it's a me! jester elf"],
-            ["what do snowmen eat?","snow flakes\n(or frosted flakes)"],
-            ["santa has gained a few\npounds lately","he's been spending\nlots of time in the uk"]
-        ];
-        const joke = jokes[
-            sequencer.globalBattleState.jokeIndex++%jokes.length
-        ];
-        return {
-            events: joke.map(jokePart=>{return {speech:jokePart}})
-        }
-    }
-});
-addMove({
-    name: "castles?",
-    type: "option",
-    process: (sequencer,user) => {
-        const startTextOptions = ["yikes","neat","clever","what is","they are","i love them"];
-        const castleFragment = castleFragments[
-            sequencer.globalBattleState.castlesFactoidIndex
-        ];
-        return {
-            speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'\n\nwant to know more?\nthen keep asking`,
-            action: () => {
-                sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.castlesFactoidIndex][0][1] = true;
-                sequencer.globalBattleState.castlesFactoidIndex = (sequencer.globalBattleState.castlesFactoidIndex + 1) % castleFragments.length;
-            }
-        }
-    }
-});
-addMove({
-    name: "dragons?",
-    type: "option",
-    process: (sequencer,user) => {
-        const startTextOptions = ["hmm","ah","ooh","maybe","how about","spooky","scary","skeletons","interesting"];
-        const dragonFragment = dragonFragments[
-            sequencer.globalBattleState.dragonsFactoidIndex
-        ];
-        return {
-            speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}\n\nwant to know more?\nthen keep asking'`,
-            action: () => {
-                sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.dragonsFactoidIndex][1][1] = true;
-                sequencer.globalBattleState.dragonsFactoidIndex = (sequencer.globalBattleState.dragonsFactoidIndex + 1) % dragonFragments.length;
-            }
-        }
-    }
-});
-addMove({
-    name: "rap battle",
-    type: "option",
-    process: sequencer => {
-        sequencer.globalBattleState.startRapBattle = true;
-        return null;
-    }
-});
-
 function JesterElf() {
     const defaultJesterElfMoves = [
         moves["rap battle"],
@@ -252,6 +188,70 @@ function JesterElf() {
         return dictionary;
     }
     const getQualityReport = quality => `this was a ${quality} response`;
+
+    addMove({
+        name: "tell me a joke",
+        type: "option",
+        process: sequencer => {
+            const jokes = [
+                ["why did the chicken\ncross the road?","to get to the other side"],
+                ["two elves walk into a bar\nwhat do they drink?","elf beer"],
+                ["they say i have a way with\nwords...","well of course.\nthey're all left to right"],
+                ["i can never find my keys","i left them in my house"],
+                ["knock knock","who's there","it's a me! jester elf"],
+                ["what do snowmen eat?","snow flakes\n(or frosted flakes)"],
+                ["santa has gained a few\npounds lately","he's been spending\nlots of time in the uk"]
+            ];
+            const joke = jokes[
+                sequencer.globalBattleState.jokeIndex++%jokes.length
+            ];
+            return {
+                events: joke.map(jokePart=>{return {speech:jokePart}})
+            }
+        }
+    });
+    addMove({
+        name: "castles?",
+        type: "option",
+        process: (sequencer,user) => {
+            const startTextOptions = ["yikes","neat","clever","what is","they are","i love them"];
+            const castleFragment = castleFragments[
+                sequencer.globalBattleState.castlesFactoidIndex
+            ];
+            return {
+                speech: `castles?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${castleFragment}'\n\nwant to know more?\nthen keep asking`,
+                action: () => {
+                    sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.castlesFactoidIndex][0][1] = true;
+                    sequencer.globalBattleState.castlesFactoidIndex = (sequencer.globalBattleState.castlesFactoidIndex + 1) % castleFragments.length;
+                }
+            }
+        }
+    });
+    addMove({
+        name: "dragons?",
+        type: "option",
+        process: (sequencer,user) => {
+            const startTextOptions = ["hmm","ah","ooh","maybe","how about","spooky","scary","skeletons","interesting"];
+            const dragonFragment = dragonFragments[
+                sequencer.globalBattleState.dragonsFactoidIndex
+            ];
+            return {
+                speech: `dragons?\n${startTextOptions[Math.floor(Math.random()*startTextOptions.length)]}...\n'${dragonFragment}\n\nwant to know more?\nthen keep asking'`,
+                action: () => {
+                    sequencer.globalBattleState.rapChoicesDictionary[sequencer.globalBattleState.dragonsFactoidIndex][1][1] = true;
+                    sequencer.globalBattleState.dragonsFactoidIndex = (sequencer.globalBattleState.dragonsFactoidIndex + 1) % dragonFragments.length;
+                }
+            }
+        }
+    });
+    addMove({
+        name: "rap battle",
+        type: "option",
+        process: sequencer => {
+            sequencer.globalBattleState.startRapBattle = true;
+            return null;
+        }
+    });
 
     this.name = "jester elf";
     this.background = "background-7";

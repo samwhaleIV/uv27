@@ -1,219 +1,4 @@
 "use strict";
-addMove({
-    name: "fiery fist",
-    type: "target",
-    process: (sequencer,user,target) => {
-        const baseDamage = 15;
-        const damagePerDegree = 0.25;
-        const damageFactor = 1 / damagePerDegree;
-        if(sequencer.globalBattleState.temperature >= startingTemperature) {
-            let damage = baseDamage + Math.floor((sequencer.globalBattleState.temperature - startingTemperature) / damageFactor);
-            const events = [{
-                text: "ouch! a scorching fist",
-                action: () => {
-                    target.dropHealth(damage)
-                }
-            }];
-            if(damage !== baseDamage) {
-                events.push({
-                    text: `(fist power was boosted by ${Math.floor(fixNumber((damage-baseDamage)/baseDamage,2)*100)} percent!)`
-                });
-            }
-            return {
-                events: events
-            }
-        } else {
-            let damage = baseDamage - Math.floor(Math.abs(sequencer.globalBattleState.temperature - startingTemperature) / damageFactor);
-            if(damage < 0) {
-                damage = 0;
-                return {
-                    failed: true,
-                    events: [
-                        {
-                            text: "it's too cold for a fiery fist"
-                        }
-                    ]
-                }
-            } else {
-                const events = [{
-                    text: "ouch! a scorching fist",
-                    action: () => {
-                        target.dropHealth(damage)
-                    }
-                }];
-                if(damage !== baseDamage) {
-                    events.push({
-                        text: `(fist power was reduced by ${Math.floor(fixNumber((baseDamage-damage)/baseDamage,2)*100)} percent!)`
-                    });
-                }
-                return {
-                    events: events
-                }
-            }
-        }
-
-    }
-    
-});
-addMove({
-    name: "glacial blast",
-    type: "target",
-    process: (sequencer,user,target) => {
-        let reductionAmount = 10 - (sequencer.globalBattleState.antifreezeCount * 2);
-        if(reductionAmount <= 0) {
-            return {
-                events: [
-                    {
-                        text: "it had no effect!"
-                    },
-                    {
-                        text: "there's too much antifreeze"
-                    }
-                ]
-            }
-        }
-        reductionAmount = Math.floor(reductionAmount);
-        return {
-            events: [
-                {
-                    text: `temperature dropped ${formatDegrees(reductionAmount)}`,
-                    action: sequencer => {
-                        sequencer.globalBattleState.temperature -= reductionAmount;
-                        updateWorldTemperatureSubText(sequencer);
-                    }
-                },
-                {
-                    text: `${target.name} got hurt a little bit too`,
-                    action: () => target.dropHealth(reductionAmount)
-                }
-            ]
-        }
-    }
-});
-addMove({
-    name: "antifreeze",
-    type: "self",
-    process: (sequencer,user) => {
-        return {
-            text: "1 antifreeze added",
-            action: sequencer => {
-                sequencer.globalBattleState.antifreezeCount++;
-                updateAntifreezeSubText(sequencer);
-            }
-        }
-    }
-});
-addMove({
-    name: "anti antifreeze",
-    type: "self",
-    process: (sequencer,user) => {
-        if(sequencer.globalBattleState.antifreezeCount <= 0) {
-            return {
-                failed: true,
-                events: [
-                    {text: "there are no antifreezes right now"}
-                ]
-            }
-        }
-        return {
-            text: "1 antifreeze removed",
-            action: sequencer => {
-                sequencer.globalBattleState.antifreezeCount--;
-                updateAntifreezeSubText(sequencer);
-            }
-        }
-    }
-});
-addMove({
-    name: "consume ice cubes",
-    type: "self",
-    process: (sequencer,user) => {
-        if(sequencer.globalBattleState.antifreezeCount >= 1) {
-            return {
-                failed: true,
-                events: [
-                    {
-                        text: "antifreeze prevents ice cube use"
-                    }
-                ]
-            }
-        }
-        const degreeDrop = 2;
-        return {
-            text: `your temperature dropped by ${formatDegrees(degreeDrop)}`,
-            action: () => {
-                user.state.temperature-=degreeDrop;
-                updatePlayerTemperatureSubtext(sequencer);
-            }
-        }
-    }
-});
-addMove({
-    name: "bake cookies",
-    type: "self",
-    process: (sequencer,user) => {
-        return {
-            events: [
-                {
-                    speech: "ooh! the perfect\ntemperature"
-                },
-                {
-                    text: `${user.name} ${overb(user)} baking cookies`
-                }
-            ]
-        }
-    }
-});
-addMove({
-    name: "icy band aid",
-    type: "self",
-    process: (sequencer,user) => {
-        if(user.health === user.maxHealth) {
-            return {
-                failed: true,
-                events: [
-                    {
-                        text: "you don't have any wounds"
-                    }
-                ]
-            }
-        }
-        if(sequencer.globalBattleState.antifreezeCount >= 1) {
-            return {
-                failed: true,
-                events: [
-                    {
-                        text: "antifreeze prevents icy band aids!"
-                    }
-                ]
-            }
-        }
-        if(sequencer.globalBattleState.temperature < startingTemperature && sequencer.globalBattleState.temperature > fakeFreezingPoint) {
-            return {
-                text: "some of your burn wounds have been healed",
-                action: () => user.addHealth(Math.ceil(user.maxHealth/4))
-            }
-        }
-        return {
-            text: "most of your burn wounds have been healed",
-            action: () => user.addHealth(Math.ceil(user.maxHealth/2))
-        }
-    }
-});
-addMove({
-    name: "global warming",
-    type: "self",
-    process: sequencer => {
-        const increaseAmount = 10;
-        return {
-            text: `temperature raised by ${formatDegrees(increaseAmount)}`,
-            action: sequencer => {
-                sequencer.globalBattleState.temperature += increaseAmount;
-                updateWorldTemperatureSubText(sequencer);
-            }
-        }
-    }
-});
 function ScorchedElf() {
     const getTemperatureString = (temperature,prefix) =>
         `${prefix ? `${prefix} `:""}${formatDegrees(fixNumber(temperature,1))}`;
@@ -329,6 +114,222 @@ function ScorchedElf() {
             return "rgba(255,255,255,1)";
         }
     }
+
+    addMove({
+        name: "fiery fist",
+        type: "target",
+        process: (sequencer,user,target) => {
+            const baseDamage = 15;
+            const damagePerDegree = 0.25;
+            const damageFactor = 1 / damagePerDegree;
+            if(sequencer.globalBattleState.temperature >= startingTemperature) {
+                let damage = baseDamage + Math.floor((sequencer.globalBattleState.temperature - startingTemperature) / damageFactor);
+                const events = [{
+                    text: "ouch! a scorching fist",
+                    action: () => {
+                        target.dropHealth(damage)
+                    }
+                }];
+                if(damage !== baseDamage) {
+                    events.push({
+                        text: `(fist power was boosted by ${Math.floor(fixNumber((damage-baseDamage)/baseDamage,2)*100)} percent!)`
+                    });
+                }
+                return {
+                    events: events
+                }
+            } else {
+                let damage = baseDamage - Math.floor(Math.abs(sequencer.globalBattleState.temperature - startingTemperature) / damageFactor);
+                if(damage < 0) {
+                    damage = 0;
+                    return {
+                        failed: true,
+                        events: [
+                            {
+                                text: "it's too cold for a fiery fist"
+                            }
+                        ]
+                    }
+                } else {
+                    const events = [{
+                        text: "ouch! a scorching fist",
+                        action: () => {
+                            target.dropHealth(damage)
+                        }
+                    }];
+                    if(damage !== baseDamage) {
+                        events.push({
+                            text: `(fist power was reduced by ${Math.floor(fixNumber((baseDamage-damage)/baseDamage,2)*100)} percent!)`
+                        });
+                    }
+                    return {
+                        events: events
+                    }
+                }
+            }
+    
+        }
+        
+    });
+    addMove({
+        name: "glacial blast",
+        type: "target",
+        process: (sequencer,user,target) => {
+            let reductionAmount = 10 - (sequencer.globalBattleState.antifreezeCount * 2);
+            if(reductionAmount <= 0) {
+                return {
+                    events: [
+                        {
+                            text: "it had no effect!"
+                        },
+                        {
+                            text: "there's too much antifreeze"
+                        }
+                    ]
+                }
+            }
+            reductionAmount = Math.floor(reductionAmount);
+            return {
+                events: [
+                    {
+                        text: `temperature dropped ${formatDegrees(reductionAmount)}`,
+                        action: sequencer => {
+                            sequencer.globalBattleState.temperature -= reductionAmount;
+                            updateWorldTemperatureSubText(sequencer);
+                        }
+                    },
+                    {
+                        text: `${target.name} got hurt a little bit too`,
+                        action: () => target.dropHealth(reductionAmount)
+                    }
+                ]
+            }
+        }
+    });
+    addMove({
+        name: "antifreeze",
+        type: "self",
+        process: (sequencer,user) => {
+            return {
+                text: "1 antifreeze added",
+                action: sequencer => {
+                    sequencer.globalBattleState.antifreezeCount++;
+                    updateAntifreezeSubText(sequencer);
+                }
+            }
+        }
+    });
+    addMove({
+        name: "anti antifreeze",
+        type: "self",
+        process: (sequencer,user) => {
+            if(sequencer.globalBattleState.antifreezeCount <= 0) {
+                return {
+                    failed: true,
+                    events: [
+                        {text: "there are no antifreezes right now"}
+                    ]
+                }
+            }
+            return {
+                text: "1 antifreeze removed",
+                action: sequencer => {
+                    sequencer.globalBattleState.antifreezeCount--;
+                    updateAntifreezeSubText(sequencer);
+                }
+            }
+        }
+    });
+    addMove({
+        name: "consume ice cubes",
+        type: "self",
+        process: (sequencer,user) => {
+            if(sequencer.globalBattleState.antifreezeCount >= 1) {
+                return {
+                    failed: true,
+                    events: [
+                        {
+                            text: "antifreeze prevents ice cube use"
+                        }
+                    ]
+                }
+            }
+            const degreeDrop = 2;
+            return {
+                text: `your temperature dropped by ${formatDegrees(degreeDrop)}`,
+                action: () => {
+                    user.state.temperature-=degreeDrop;
+                    updatePlayerTemperatureSubtext(sequencer);
+                }
+            }
+        }
+    });
+    addMove({
+        name: "bake cookies",
+        type: "self",
+        process: (sequencer,user) => {
+            return {
+                events: [
+                    {
+                        speech: "ooh! the perfect\ntemperature"
+                    },
+                    {
+                        text: `${user.name} ${overb(user)} baking cookies`
+                    }
+                ]
+            }
+        }
+    });
+    addMove({
+        name: "icy band aid",
+        type: "self",
+        process: (sequencer,user) => {
+            if(user.health === user.maxHealth) {
+                return {
+                    failed: true,
+                    events: [
+                        {
+                            text: "you don't have any wounds"
+                        }
+                    ]
+                }
+            }
+            if(sequencer.globalBattleState.antifreezeCount >= 1) {
+                return {
+                    failed: true,
+                    events: [
+                        {
+                            text: "antifreeze prevents icy band aids!"
+                        }
+                    ]
+                }
+            }
+            if(sequencer.globalBattleState.temperature < startingTemperature && sequencer.globalBattleState.temperature > fakeFreezingPoint) {
+                return {
+                    text: "some of your burn wounds have been healed",
+                    action: () => user.addHealth(Math.ceil(user.maxHealth/4))
+                }
+            }
+            return {
+                text: "most of your burn wounds have been healed",
+                action: () => user.addHealth(Math.ceil(user.maxHealth/2))
+            }
+        }
+    });
+    addMove({
+        name: "global warming",
+        type: "self",
+        process: sequencer => {
+            const increaseAmount = 10;
+            return {
+                text: `temperature raised by ${formatDegrees(increaseAmount)}`,
+                action: sequencer => {
+                    sequencer.globalBattleState.temperature += increaseAmount;
+                    updateWorldTemperatureSubText(sequencer);
+                }
+            }
+        }
+    });
 
     this.name = "scorched elf";
     this.background = "background-9";

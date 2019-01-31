@@ -1,242 +1,4 @@
 "use strict";
-addMove({
-    name: "dodgy dodge",
-    type: "self",
-    process: (sequencer,user) => {
-        user.state.dodging = true;
-        if(user.state.comboState.length === 0) {
-            user.state.comboState.push(0);
-            user.subText = ["combo chain active","[stage 1 of 3]","1. dodgy dodge"];
-            return {
-                events: [{
-                    text: "a combo has started! >:)"
-                },{
-                    text: "you might dodge what's next"
-                }]
-            }
-        } else {
-            user.state.comboState = [];
-            user.subText = [noComboChainText];
-            return {
-                events: [{
-                    text: "you broke your combo :("
-                },{
-                    text: "but you still prepare to dodge",
-                }]
-            }
-        }
-    }
-});
-addMove({
-    name: "elfmart brand band aid",
-    type: "self",
-
-    process: (sequencer,user) => {
-        if(user.state.comboState.length !== 0) {
-            user.state.comboState = [];
-            user.subText = [noComboChainText];
-            user.addHealth(30);
-            return {
-                text: "the healing broke your combo"
-            }
-        }
-        const responses = [
-            "*you thank elfmart for their low low prices*",
-            "elfmart has the best deals",
-            "you should shop at elfmart more often",
-            "you must really <3 elfmart"
-        ];
-        user.addHealth(30);
-        return {
-            text: responses[Math.floor(Math.random()*responses.length)]
-        }
-    }
-});
-addMove({
-    name: "krazy kick",
-    type: "target",
-    process: (sequencer,user,target) => {
-        const breakComboKick = () => {
-            target.dropHealth(35);
-            return {
-                events: [
-                    {
-                        text: "what a great kick!"
-                    },
-                    {
-                        text: "it broke your combo though..."
-                    }
-                ]
-            }
-        }
-        if(user.state.comboState.length === 2) {
-            if(user.state.comboState[0] === 0 && user.state.comboState[1] === 1) {
-                user.state.comboState = [];
-                user.subText = [noComboChainText];
-                target.dropHealth(250);
-                return {
-                    events: [
-                        {
-                            text: "you completed your combo!"
-                        },
-                        {
-                            text: "it is super effective!"
-                        },
-                    ]
-                }
-            } else {
-                user.state.comboState = [];
-                user.subText = [noComboChainText];
-                return breakComboKick();
-            }
-        } else if(user.state.comboState.length !== 0) {
-            user.state.comboState = [];
-            user.subText = [noComboChainText];
-            return breakComboKick();
-        }
-        target.dropHealth(35);
-        return {
-            events: [{
-                text: "kicking someone without legs - a new low"
-            },{
-                text: "(even for you)"
-            }]
-        }
-    }
-});
-addMove({
-    name: "uppercut",
-    type: "target",
-    process: (sequencer,user,target) => {
-        const breakHealCycle = () => {
-            if(target.state.healState >= 1) {
-                target.state.healState = 0;
-                target.state.healStateJustBroke = true;
-                return true;
-            } else {
-                return false;
-            }
-        }
-        const breakComboPunch = () => {
-            target.dropHealth(15);
-            const events = [
-                {
-                    text: "you landed your punch"
-                }
-            ];
-            if(breakHealCycle()) {
-                events.push({
-                    text: "and you broke their meditative state!"
-                });
-            }
-            events.push({
-                text: "but this broke your combo :("
-            });
-            return {
-                events: events
-            }
-        }
-        if(user.state.comboState.length === 1) {
-            if(user.state.comboState[0] === 0) {
-                user.state.comboState.push(1);
-                target.dropHealth(20);
-                user.subText = ["combo chain active","[stage 2 of 3]","1. dodgy dodge","2. uppercut"];
-                const events = [
-                    {
-                        text: "this continues your combo"
-                    },
-                    {
-                        text: "you're almost there!"
-                    }
-                ];
-                if(breakHealCycle()) {
-                    events.push({
-                        text: "you also broke their meditative state!"
-                    });
-                }
-                return {
-                    events: events
-                }
-            } else {
-                user.state.comboState = [];
-                user.subText = [noComboChainText];
-                return breakComboPunch();
-            }
-        } else if(user.state.comboState.length !== 0) {
-            user.state.comboState = [];
-            user.subText = [noComboChainText];
-            return breakComboPunch();
-        }
-        target.dropHealth(15);
-        if(breakHealCycle()) {
-            return {
-                text: "you broke their focus!"
-            }
-        } else {
-            return {
-                text: "but it barely made a dent"
-            }
-        }
-
-    }
-});
-addMove({
-    name: "lightweight champion",
-    type: "target",
-    process: (sequencer,user,target) => {
-        const events = [];
-        const hitCount = Math.floor(Math.random() * 5) + 2;
-        const responses = ["oof!","ow!","erf!","ack!"];
-        for(let i = 0;i<hitCount;i++) {
-            events.push({
-                text: responses[i%responses.length],
-                action: () => target.dropHealth(6)
-            });
-        }
-        events.push({
-            text: `ouch! hit ${hitCount} time${hitCount !== 1 ? "s":""}`
-        });
-        return {
-            events: events
-        }
-    }
-});
-addMove({
-    name: "big punch",
-    type: "target",
-    process: (sequencer,user,target) => {
-        return {
-            text: "that's gonna leave a bruise",
-            action: () => target.dropHealth(36)
-        }
-    }
-})
-addMove({
-    name: "deep meditation",
-    type: "self",
-    process: (sequencer,user) => {
-        return {
-            text: `${user.name} ${overb(user)} channeling inwards`,
-            action: () => user.addHealth(95)
-        }
-    }
-});
-addMove({
-    name: "napoleon complex",
-    type: "self",
-    process: (sequencer,user) => {
-        const hadComplex = user.state.hasNapoleonComplex;
-        user.state.hasNapoleonComplex = true;
-        const events = [{text:`${user.name} got very frustrated`}];
-        if(!hadComplex) {
-            events.push({text:`${user.name} will be hastier now`});
-        }
-        return {
-            events: events
-        }
-    }
-});
-
 function LeglessElf() {
     const noComboChainText = "no combo chain";
 
@@ -249,6 +11,244 @@ function LeglessElf() {
         text: "i might not have legs\nbut i can throw stronger\npunches than any you've\nseen yet.\n\nbring it human swine."
     };
 
+    addMove({
+        name: "dodgy dodge",
+        type: "self",
+        process: (sequencer,user) => {
+            user.state.dodging = true;
+            if(user.state.comboState.length === 0) {
+                user.state.comboState.push(0);
+                user.subText = ["combo chain active","[stage 1 of 3]","1. dodgy dodge"];
+                return {
+                    events: [{
+                        text: "a combo has started! >:)"
+                    },{
+                        text: "you might dodge what's next"
+                    }]
+                }
+            } else {
+                user.state.comboState = [];
+                user.subText = [noComboChainText];
+                return {
+                    events: [{
+                        text: "you broke your combo :("
+                    },{
+                        text: "but you still prepare to dodge",
+                    }]
+                }
+            }
+        }
+    });
+    addMove({
+        name: "elfmart brand band aid",
+        type: "self",
+    
+        process: (sequencer,user) => {
+            if(user.state.comboState.length !== 0) {
+                user.state.comboState = [];
+                user.subText = [noComboChainText];
+                user.addHealth(30);
+                return {
+                    text: "the healing broke your combo"
+                }
+            }
+            const responses = [
+                "*you thank elfmart for their low low prices*",
+                "elfmart has the best deals",
+                "you should shop at elfmart more often",
+                "you must really <3 elfmart"
+            ];
+            user.addHealth(30);
+            return {
+                text: responses[Math.floor(Math.random()*responses.length)]
+            }
+        }
+    });
+    addMove({
+        name: "krazy kick",
+        type: "target",
+        process: (sequencer,user,target) => {
+            const breakComboKick = () => {
+                target.dropHealth(35);
+                return {
+                    events: [
+                        {
+                            text: "what a great kick!"
+                        },
+                        {
+                            text: "it broke your combo though..."
+                        }
+                    ]
+                }
+            }
+            if(user.state.comboState.length === 2) {
+                if(user.state.comboState[0] === 0 && user.state.comboState[1] === 1) {
+                    user.state.comboState = [];
+                    user.subText = [noComboChainText];
+                    target.dropHealth(250);
+                    return {
+                        events: [
+                            {
+                                text: "you completed your combo!"
+                            },
+                            {
+                                text: "it is super effective!"
+                            },
+                        ]
+                    }
+                } else {
+                    user.state.comboState = [];
+                    user.subText = [noComboChainText];
+                    return breakComboKick();
+                }
+            } else if(user.state.comboState.length !== 0) {
+                user.state.comboState = [];
+                user.subText = [noComboChainText];
+                return breakComboKick();
+            }
+            target.dropHealth(35);
+            return {
+                events: [{
+                    text: "kicking someone without legs - a new low"
+                },{
+                    text: "(even for you)"
+                }]
+            }
+        }
+    });
+    addMove({
+        name: "uppercut",
+        type: "target",
+        process: (sequencer,user,target) => {
+            const breakHealCycle = () => {
+                if(target.state.healState >= 1) {
+                    target.state.healState = 0;
+                    target.state.healStateJustBroke = true;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            const breakComboPunch = () => {
+                target.dropHealth(15);
+                const events = [
+                    {
+                        text: "you landed your punch"
+                    }
+                ];
+                if(breakHealCycle()) {
+                    events.push({
+                        text: "and you broke their meditative state!"
+                    });
+                }
+                events.push({
+                    text: "but this broke your combo :("
+                });
+                return {
+                    events: events
+                }
+            }
+            if(user.state.comboState.length === 1) {
+                if(user.state.comboState[0] === 0) {
+                    user.state.comboState.push(1);
+                    target.dropHealth(20);
+                    user.subText = ["combo chain active","[stage 2 of 3]","1. dodgy dodge","2. uppercut"];
+                    const events = [
+                        {
+                            text: "this continues your combo"
+                        },
+                        {
+                            text: "you're almost there!"
+                        }
+                    ];
+                    if(breakHealCycle()) {
+                        events.push({
+                            text: "you also broke their meditative state!"
+                        });
+                    }
+                    return {
+                        events: events
+                    }
+                } else {
+                    user.state.comboState = [];
+                    user.subText = [noComboChainText];
+                    return breakComboPunch();
+                }
+            } else if(user.state.comboState.length !== 0) {
+                user.state.comboState = [];
+                user.subText = [noComboChainText];
+                return breakComboPunch();
+            }
+            target.dropHealth(15);
+            if(breakHealCycle()) {
+                return {
+                    text: "you broke their focus!"
+                }
+            } else {
+                return {
+                    text: "but it barely made a dent"
+                }
+            }
+    
+        }
+    });
+    addMove({
+        name: "lightweight champion",
+        type: "target",
+        process: (sequencer,user,target) => {
+            const events = [];
+            const hitCount = Math.floor(Math.random() * 5) + 2;
+            const responses = ["oof!","ow!","erf!","ack!"];
+            for(let i = 0;i<hitCount;i++) {
+                events.push({
+                    text: responses[i%responses.length],
+                    action: () => target.dropHealth(6)
+                });
+            }
+            events.push({
+                text: `ouch! hit ${hitCount} time${hitCount !== 1 ? "s":""}`
+            });
+            return {
+                events: events
+            }
+        }
+    });
+    addMove({
+        name: "big punch",
+        type: "target",
+        process: (sequencer,user,target) => {
+            return {
+                text: "that's gonna leave a bruise",
+                action: () => target.dropHealth(36)
+            }
+        }
+    })
+    addMove({
+        name: "deep meditation",
+        type: "self",
+        process: (sequencer,user) => {
+            return {
+                text: `${user.name} ${overb(user)} channeling inwards`,
+                action: () => user.addHealth(95)
+            }
+        }
+    });
+    addMove({
+        name: "napoleon complex",
+        type: "self",
+        process: (sequencer,user) => {
+            const hadComplex = user.state.hasNapoleonComplex;
+            user.state.hasNapoleonComplex = true;
+            const events = [{text:`${user.name} got very frustrated`}];
+            if(!hadComplex) {
+                events.push({text:`${user.name} will be hastier now`});
+            }
+            return {
+                events: events
+            }
+        }
+    });
+    
     this.getMove = sequencer => {
         const skipNewHeal = sequencer.elfBattleObject.state.healStateJustBroke;
         if(skipNewHeal) {

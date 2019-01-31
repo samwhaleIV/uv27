@@ -1,440 +1,400 @@
 "use strict";
-addMove({
-    name: "visit specific store",
-    type: "interface",
-    process: (sequencer,user) => {
-        sequencer.globalBattleState.backStack.push({
-            name: "home",
-            subText: user.subText
-        });
-        sequencer.updatePlayerMoves(oldTimeyMoveTree.specificStore);
-
-        user.subText = [];
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`
-        user.subText[1] = "at the specific store";
-
-
-        sequencer.globalBattleState.playerInterfaced = true;
-        sequencer.globalBattleState.currentPlace = "specificStore";
-        return null;
-    }
-});
-addMove({
-    name: "visit saloon",
-    type: "interface",
-    process: (sequencer,user) => {
-        sequencer.globalBattleState.backStack.push({
-            name: "home",
-            subText: user.subText
-        });
-        sequencer.updatePlayerMoves(oldTimeyMoveTree.saloon);
-
-        user.subText = [];
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`
-        user.subText[1] = "at the saloon";
-
-        sequencer.globalBattleState.playerInterfaced = true;
-        sequencer.globalBattleState.currentPlace = "saloon";
-        return null;
-    }
-});
-addMove({
-    name: "go back",
-    type: "interface",
-    process: (sequencer,user) => {
-        const lastLocation = sequencer.globalBattleState.backStack.pop();
-        sequencer.updatePlayerMoves(sequencer.globalBattleState.moveTree[
-            lastLocation.name
-        ]);
-
-        if(lastLocation.postAction) {
-            lastLocation.postAction();
+function OldTimeyElf() {
+    addMove({
+        name: "go back",
+        type: "interface",
+        process: (sequencer,user) => {
+            const lastLocation = sequencer.globalBattleState.backStack.pop();
+            sequencer.updatePlayerMoves(sequencer.globalBattleState.moveTree[
+                lastLocation.name
+            ]);
+    
+            if(lastLocation.postAction) {
+                lastLocation.postAction();
+            }
+    
+            sequencer.globalBattleState.subTexts[sequencer.globalBattleState.currentPlace] = user.subText;
+    
+            user.subText = sequencer.globalBattleState.subTexts[lastLocation.name];
+    
+            user.subText = lastLocation.subText;
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+            sequencer.globalBattleState.playerInterfaced = true;
+    
+            sequencer.globalBattleState.currentPlace = lastLocation.name;
+            return null;
         }
-
-        sequencer.globalBattleState.subTexts[sequencer.globalBattleState.currentPlace] = user.subText;
-
-        user.subText = sequencer.globalBattleState.subTexts[lastLocation.name];
-
-        user.subText = lastLocation.subText;
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
-        sequencer.globalBattleState.playerInterfaced = true;
-
-        sequencer.globalBattleState.currentPlace = lastLocation.name;
-        return null;
-    }
-});
-addMove({
-    name: "leave",
-    type: "interface",
-    process: (sequencer,user) => moves["go back"].process(sequencer,user)
-});
-addMove({
-    name: "retreat",
-    type: "interface",
-    process: (sequencer,user) => moves["go back"].process(sequencer,user)
-});
-addMove({
-    name: "buy treaty - 100 coins",
-    type: "option",
-    process: (sequencer,user) => {
-
-        if(user.state.ownsTreaty) {
-            return {
-                failed: true,
-                text: "you already have a treaty"
-            }
-        }
-
-        const price = 100;
-        if(user.state.money >= price) {
-            user.state.money -= price;
-            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
-
-            if(!user.state.ownsTreaty) {
-                user.state.ownsTreaty = true;
-            }
-        } else {
-            return {
-                failed: true,
-                text: "you don't have enough coins"
-            }
-        }
-    }
-});
-addMove({
-    name: "buy love - 999 coins",
-    type: "option",
-    process: (sequencer,user) => {
-
-        if(user.state.ownsLove) {
-            return {
-                failed: true,
-                text: "you already bought love"
-            }
-        }
-
-        const price = 999;
-        if(user.state.money >= price) {
-            user.state.money -= price;
-            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
-
-            if(!user.state.ownsLove) {
-                user.state.ownsLove = true;
-            }
-
-            return {
-                text: "you received love"
-            }
-        } else {
-            return {
-                failed: true,
-                text: "you don't have enough coins"
-            }
-        }
-    }
-});
-addMove({
-    name: "buy matter - 1 coin",
-    type: "option",
-    process: (sequencer,user) => {
-        const price = 1;
-        if(user.state.money >= price) {
-            user.state.money -= price;
-            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
-
-            if(!user.state.ownsMatter) {
-                user.state.ownsMatter = true;
-                user.state.matter = 1;
-            } else {
-                user.state.matter++;
-            }
-
-            return {
-                text: "you received 1 matter"
-            }
-        } else {
-            return {
-                failed: true,
-                text: "you don't have enough coins"
-            }
-        }
-    }
-});
-addMove({
-    name: "buy a thing - 2 coins",
-    type: "option",
-    process: (sequencer,user) => {
-        const price = 2;
-        if(user.state.money >= price) {
-            user.state.money -= price;
-            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
-
-            if(!user.state.ownsAThing) {
-                user.state.ownsAThing = true;
-                user.state.things = 1;
-            } else {
-                user.state.things++;
-            }
-
-            return {
-                text: "you received 1 thing"
-            }
-        } else {
-            return {
-                failed: true,
-                text: "you don't have enough coins"
-            }
-        }
-    }
-});
-addMove({
-    name: "buying in and of itself",
-    type: "option",
-    process: (sequencer,user,target) => moves["multiverse"].process(sequencer,user,target)
-});
-addMove({
-    name: "down some whiskey",
-    type: "self",
-    process: (sequencer,user) => moves["drink alchohol"].process(sequencer,user)
-});
-addMove({
-    name: "gamble all your coins",
-    type: "interface",
-    process: (sequencer,user) => {
-        if(user.state.money <= 0) {
-            return {
-                failed: true,
-                events: [{
-                    text: "you don't have any coins"
-                },
-                {
-                    text: "the raffle is rolled at 6 in the evening"
-                }]
-            }
-        }
-        return {
-            events: [
-                {
-                    text: `${user.name} bought ${user.state.money} raffle ticket${user.state.money !== 1 ? "s" : ""}`,
-                    action: () => {
-                        if(!(sequencer.globalBattleState.raffleAmount >= 0)) {
-                            sequencer.globalBattleState.raffleAmount = 0;
-                        }
-                        sequencer.globalBattleState.raffleAmount += user.state.money;
-                        user.state.money = 0;
-                        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
-                    }
-                },
-                {
-                    text: "the raffle is rolled at 6 in the evening"
+    });
+    addMove({
+        name: "leave",
+        type: "interface",
+        process: (sequencer,user) => moves["go back"].process(sequencer,user)
+    });
+    addMove({
+        name: "retreat",
+        type: "interface",
+        process: (sequencer,user) => moves["go back"].process(sequencer,user)
+    });
+    addMove({
+        name: "buy treaty - 100 coins",
+        type: "option",
+        process: (sequencer,user) => {
+    
+            if(user.state.ownsTreaty) {
+                return {
+                    failed: true,
+                    text: "you already have a treaty"
                 }
-            ]
-        }
-    }
-});
-addMove({
-    name: "sober punch",
-    type: "target",
-    process: (sequencer,user,target) => {
-        target.dropHealth(9);
-        return {
-            failed: false,
-            text: "being lit would've helped",
-            animation:{name:"punch"}
-        }
-    }
-});
-addMove({
-    name: "throw stool",
-    type: "target",
-    process: (sequencer,user,target,stoolBypass=false) => {
-        if(!stoolBypass) {
-            if(sequencer.globalBattleState.stools >= 1) {
-                sequencer.globalBattleState.stools--;
+            }
+    
+            const price = 100;
+            if(user.state.money >= price) {
+                user.state.money -= price;
+                user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
+    
+                if(!user.state.ownsTreaty) {
+                    user.state.ownsTreaty = true;
+                }
             } else {
                 return {
                     failed: true,
+                    text: "you don't have enough coins"
+                }
+            }
+        }
+    });
+    addMove({
+        name: "buy love - 999 coins",
+        type: "option",
+        process: (sequencer,user) => {
+    
+            if(user.state.ownsLove) {
+                return {
+                    failed: true,
+                    text: "you already bought love"
+                }
+            }
+    
+            const price = 999;
+            if(user.state.money >= price) {
+                user.state.money -= price;
+                user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
+    
+                if(!user.state.ownsLove) {
+                    user.state.ownsLove = true;
+                }
+    
+                return {
+                    text: "you received love"
+                }
+            } else {
+                return {
+                    failed: true,
+                    text: "you don't have enough coins"
+                }
+            }
+        }
+    });
+    addMove({
+        name: "buy matter - 1 coin",
+        type: "option",
+        process: (sequencer,user) => {
+            const price = 1;
+            if(user.state.money >= price) {
+                user.state.money -= price;
+                user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
+    
+                if(!user.state.ownsMatter) {
+                    user.state.ownsMatter = true;
+                    user.state.matter = 1;
+                } else {
+                    user.state.matter++;
+                }
+    
+                return {
+                    text: "you received 1 matter"
+                }
+            } else {
+                return {
+                    failed: true,
+                    text: "you don't have enough coins"
+                }
+            }
+        }
+    });
+    addMove({
+        name: "buy a thing - 2 coins",
+        type: "option",
+        process: (sequencer,user) => {
+            const price = 2;
+            if(user.state.money >= price) {
+                user.state.money -= price;
+                user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s":""}`;
+    
+                if(!user.state.ownsAThing) {
+                    user.state.ownsAThing = true;
+                    user.state.things = 1;
+                } else {
+                    user.state.things++;
+                }
+    
+                return {
+                    text: "you received 1 thing"
+                }
+            } else {
+                return {
+                    failed: true,
+                    text: "you don't have enough coins"
+                }
+            }
+        }
+    });
+    addMove({
+        name: "buying in and of itself",
+        type: "option",
+        process: (sequencer,user,target) => moves["multiverse"].process(sequencer,user,target)
+    });
+    addMove({
+        name: "down some whiskey",
+        type: "self",
+        process: (sequencer,user) => moves["drink alchohol"].process(sequencer,user)
+    });
+    addMove({
+        name: "gamble all your coins",
+        type: "interface",
+        process: (sequencer,user) => {
+            if(user.state.money <= 0) {
+                return {
+                    failed: true,
+                    events: [{
+                        text: "you don't have any coins"
+                    },
+                    {
+                        text: "the raffle is rolled at 6 in the evening"
+                    }]
+                }
+            }
+            return {
+                events: [
+                    {
+                        text: `${user.name} bought ${user.state.money} raffle ticket${user.state.money !== 1 ? "s" : ""}`,
+                        action: () => {
+                            if(!(sequencer.globalBattleState.raffleAmount >= 0)) {
+                                sequencer.globalBattleState.raffleAmount = 0;
+                            }
+                            sequencer.globalBattleState.raffleAmount += user.state.money;
+                            user.state.money = 0;
+                            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+                        }
+                    },
+                    {
+                        text: "the raffle is rolled at 6 in the evening"
+                    }
+                ]
+            }
+        }
+    });
+    addMove({
+        name: "sober punch",
+        type: "target",
+        process: (sequencer,user,target) => {
+            target.dropHealth(9);
+            return {
+                failed: false,
+                text: "being lit would've helped",
+                animation:{name:"punch"}
+            }
+        }
+    });
+    addMove({
+        name: "throw stool",
+        type: "target",
+        process: (sequencer,user,target,stoolBypass=false) => {
+            if(!stoolBypass) {
+                if(sequencer.globalBattleState.stools >= 1) {
+                    sequencer.globalBattleState.stools--;
+                } else {
+                    return {
+                        failed: true,
+                        events: [
+                            {
+                                text: "the saloon is out of stools. sorry."
+                            },
+                            {
+                                text: "(stools restock at 1 in the morning)"
+                            }
+                        ]
+                    }
+                }
+            }
+            return {
+                events: [
+                    {
+                        text: "it was a big stool",
+                        action: () => target.dropHealth(35)
+                    },
+                    {
+                        text: `${sequencer.globalBattleState.stools} stool${sequencer.globalBattleState.stools !== 1?"s":""} left`
+                    }
+                ]
+            }
+        }
+    });
+    addMove({
+        name: "sling a thing",
+        type: "target",
+        process: (sequencer,user,target) => {
+            if(user.state.things >= 1) {
+                user.state.things--;
+                return {
                     events: [
+                        ...turboTextIncremental(sequencer,"what a neat thing","and awayyyyyyyyyyy it goes"),
                         {
-                            text: "the saloon is out of stools. sorry."
+                            text: "oof! that's gonna leave a mark",
+                            action: () => target.dropHealth(50)
                         },
                         {
-                            text: "(stools restock at 1 in the morning)"
+                            text: `${user.name} have ${user.state.things} thing${user.state.things !== 1?"s":""} left`
                         }
                     ]
                 }
-            }
-        }
-        return {
-            events: [
-                {
-                    text: "it was a big stool",
-                    action: () => target.dropHealth(35)
-                },
-                {
-                    text: `${sequencer.globalBattleState.stools} stool${sequencer.globalBattleState.stools !== 1?"s":""} left`
+            } else {
+                return {
+                    text: "but you are out of things"
                 }
-            ]
-        }
-    }
-});
-addMove({
-    name: "sling a thing",
-    type: "target",
-    process: (sequencer,user,target) => {
-        if(user.state.things >= 1) {
-            user.state.things--;
-            return {
-                events: [
-                    ...turboTextIncremental(sequencer,"what a neat thing","and awayyyyyyyyyyy it goes"),
-                    {
-                        text: "oof! that's gonna leave a mark",
-                        action: () => target.dropHealth(50)
-                    },
-                    {
-                        text: `${user.name} have ${user.state.things} thing${user.state.things !== 1?"s":""} left`
-                    }
-                ]
-            }
-        } else {
-            return {
-                text: "but you are out of things"
             }
         }
-    }
-});
-addMove({
-    name: "mad matter",
-    type: "target",
-    process: (sequencer,user,target) => {
-        if(user.state.matter >= 1) {
-            user.state.matter--;
+    });
+    addMove({
+        name: "mad matter",
+        type: "target",
+        process: (sequencer,user,target) => {
+            if(user.state.matter >= 1) {
+                user.state.matter--;
+                return {
+                    events: [
+                        {
+                            text: "the matter took the form of a stool"
+                        },
+                        {
+                            text: `${user.name} used throw stool`
+                        },...moves["throw stool"].process(sequencer,user,target,true).events,
+                        {
+                            text: `${user.name} have ${user.state.matter} matter left`
+                        }
+                    ]
+                }
+            } else {
+                return {
+                    text: "but you are out of matter"
+                }
+            }
+        }
+    });
+    addMove({
+        name: "peace treaty",
+        type: "target",
+        process: (sequencer,user,target) => {
             return {
                 events: [
                     {
-                        text: "the matter took the form of a stool"
+                        text: `${user.name} hand ${target.name} the treaty`
                     },
                     {
-                        text: `${user.name} used throw stool`
-                    },...moves["throw stool"].process(sequencer,user,target,true).events,
+                        text: "!",
+                        action: () => target.dropHealth(target.maxHealth)
+                    },
                     {
-                        text: `${user.name} have ${user.state.matter} matter left`
+                        text: "yikes! it was laced with anthrax"
+                    },
+                    {
+                        text: "i guess we have a winner!"
                     }
                 ]
             }
-        } else {
-            return {
-                text: "but you are out of matter"
+        }
+    });
+    addMove({
+        name: "drop em",
+        type: "target",
+        process: (sequencer,user,target) => {
+            const eventStack = [];
+            const sounds = ["*pcheng*","whiz*","*plonk*","*ping*","*ahhh!*","*blargh!*"];
+    
+            const shotCount = Math.floor(Math.random() * 6) + 1;
+    
+            for(let i = 0;i<shotCount;i++) {
+                eventStack.push({
+                    text: sounds[i%sounds.length],
+                    action: () => target.dropHealth(10)
+                });
             }
-        }
-    }
-});
-addMove({
-    name: "peace treaty",
-    type: "target",
-    process: (sequencer,user,target) => {
-        return {
-            events: [
-                {
-                    text: `${user.name} hand ${target.name} the treaty`
-                },
-                {
-                    text: "!",
-                    action: () => target.dropHealth(target.maxHealth)
-                },
-                {
-                    text: "yikes! it was laced with anthrax"
-                },
-                {
-                    text: "i guess we have a winner!"
-                }
-            ]
-        }
-    }
-});
-addMove({
-    name: "drop em",
-    type: "target",
-    process: (sequencer,user,target) => {
-        const eventStack = [];
-        const sounds = ["*pcheng*","whiz*","*plonk*","*ping*","*ahhh!*","*blargh!*"];
-
-        const shotCount = Math.floor(Math.random() * 6) + 1;
-
-        for(let i = 0;i<shotCount;i++) {
+            
             eventStack.push({
-                text: sounds[i%sounds.length],
-                action: () => target.dropHealth(10)
+                text: `${user.name} fired ${shotCount} shot${shotCount !== 1 ? "s" : ""} at you`
             });
-        }
-        
-        eventStack.push({
-            text: `${user.name} fired ${shotCount} shot${shotCount !== 1 ? "s" : ""} at you`
-        });
-
-        return {
-            events: events
-        }
-    }
-});
-addMove({
-    name: "drunken shot",
-    type: "target",
-    process: (sequencer,user,target) => {
-        if(Math.random() > 0.5) {
+    
             return {
-                failed: true,
-                text: "but their shot missed!"
-            }
-        } else {
-            return {
-                text: "their shot hit you!",
-                action: () => target.dropHealth(Math.ceil(target.maxHealth / 2))
+                events: events
             }
         }
-    }
-});
-addMove({
-    name: "snake in ur boot",
-    type: "target",
-    process: (sequencer,user,target) => {
-        if(Math.random() > 0.5) {
-            return {
-                text: "you fell for it and hit a rock",
-                action: () => target.dropHealth(5)
+    });
+    addMove({
+        name: "drunken shot",
+        type: "target",
+        process: (sequencer,user,target) => {
+            if(Math.random() > 0.5) {
+                return {
+                    failed: true,
+                    text: "but their shot missed!"
+                }
+            } else {
+                return {
+                    text: "their shot hit you!",
+                    action: () => target.dropHealth(Math.ceil(target.maxHealth / 2))
+                }
             }
-        } else {
-            return {
-                text: "you saw through the drunken lie"
+        }
+    });
+    addMove({
+        name: "snake in ur boot",
+        type: "target",
+        process: (sequencer,user,target) => {
+            if(Math.random() > 0.5) {
+                return {
+                    text: "you fell for it and hit a rock",
+                    action: () => target.dropHealth(5)
+                }
+            } else {
+                return {
+                    text: "you saw through the drunken lie"
+                }
             }
         }
-    }
-});
-addMove({
-    name: "sip whiskey",
-    type: "self",
-    process: (sequencer,user) => {
-        return {
-            text: `${user.name} sips ${user.isPlayer ? "your" : "their"} whiskey`
+    });
+    addMove({
+        name: "sip whiskey",
+        type: "self",
+        process: (sequencer,user) => {
+            return {
+                text: `${user.name} sips ${user.isPlayer ? "your" : "their"} whiskey`
+            }
         }
-    }
-});
-addMove({
-    name: "f**k off",
-    type: "target",
-    process: (sequencer,user,target) => {
-        return {
-            events: [
-                {
-                    text: `${user.name} passed ${target.name} the whiskey`
-                },
-                ...moves["drink alchohol"].process(sequencer,target,user)
-            ]
+    });
+    addMove({
+        name: "f**k off",
+        type: "target",
+        process: (sequencer,user,target) => {
+            return {
+                events: [
+                    {
+                        text: `${user.name} passed ${target.name} the whiskey`
+                    },
+                    ...moves["drink alchohol"].process(sequencer,target,user)
+                ]
+            }
         }
-    }
-});
-
-function OldTimeyElf() {
+    });
     addMove({
         name: "high noon",
         type: "interface",
@@ -509,8 +469,74 @@ function OldTimeyElf() {
             return null;
         }
     });
+    addMove({
+        name: "visit specific store",
+        type: "interface",
+        process: (sequencer,user) => {
+            sequencer.globalBattleState.backStack.push({
+                name: "home",
+                subText: user.subText
+            });
+            sequencer.updatePlayerMoves(oldTimeyMoveTree.specificStore);
+    
+            user.subText = [];
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`
+            user.subText[1] = "at the specific store";
+    
+    
+            sequencer.globalBattleState.playerInterfaced = true;
+            sequencer.globalBattleState.currentPlace = "specificStore";
+            return null;
+        }
+    });
+    addMove({
+        name: "visit saloon",
+        type: "interface",
+        process: (sequencer,user) => {
+            sequencer.globalBattleState.backStack.push({
+                name: "home",
+                subText: user.subText
+            });
+            sequencer.updatePlayerMoves(oldTimeyMoveTree.saloon);
+    
+            user.subText = [];
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`
+            user.subText[1] = "at the saloon";
+    
+            sequencer.globalBattleState.playerInterfaced = true;
+            sequencer.globalBattleState.currentPlace = "saloon";
+            return null;
+        }
+    });
 
-    const oldTimeyMoveTree = {
+    var timeOfDayLookup = {
+        0:"midnight",
+        1:"1 in the black of night",
+        2:"2 in the black of night",
+        3:"3 in the black of night",
+        4:"4 in the morning",
+        5:"5 in the morning",
+        6:"6 in the morning",
+        7:"7 in the morning",
+        8:"8 in the morning",
+        9:"9 in the morning",
+        10:"10 in the late morning",
+        11:"11 in the late morning",
+        12:"high noon",
+        13:"1 in the afternoon",
+        14:"2 in the afternoon",
+        15:"3 in the early evening",
+        16:"4 in the evening",
+        17:"5 in the evening",
+        18:"6 in the evening",
+        19:"7 at night",
+        20:"8 at night",
+        21:"9 at night",
+        22:"10 at night",
+        23:"11 at night"
+    };
+
+    var oldTimeyMoveTree = {
         fistFight: sequencer => {
             if(sequencer.playerBattleObject.state.ownsLove) {
                 return [
@@ -564,33 +590,6 @@ function OldTimeyElf() {
             moves["boom"]
         ]
     }
-    
-    const timeOfDayLookup = {
-        0:"midnight",
-        1:"1 in the black of night",
-        2:"2 in the black of night",
-        3:"3 in the black of night",
-        4:"4 in the morning",
-        5:"5 in the morning",
-        6:"6 in the morning",
-        7:"7 in the morning",
-        8:"8 in the morning",
-        9:"9 in the morning",
-        10:"10 in the late morning",
-        11:"11 in the late morning",
-        12:"high noon",
-        13:"1 in the afternoon",
-        14:"2 in the afternoon",
-        15:"3 in the early evening",
-        16:"4 in the evening",
-        17:"5 in the evening",
-        18:"6 in the evening",
-        19:"7 at night",
-        20:"8 at night",
-        21:"9 at night",
-        22:"10 at night",
-        23:"11 at night"
-    };
 
     this.name = "old timey elf";
     this.background = "background-1";

@@ -1,25 +1,4 @@
 "use strict";
-addMove({
-    name: "disposition - 1",
-    type: "self",
-    process: () => {
-        const speeches = ["you were my only friend!","you betray me","you think differently\ntherefore i hate you","get out of my life!"];
-        return {
-            speech: `head one:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
-        }
-    }
-});
-addMove({
-    name: "disposition - 2",
-    type: "self",
-    process: () => {
-        const speeches = ["you were my best friend!","i don't even know you\nanymore","i just wanted to get along!","stay away from me!"];
-        return {
-            speech: `head two:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
-        }
-    }
-});
-
 function TwoHeadedElf() {
     const getDoubleSpeech = (speech1,speech2) => `head one:\n${speech1}\n\nhead two:\n${speech2}`;
     const advanceSelectionScreen = sequencer => {
@@ -492,6 +471,27 @@ function TwoHeadedElf() {
             }
         }
     }
+
+    addMove({
+        name: "disposition - 1",
+        type: "self",
+        process: () => {
+            const speeches = ["you were my only friend!","you betray me","you think differently\ntherefore i hate you","get out of my life!"];
+            return {
+                speech: `head one:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
+            }
+        }
+    });
+    addMove({
+        name: "disposition - 2",
+        type: "self",
+        process: () => {
+            const speeches = ["you were my best friend!","i don't even know you\nanymore","i just wanted to get along!","stay away from me!"];
+            return {
+                speech: `head two:\n${speeches[Math.floor(Math.random()*speeches.length)]}`
+            }
+        }
+    });    
 
     this.name = "two headed elf";
     this.background = "background-3";
