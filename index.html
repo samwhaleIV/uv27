@@ -11,26 +11,55 @@
 <body>
     <canvas id="canvas" width="750" height="650"></canvas>
     <p id="picture-mode-element"></p>
-    <script src="elven-engine/renderers/components/custom-text.js"></script>
-    <script src="elven-engine/renderers/components/fader.js"></script>
-    <script src="elven-engine/controller-helper.js"></script>
+    <script>
+    let startKeys = Object.keys(this);
+    startKeys = startKeys.reduce((pv,cv)=>{pv[cv]=true;return pv},{});
+    </script>
+
+    <!-- Begin load engine -->
     <script src="elven-engine/canvas-manager.js"></script>
+    <script src="elven-engine/controller-helper.js"></script>
     <script src="elven-engine/audio-manager.js"></script>
     <script src="elven-engine/file-managers.js"></script>
     <script src="elven-engine/constants.js"></script>
     <script src="elven-engine/files.js"></script>
-    <script src="elven-custom/runtime/elves/base.js"></script>
-    <script src="elven-custom/renderers/components/fader-static-effect.js"></script>
+    <script src="elven-engine/renderers/components/fader.js"></script>
+    <script src="elven-engine/renderers/components/custom-text.js"></script>
+    <!-- End load engine -->
+
+
+    <!-- Begin expected runtime engine -->
+    <script src="elven-custom/files.js"></script>
+    <script src="elven-custom/constants.js"></script>
+    <!-- End expected runtime engine -->
+
+
+    <!-- Begin custom runtime renderers -->
+    <script src="elven-custom/renderers/components/background.js"></script>
     <script src="elven-custom/renderers/components/boss-background.js"></script>
     <script src="elven-custom/renderers/components/elf-animations.js"></script>
-    <script src="elven-custom/renderers/components/background.js"></script>
-    <script src="elven-custom/renderers/elf-select-screen.js"></script>
-    <script src="elven-custom/runtime/battle-sequencer.js"></script>
-    <script src="elven-custom/renderers/bonus-screen.js"></script>
-    <script src="elven-custom/renderers/introduction.js"></script>
-    <script src="elven-custom/renderers/elf-screen.js"></script>
-    <script src="elven-custom/renderers/end-screen.js"></script>
     <script src="elven-custom/renderers/sidescroll.js"></script>
+    <script src="elven-custom/renderers/elf-screen.js"></script>
+    <script src="elven-custom/renderers/elf-select-screen.js"></script>
+    <script src="elven-custom/renderers/end-screen.js"></script>
+    <script src="elven-custom/renderers/introduction.js"></script>
+    <script src="elven-custom/renderers/bonus-screen.js"></script>
+    <script src="elven-custom/renderers/components/fader-static-effect.js"></script>
+    <!-- End custom runtime renderers -->
+
+
+    <!-- Begin custom runtime components -->
+    <script src="elven-custom/runtime/elves/base.js"></script>
+
+    <script src="elven-custom/runtime/elves/1.js"></script>
+    <script src="elven-custom/runtime/elves/2.js"></script>
+    <script src="elven-custom/runtime/elves/3.js"></script>
+    <script src="elven-custom/runtime/elves/4.js"></script>
+    <script src="elven-custom/runtime/elves/5.js"></script>
+    <script src="elven-custom/runtime/elves/6.js"></script>
+    <script src="elven-custom/runtime/elves/7.js"></script>
+    <script src="elven-custom/runtime/elves/8.js"></script>
+    <script src="elven-custom/runtime/elves/9.js"></script>
     <script src="elven-custom/runtime/elves/10.js"></script>
     <script src="elven-custom/runtime/elves/11.js"></script>
     <script src="elven-custom/runtime/elves/12.js"></script>
@@ -49,18 +78,27 @@
     <script src="elven-custom/runtime/elves/25.js"></script>
     <script src="elven-custom/runtime/elves/26.js"></script>
     <script src="elven-custom/runtime/elves/27.js"></script>
-    <script src="elven-custom/runtime/elves/1.js"></script>
-    <script src="elven-custom/runtime/elves/2.js"></script>
-    <script src="elven-custom/runtime/elves/3.js"></script>
-    <script src="elven-custom/runtime/elves/4.js"></script>
-    <script src="elven-custom/runtime/elves/5.js"></script>
-    <script src="elven-custom/runtime/elves/6.js"></script>
-    <script src="elven-custom/runtime/elves/7.js"></script>
-    <script src="elven-custom/runtime/elves/8.js"></script>
-    <script src="elven-custom/runtime/elves/9.js"></script>
+
+    <script src="elven-custom/runtime/battle-sequencer.js"></script>
     <script src="elven-custom/runtime/debug.js"></script>
-    <script src="elven-custom/constants.js"></script>
+    <!-- End custom runtime components -->
+
+
+    <!-- Begin expected runtime initializer -->
     <script src="elven-custom/script.js"></script>
-    <script src="elven-custom/files.js"></script>
+    <!-- End expected custom engine -->
+
+    <script>
+    (function(){
+        const endKeys = Object.keys(this);
+        console.log("New keys",endKeys.filter(endKey => {
+            if(!startKeys[endKey]) {
+                return true;
+            } else {
+                return false;
+            }
+        }));
+    })();
+    </script>
 </body>
 </html>

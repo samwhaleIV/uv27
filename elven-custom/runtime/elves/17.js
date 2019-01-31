@@ -3,6 +3,12 @@ addMove({
     name: "elfmart sword",
     type: "target",
     process: (sequencer,user,target) => {
+        if(target.name === "not red elfette" && target.state.layerCount !== 0) {
+            return {
+                failed: true,
+                text: "but the elfette's clothes protect her"
+            }
+        }
         const elfmartSwordDamage = 150;
         return {
             text: "no one is a match for the elfmart sword",
