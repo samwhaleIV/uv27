@@ -239,7 +239,7 @@ function InvisibleElf() {
                 failed: true,
                 events: [
                     {
-                        text: "but a trap got in the way!"
+                        text: "a trap got in the way!"
                     },
                     {
                         text: "a bear trap snapped on invisible elf! ouch",
@@ -288,7 +288,7 @@ function InvisibleElf() {
         const elf = sequencer.elfBattleObject;
 
         elf.movePreProcess = (sequencer,move) => {
-            const trapHitChance = sequencer.globalBattleState.trapsPlaced * 0.15;
+            const trapHitChance = sequencer.globalBattleState.trapsPlaced * 0.1;
             if(sequencer.globalBattleState.trapsPlaced >= 1 && Math.random() <= trapHitChance) {
                 return moves["trap failure"];
             }

@@ -293,13 +293,23 @@ addMove({
     process: (sequencer,user,target) => {
         const successRate = user.state.isSuperLit ? 0.8 : 0.63;
         if(Math.random() > successRate) {
-            return {
-                failed: true,
-                events: turboTextIncremental(
-                    sequencer,
-                    "but it failed because...",
-                    "it's booooooooooooze o' clock!!!",
-                )
+            if(sequencer.globalBattleState.playedBoozeOClock) {
+                return {
+                    failed: true,
+                    events: [{
+                        text: `${target.name} got too lit`
+                    }]
+                }
+            } else {
+                sequencer.globalBattleState.playedBoozeOClock = true;
+                return {
+                    failed: true,
+                    events: turboTextIncremental(
+                        sequencer,
+                        "but it failed because...",
+                        "it's booooooooooooze o' clock!!!",
+                    )
+                }
             }
         } else {
             target.dropHealth(user.state.isSuperLit ? 20 : 15);

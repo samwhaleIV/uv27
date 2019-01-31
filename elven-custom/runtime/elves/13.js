@@ -236,13 +236,13 @@ addMove({
             user.state.phasedOut = false;
             user.subText[1] = temporalPhaseText;
             return {
-                text: `${user.name} phased into temporal space`
+                events: [{text: `${user.name} phased into temporal space`}]
             }
         } else {
             user.state.phasedOut = true;
             user.subText[1] = ghostPhaseText;
             return {
-                text: `${user.name} phased out of temporal space`
+                events: [{text: `${user.name} phased out of temporal space`}]
             }
         }
     }

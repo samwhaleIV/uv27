@@ -175,7 +175,7 @@ function ScorchedElf() {
         name: "glacial blast",
         type: "target",
         process: (sequencer,user,target) => {
-            let reductionAmount = 10 - (sequencer.globalBattleState.antifreezeCount * 2);
+            let reductionAmount = 20 - (sequencer.globalBattleState.antifreezeCount * 5);
             if(reductionAmount <= 0) {
                 return {
                     events: [

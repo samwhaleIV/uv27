@@ -781,8 +781,8 @@ function OldTimeyElf() {
                     }
 
                     if(sequencer.globalBattleState.time === 18 && sequencer.globalBattleState.raffleAmount) {
-                        sequencer.globalBattleState.raffleAmount = 0;
                         const winChance = sequencer.globalBattleState.raffleAmount * 0.01;
+                        sequencer.globalBattleState.raffleAmount = 0;
                         const winEvents = Math.random() < winChance ? [{
                             text: "the human dude!",
                             action: () => {

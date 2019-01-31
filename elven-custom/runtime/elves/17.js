@@ -12,16 +12,16 @@ addMove({
 });
 function RogueElf() {
 
-    const taintedHolidayDamage = 20;
+    const taintedHolidayDamage = 40;
     const pureHatredDamage = 40;
     const extraComboDamage = 40;
-    const ihatesantaHealAmount = 100;
-    const vampireBloodSwapAmount = 10;
+    const ihatesantaHealAmount = 65;
+    const vampireBloodSwapAmount = 20;
     const maniacalSlashDamage = 25;
-    const bloodLossAmount = 20;
-    const bloodBankGains = 15;
+    const bloodLossAmount = 60;
+    const bloodBankGains = 30;
     const rogueElfBloodRegenAmount = 4;
-    const getHealthRegenAmount = blood => Math.ceil(blood / 4);
+    const getHealthRegenAmount = blood => Math.ceil(blood / 7);
 
     addMove({
         name: "i hate santa",
@@ -29,7 +29,7 @@ function RogueElf() {
         process: (sequencer,user) => {
             const defaultEvent = {
                 text: "rogue elf's hatred fuels their spirit",
-                action: () => user.addHealth(ihatesantaHealAmount)
+                action: () => user.addHealth(user.state.phasedOut ? 150 : ihatesantaHealAmount)
             };
             if(user.state.phasedOut) {
                 return defaultEvent;
@@ -202,6 +202,16 @@ function RogueElf() {
         name: "interference",
         type: "target",
         process: (sequencer,user,target) => {
+            if(target.state.phasedOut) {
+                target.state.justBroughtBackIntoPhase = true;
+                return {
+                    events: [
+                        {
+                            text:"you brought rogue elf back into phase"
+                        },...moves["phase shift"].process(sequencer,target).events
+                    ]
+                }
+            }
             if(target.state.inCombo) {
                 return {
                     text: "you broke rogue elf's combo",
@@ -238,7 +248,7 @@ function RogueElf() {
     });
     
     addMove({
-        name: "blood loss",
+        name: "massive blood loss",
         type: "self",
         process: (sequencer,user) => {
             let eventText = null;
@@ -275,7 +285,7 @@ function RogueElf() {
     });
     const getRogueElfPlayerMoves = sequencer => {
         if(sequencer.playerBattleObject.state.forcedBloodLoss) {
-            return [moves["blood loss"]];
+            return [moves["massive blood loss"]];
         }
         return [
             moves["blood bank"],
@@ -291,14 +301,14 @@ function RogueElf() {
                 sequencer.elfBattleObject.state.inCombo = false;
                 updateComboSubText(sequencer);
             }
-            if(sequencer.elfBattleObject.state.health >= sequencer.elfBattleObject.state.maxHealth) {
+            if(sequencer.elfBattleObject.health >= sequencer.elfBattleObject.maxHealth) {
                 return moves["phase shift"];
             } else {
                 return moves["i hate santa"];
             }
         }
     
-        if(sequencer.elfBattleObject.health <= 125) {
+        if(sequencer.elfBattleObject.health <= 135 && !sequencer.elfBattleObject.state.justBroughtBackIntoPhase) {
             if(sequencer.elfBattleObject.state.inCombo) {
                 sequencer.elfBattleObject.state.inCombo = false;
                 updateComboSubText(sequencer);
@@ -360,7 +370,7 @@ function RogueElf() {
     const setupRogueElfBattle = sequencer => {
     
         sequencer.playerBattleObject.movePreProcess = (sequencer,move) => {
-            if(move.type === "target" && sequencer.elfBattleObject.state.phasedOut) {
+            if(move.type === "target" && move.name !== "interference" && sequencer.elfBattleObject.state.phasedOut) {
                 return moves["failed because rogue elf is creepy or something"];
             }
             return move;
@@ -443,6 +453,7 @@ function RogueElf() {
     this.getDefaultGlobalState = () => {
         return {
             postTurnProcess: sequencer => {
+                sequencer.elfBattleObject.state.justBroughtBackIntoPhase = false;
                 if(sequencer.playerBattleObject.state.blood <= 0) {
                     return {
                         text: "you died from complete blood loss",
