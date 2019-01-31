@@ -435,60 +435,6 @@ addMove({
 });
 
 function OldTimeyElf() {
-    const oldTimeyMoveTree = {
-        fistFight: sequencer => {
-            if(sequencer.playerBattleObject.state.ownsLove) {
-                return [
-                    moves["big hug"],
-                    moves["big hug"],
-                    moves["big hug"],
-                    moves["big hug"]
-                ]
-            }
-            const fightMoves = [
-                sequencer.playerBattleObject.state.isLit ? moves["drunken punch"] : moves["sober punch"],
-                moves["throw stool"]
-            ];
-            if(sequencer.playerBattleObject.state.ownsAThing) {
-                fightMoves.push(moves["sling a thing"]);
-            }
-            if(sequencer.playerBattleObject.state.ownsMatter) {
-                fightMoves.push(moves["mad matter"]);
-            }
-            return fightMoves;
-        },
-        home: [
-            moves["visit general store"],
-            moves["visit specific store"],
-            moves["visit saloon"]
-        ],
-        specificStore: [
-            moves["buy bullet - 5 coins"],
-            moves["buy treaty - 100 coins"],
-            moves["buy love - 999 coins"],
-            moves["leave"]
-        ],
-        generalStore: [
-            moves["buy matter - 1 coin"],
-            moves["buy a thing - 2 coins"],
-            moves["buying in and of itself"],
-            moves["leave"]
-        ],
-        saloon: [
-            moves["down some whiskey"],
-            moves["fist fight - win coins!"],
-            moves["gamble all your coins"],
-            moves["leave"]
-        ],
-        highNoon: sequencer => sequencer.playerBattleObject.ownsTreaty ?
-            [moves["retreat"],moves["peace treaty"]]:
-    
-            [moves["retreat"],
-            moves["load chamber"],
-            moves["spin chamber"],
-            moves["boom"]
-        ]
-    }
     addMove({
         name: "high noon",
         type: "interface",
@@ -563,6 +509,62 @@ function OldTimeyElf() {
             return null;
         }
     });
+
+    const oldTimeyMoveTree = {
+        fistFight: sequencer => {
+            if(sequencer.playerBattleObject.state.ownsLove) {
+                return [
+                    moves["big hug"],
+                    moves["big hug"],
+                    moves["big hug"],
+                    moves["big hug"]
+                ]
+            }
+            const fightMoves = [
+                sequencer.playerBattleObject.state.isLit ? moves["drunken punch"] : moves["sober punch"],
+                moves["throw stool"]
+            ];
+            if(sequencer.playerBattleObject.state.ownsAThing) {
+                fightMoves.push(moves["sling a thing"]);
+            }
+            if(sequencer.playerBattleObject.state.ownsMatter) {
+                fightMoves.push(moves["mad matter"]);
+            }
+            return fightMoves;
+        },
+        home: [
+            moves["visit general store"],
+            moves["visit specific store"],
+            moves["visit saloon"]
+        ],
+        specificStore: [
+            moves["buy bullet - 5 coins"],
+            moves["buy treaty - 100 coins"],
+            moves["buy love - 999 coins"],
+            moves["leave"]
+        ],
+        generalStore: [
+            moves["buy matter - 1 coin"],
+            moves["buy a thing - 2 coins"],
+            moves["buying in and of itself"],
+            moves["leave"]
+        ],
+        saloon: [
+            moves["down some whiskey"],
+            moves["fist fight - win coins!"],
+            moves["gamble all your coins"],
+            moves["leave"]
+        ],
+        highNoon: sequencer => sequencer.playerBattleObject.ownsTreaty ?
+            [moves["retreat"],moves["peace treaty"]]:
+    
+            [moves["retreat"],
+            moves["load chamber"],
+            moves["spin chamber"],
+            moves["boom"]
+        ]
+    }
+    
     const timeOfDayLookup = {
         0:"midnight",
         1:"1 in the black of night",
