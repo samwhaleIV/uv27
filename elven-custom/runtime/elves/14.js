@@ -1,24 +1,5 @@
 "use strict";
 addMove({
-    name: "visit general store",
-    type: "interface",
-    process: (sequencer,user) => {
-        sequencer.globalBattleState.backStack.push({
-            name: "home",
-            subText: user.subText
-        });
-        sequencer.updatePlayerMoves(oldTimeyMoveTree.generalStore);
-
-        user.subText = [];
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
-        user.subText[1] = "at the general store";
-
-        sequencer.globalBattleState.playerInterfaced = true;
-        sequencer.globalBattleState.currentPlace = "generalStore";
-        return null;
-    }
-});
-addMove({
     name: "visit specific store",
     type: "interface",
     process: (sequencer,user) => {
@@ -212,64 +193,9 @@ addMove({
     process: (sequencer,user,target) => moves["multiverse"].process(sequencer,user,target)
 });
 addMove({
-    name: "high noon",
-    type: "interface",
-    process: (sequencer,user) => {
-        sequencer.globalBattleState.backStack.push({
-            name: "home",
-            subText: user.subText
-        });
-        
-        sequencer.updatePlayerMoves(oldTimeyMoveTree.highNoon(sequencer));
-
-        user.subText = sequencer.globalBattleState.subTexts.highNoon;
-        
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
-        user.subText[1] = `${user.state.bullets} bullet${user.state.bullets === 1 ? "" : "s"}`;
-        user.subText[2] = `${user.state.loadedBullets} loaded`;
-        if(user.state.freshSpin) {
-            user.subText[3] = "spun";
-        } else {
-            user.subText[3] = "not spun";
-        }
-
-        sequencer.globalBattleState.playerInterfaced = true;
-        sequencer.globalBattleState.currentPlace = "highNoon";
-        return null;
-    }
-});
-addMove({
     name: "down some whiskey",
     type: "self",
     process: (sequencer,user) => moves["drink alchohol"].process(sequencer,user)
-});
-addMove({
-    name: "fist fight - win coins!",
-    type: "interface",
-    process: (sequencer,user) => {
-        sequencer.globalBattleState.timeFreeze = true;
-        sequencer.globalBattleState.saloonFisting = true;
-
-        sequencer.globalBattleState.backStack.push({
-            name: "saloon",
-            subText: user.subText,
-            postAction: () => {
-                sequencer.globalBattleState.timeFreeze = false;
-                sequencer.globalBattleState.saloonFisting = false;
-                sequencer.globalBattleState.saidFistFightStart = false;
-            }
-        });
-        
-        sequencer.updatePlayerMoves(oldTimeyMoveTree.fistFight(sequencer));
-
-        user.subText = sequencer.globalBattleState.subTexts.fistFight;
-        user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
-        user.subText[1] = "in a bar fight";
-
-        sequencer.globalBattleState.playerInterfaced = true;
-        sequencer.globalBattleState.currentPlace = "fistFight";
-        return null;
-    }
 });
 addMove({
     name: "gamble all your coins",
@@ -563,7 +489,80 @@ function OldTimeyElf() {
             moves["boom"]
         ]
     }
+    addMove({
+        name: "high noon",
+        type: "interface",
+        process: (sequencer,user) => {
+            sequencer.globalBattleState.backStack.push({
+                name: "home",
+                subText: user.subText
+            });
+            
+            sequencer.updatePlayerMoves(oldTimeyMoveTree.highNoon(sequencer));
     
+            user.subText = sequencer.globalBattleState.subTexts.highNoon;
+            
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+            user.subText[1] = `${user.state.bullets} bullet${user.state.bullets === 1 ? "" : "s"}`;
+            user.subText[2] = `${user.state.loadedBullets} loaded`;
+            if(user.state.freshSpin) {
+                user.subText[3] = "spun";
+            } else {
+                user.subText[3] = "not spun";
+            }
+    
+            sequencer.globalBattleState.playerInterfaced = true;
+            sequencer.globalBattleState.currentPlace = "highNoon";
+            return null;
+        }
+    });
+    addMove({
+        name: "fist fight - win coins!",
+        type: "interface",
+        process: (sequencer,user) => {
+            sequencer.globalBattleState.timeFreeze = true;
+            sequencer.globalBattleState.saloonFisting = true;
+    
+            sequencer.globalBattleState.backStack.push({
+                name: "saloon",
+                subText: user.subText,
+                postAction: () => {
+                    sequencer.globalBattleState.timeFreeze = false;
+                    sequencer.globalBattleState.saloonFisting = false;
+                    sequencer.globalBattleState.saidFistFightStart = false;
+                }
+            });
+            
+            sequencer.updatePlayerMoves(oldTimeyMoveTree.fistFight(sequencer));
+    
+            user.subText = sequencer.globalBattleState.subTexts.fistFight;
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+            user.subText[1] = "in a bar fight";
+    
+            sequencer.globalBattleState.playerInterfaced = true;
+            sequencer.globalBattleState.currentPlace = "fistFight";
+            return null;
+        }
+    });
+    addMove({
+        name: "visit general store",
+        type: "interface",
+        process: (sequencer,user) => {
+            sequencer.globalBattleState.backStack.push({
+                name: "home",
+                subText: user.subText
+            });
+            sequencer.updatePlayerMoves(oldTimeyMoveTree.generalStore);
+    
+            user.subText = [];
+            user.subText[0] = `${user.state.money} coin${user.state.money !== 1 ? "s" : ""}`;
+            user.subText[1] = "at the general store";
+    
+            sequencer.globalBattleState.playerInterfaced = true;
+            sequencer.globalBattleState.currentPlace = "generalStore";
+            return null;
+        }
+    });
     const timeOfDayLookup = {
         0:"midnight",
         1:"1 in the black of night",

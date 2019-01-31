@@ -90,7 +90,7 @@ namespace ElvenCompile {
             var musicDirectory = Path.Combine(soundDirectory,"music");
             var imagesDirectory = Path.Combine(directory,"images");
             var backgroundImagesDirectory = Path.Combine(directory,"images","backgrounds");
-			sectorEvaluation.Script = Directory.GetFiles(directory,"*.js",SearchOption.AllDirectories).ToList();//.OrderByDescending((x) => x.Length).ToList();
+			sectorEvaluation.Script = Directory.GetFiles(directory,"*.js",SearchOption.AllDirectories).OrderByDescending((x) => x.Length).ToList();
 
 			if(Directory.Exists(soundDirectory)) {
 			    sectorEvaluation.Sound = Directory.GetFiles(soundDirectory,"*",SearchOption.TopDirectoryOnly).ToList();
