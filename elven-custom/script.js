@@ -3,7 +3,13 @@ const loadingImage = new Image();
 loadingImage.onload = () => {
     setRendererState(new SidescrollRenderer(loadingImage));
     startRenderer();
+    SetFaderOutSound("swish-1");
+    SetFaderInSound("swish-2");
+    SetFaderDelay(400);
+    SetFaderDuration(600);
+    SetFaderEffectsRenderer(new FaderStaticEffect());
     loadElves();
+    loadElfAnimationMetadata();
     const loadCallback = () => {
         if(SoundManager.soundsLoaded && ImageManager.imagesLoaded) {
             gameLoop();
@@ -16,15 +22,7 @@ loadingImage.onload = () => {
 loadingImage.src = "elven-custom/images/loading-animations.png";
 
 drawDefaultLoadingText();
-
-SetFaderOutSound("swish-1");
-SetFaderInSound("swish-2");
-
-SetFaderDelay(400);
-SetFaderDuration(600);
-
 SetPageTitle("You Versus 27 Elves");
-SetFaderEffectsRenderer(new FaderStaticEffect());
 
 const loadSongOnDemand = fileName => {
     SoundManager.loadOnDemand(`elven-custom/audio/music/${fileName}.ogg`);
