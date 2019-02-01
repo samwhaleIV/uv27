@@ -5,7 +5,6 @@ EssentialSounds.push(
     GetFile("clip.mp3",FileTypes.Sound),
     GetFile("reverse-clip.mp3",FileTypes.Sound),
     GetFile("transform.mp3",FileTypes.Sound),
-    GetFile("squish.mp3",FileTypes.Sound),
 
     GetFile("menu/intro_a.ogg",FileTypes.Music),
     GetFile("menu/intro_b.ogg",FileTypes.Music),

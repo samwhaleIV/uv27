@@ -5,7 +5,6 @@ function UpsideDownElf() {
         sequencer.showAnimation({name:"headExplode"});
         sequencer.setRenderLayer(2,false);
         sequencer.dropHealth(sequencer.elfBattleObject,sequencer.elfBattleObject.maxHealth);
-        //playSound("squish");
     }
 
 
