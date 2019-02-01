@@ -403,6 +403,7 @@ function BattleSequencer(renderer) {
             moveResult.events = [{
                 text:moveResult.text,
                 speech:moveResult.speech,
+                persist:moveResult.persist,
                 action:moveResult.action,
                 animation:moveResult.animation
             }];
@@ -603,7 +604,7 @@ function BattleSequencer(renderer) {
         } else if(event.speech) {
             let hasAnimation = false;
             if(event.animation) {
-                if(!event.speech.persist) {
+                if(!event.persist) {
                     this.showAnimation(event.animation);
                     hasAnimation = true;
                 } else {

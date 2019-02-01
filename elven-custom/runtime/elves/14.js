@@ -335,7 +335,7 @@ function OldTimeyElf() {
             });
     
             return {
-                events: events
+                events: eventStack
             }
         }
     });
