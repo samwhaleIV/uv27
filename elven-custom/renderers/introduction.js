@@ -3,15 +3,16 @@ function IntroductionRenderer(endCallback) {
     this.endCallback = endCallback;
 
     this.messages = [
-        "i bring terrible news",
         "the christmas elves have turned",
-        "an elite crew of elves has taken over",
-        "they have stopped all toy production",
-        "they plan mass killings",
-        "you are the only hope the world has",
-        "the location of the elite crew is known",
-        "you know what to do",
-        "good luck"
+        "an elite crew of elves has taken the reigns",
+        "these are not ordinary elves",
+        "these elves create weapons",
+        "these elves commit genocides",
+        "the world needs a hero...",
+        "the world needs...",
+        "you...",
+        "no one knows elves like you",
+        "i wish there was any other way"
     ];
 
     this.processClick = () => {
@@ -38,8 +39,8 @@ function IntroductionRenderer(endCallback) {
         }
     }
 
-    const startTimeOffset = 2500;
-    this.fadeIn = 2000;
+    const startTimeOffset = 3200;
+    this.fadeIn = 3500;
     this.fadeRange = 0.5;
     this.startTime = null;
 
@@ -51,7 +52,7 @@ function IntroductionRenderer(endCallback) {
 
         if(this.startTime === null) {
             this.startTime = performance.now() + startTimeOffset;
-            const timeout = (this.messages.length+1)*this.fadeIn + (startTimeOffset*0.75);
+            const timeout = (this.messages.length+1)*this.fadeIn + 14000;
             this.endTimeout = setTimeout(endCallback,timeout);
 
         }

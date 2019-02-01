@@ -9,9 +9,17 @@ function WimpyRedElf() {
     
     this.backgroundCycleTime = 35000;
 
-    this.getMove = () => moves["cry"];
+    this.getMove = sequencer => {
+        if(sequencer.globalBattleState.readyForMove++ >= 1) {
+            return moves["cry"];
+        }
+        return null;
+    }
 
     this.getSpeech = sequencer => {
+        if(sequencer.globalBattleState.readyForMove < 2) {
+            return null;
+        }
         const elfBattleObject = sequencer.elfBattleObject;
 
         const speeches = ["i never learned to fight","stop this plz","i am just a poor elf"];
@@ -25,12 +33,56 @@ function WimpyRedElf() {
             animation:{name:"crying"}
         }
     };
-    this.playerMoves = [
+
+    const readyMoves = [
         moves["nothing"],moves["also nothing"],moves["honorable suicide"],moves["senseless murder"]
+    ];
+
+    const yesMove = {
+        name: "yes",
+        type: "interface",
+        process: sequencer => {
+            sequencer.updatePlayerMoves(readyMoves);
+            sequencer.globalBattleState.readyForMove = 0;
+            return {
+                speech: "whelp - this concludes\nthe tutorial.\ngood luck - and again...\n\ni hate you :)"
+            }
+        }
+    }
+    const noMove = {
+        name: "no",
+        type: "interface",
+        process: sequencer => {
+            sequencer.updatePlayerMoves(readyMoves);
+            sequencer.globalBattleState.readyForMove = 0;
+            return {
+                speech: "okay well sorry\n\ni don't have time to teach\nyou right now...\n\ni am very busy"
+            }
+        }
+    }
+    const noIdeaMove = {
+        name: "no idea",
+        type: "interface",
+        process: sequencer => {
+            sequencer.updatePlayerMoves(readyMoves);
+            sequencer.globalBattleState.readyForMove = 0;
+            return {
+                speech: "ehhh - close enough\n\nyou seem ready\nfor anything"
+            }
+        }
+    }
+
+    this.playerMoves = [
+        yesMove,noMove,noIdeaMove
     ];
     this.health = 100;
 
     this.winSpeech = "bye\nthanks for stopping by\ncome again some time";
+
+    this.startSpeech = {
+        text: "nice to meet you.\nhahaha just kidding.\ni hate humans.\n\nbut before i kill you\ndo you know how to use\nbuttons?",
+        persist: true
+    }
 
     this.getLoseSpeech = () => {
         return {

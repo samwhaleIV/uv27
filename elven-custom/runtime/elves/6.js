@@ -220,10 +220,12 @@ function GoldenElfette() {
         if(sequencer.elfBattleObject.state.puttingAnEndToThis) {
             return Math.random() < 0.5 ? moves["unfiscal punch"] : Math.random() > 0.5 ? moves["cry"] : moves["complain"];
         }
+        if(sequencer.playerBattleObject.state.squirrels >= 1) {
+            sequencer.playerBattleObject.state.protectedTheirNuts = true;
+        } else {
+            sequencer.playerBattleObject.state.protectedTheirNuts = false;
+        }
         if(sequencer.playerBattleObject.lastMove === "take gold" && !sequencer.playerBattleObject.state.protectedTheirNuts) {
-            if(sequencer.playerBattleObject.state.squirrels >= 1) {
-                sequencer.playerBattleObject.state.protectedTheirNuts = true;
-            }
             return moves["nutcracker"];
         } else {
             const elfMoves = [

@@ -454,7 +454,7 @@ function PhaseShiftElf() {
                 return moves["ghost buster"];
             }
             const moveSets = [
-                ["phase shift","quantum detangle"],
+                ["quantum detangle","glitch punch","quantum detangle","phase shift",],
                 ["confusion","trapezoid","hungry hungry potato","quantum detangle"],
                 ["multiverse","eternal darkness","trapezoid","glitch punch"],
             ];

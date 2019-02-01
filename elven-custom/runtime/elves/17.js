@@ -446,11 +446,11 @@ function RogueElf() {
     this.backgroundColor = "rgb(114,114,114)";
     this.health = 400;
     this.startSpeech = {
-        text: "you will die...\ntraitor"
+        text: "you will die...\ntraitor.\n\nyou're not what you\nthink you are.\n\ni see through your lies."
     };
 
     this.startText = "blood heals you - but run out and you'll die";
-    this.loseSpeech = "there's alway a\nbigger fish.";
+    this.loseSpeech = "there's alway a\nbigger fish...\n\nbut you and i are\nnot so different.";
     this.winSpeech = "predictable.";
 
     this.setup = setupRogueElfBattle;

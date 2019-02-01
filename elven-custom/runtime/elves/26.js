@@ -3,6 +3,7 @@ function MurderedElf() {
     const speeches = [
         "you don't remember me?\n\nfigures",
         "it's true what they said\n\nso true...",
+        "i taught you everything\nyou know...",
         ".....\n*sigh*",
         "why do you think we kill?",
         "did you not even think?",

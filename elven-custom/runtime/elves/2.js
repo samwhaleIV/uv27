@@ -9,12 +9,33 @@ function WimpyGreenElf() {
     
     this.backgroundCycleTime = 35000;
 
+    const runAwayMove = {
+        name: "run away",
+        type: "self",
+        process: (sequencer,user,target) => {
+            return {
+                events: [
+                    {
+                        text: "you got away safely!"
+                    },
+                    {
+                        action: () => {
+                            sequencer.murderSequencerGracefully();
+                            sequencer.renderer.loseCallback();
+                        }
+                    }
+                ]
+            }
+        }
+    }
+
     this.health = 100;
     this.startText = "this battle will be harder so no crying";
     this.playerMoves = [
         moves["wimpy punch"],
         moves["cry"],
-        moves["nothing"]
+        moves["nothing"],
+        runAwayMove
     ];
     this.getMove = sequencer => {
         if(sequencer.elfBattleObject.health <= 20) {

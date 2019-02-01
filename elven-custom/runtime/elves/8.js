@@ -390,7 +390,7 @@ function BoneyElf() {
     ];
     this.getMove = sequencer => {
         if(sequencer.elfBattleObject.state.isLit) {
-            const litMoves = ["drunken punch","drunken punch","them bones","drunken rant","cry"];
+            const litMoves = ["drunken punch","drunken punch","them bones","drunken rant","cry","cry"];
             if(sequencer.elfBattleObject.state.isSuperLit) {
                 litMoves.push("slrrd werrsds");
             } else {
@@ -401,7 +401,7 @@ function BoneyElf() {
             const userPoisonedMoves = ["them bones","bone toss","bone salad","bone o' clock"];
             if(sequencer.playerBattleObject.state.isPoisoned) {
                 return moves[userPoisonedMoves[Math.floor(Math.random()*userPoisonedMoves.length)]];
-            } else if(Math.random() < 0.27) {
+            } else if(Math.random() < 0.35) {
                 return moves["poison"];
             } else {
                 return moves[userPoisonedMoves[Math.floor(Math.random()*userPoisonedMoves.length)]];
