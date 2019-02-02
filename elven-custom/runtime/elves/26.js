@@ -8,10 +8,13 @@ function MurderedElf() {
         "why do you think we kill?",
         "did you not even think?",
         "year after year... used....\n\nabused...",
-        "and you don't even\nremember\nwho i am.",
-        "you were always so\n[senseless]...",
-        "you frustrate me\nto no end.\n\ni hate you.\n\nthey used to call me...\nwimpy...",
-        "i'll show them now.",
+        "of all people...\n\ni thought you would\nunderstand",
+        "it's true what they say...\n\nyou're just a traitor.",
+        "you don't even\nremember\nwho i am.",
+        "but how can i blame you...\nyou don't even know\nwho you are...\n...what you are",
+        "they used to call me\nwimpy...\n\nthen what's left for you?\n\ncoward? bastard?",
+        "it doesn't matter now.",
+        "i'll show you my true\npurpose.",
         "i'll show them all."
     ];
 
@@ -45,7 +48,7 @@ function MurderedElf() {
                         events: [
                             {
                                 text: "murdered elf took your elfmart sword",
-                                speech: "goodbye.\n\nthis is not death.\nonly rebirth."
+                                speech: "goodbye.\n\nbut this this is not death.\n\nhahaha...\n\n    this is only rebirth..."
                             },
                             {
                                 text: "murdered elf stabbed deeply with the sword",

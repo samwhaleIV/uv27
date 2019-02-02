@@ -737,7 +737,8 @@ function BattleSequencer(renderer) {
                         turnProcessResult.events = [{
                             text:turnProcessResult.text,
                             speech:turnProcessResult.speech,
-                            action:turnProcessResult.action}
+                            action:turnProcessResult.action,
+                            persist:turnProcessResult.persist}
                         ];
                     }
                     if(turnProcessResult.events && turnProcessResult.events.length >= 1) {

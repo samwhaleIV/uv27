@@ -3,16 +3,13 @@ function FireEffect() {
 
     const height = 23; //Adjust height to have slight margin with the firestack
     const width = Math.ceil(fullWidth / 20) + 1;
-
     const texelSize = Math.ceil(fullWidth / width);
-
     const horizontalOffset = texelSize / 4;
 
     const fire = new Array(height);
     for(let i = 0;i<height;i++) {
         fire[i] = new Array(width).fill(0);
     }
-
 
     this.render = () => {
         const lastRow = fire.pop();
@@ -23,7 +20,7 @@ function FireEffect() {
         }
         fire.unshift(lastRow);
 
-        let y = 0;
+        let y = 1;
         while(y < height) {
             let x = 0;
             while(x < width) {
