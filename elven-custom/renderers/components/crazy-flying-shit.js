@@ -53,7 +53,6 @@ function CrazyFlyingShitEffect() {
                 const particle = particles[i];
                 particle.size -= particle.nextSizeDifference;
                 if(particle.size < 0) {
-                    console.count("Spliced");
                     particles.splice(i,1);
                     this.addParticle(timestamp);
                 } else {
