@@ -29,6 +29,8 @@ function WimpyGreenElf() {
         }
     }
 
+    this.winSpeech = "this is a dog eat dog\nman eat man world!\n\nit's kill or be\nkilled b****h!";
+
     this.health = 100;
     this.startText = "this battle will be harder so no crying";
     this.playerMoves = [

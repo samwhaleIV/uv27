@@ -421,9 +421,15 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         this.hoverEffectIndex = null;
     }
 
+    this.fireEffect = new FireEffect();
+
     this.render = timestamp => {
 
         this.background.renderNormal(timestamp);
+
+        if(this.currentIndex === 26) {
+            this.fireEffect.render();
+        }
 
         if(this.elf.defaultRenderLayers) {
             for(let i = 0;i<this.elf.defaultRenderLayers.length;i++) {

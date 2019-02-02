@@ -23,7 +23,9 @@ function MurderedElf() {
     this.backgroundColor = "red";
     this.health = 1;
 
-    this.startSpeech = {text:"oh. surprised?\n\ni've really let myself go\n\never since you - you know..\nmurdered me"};
+    this.startSpeech = {
+        text:"oh. surprised?\n\ni've really let myself go\n\never since you - you know..\nmurdered me"
+    };
 
     this.playerMoves = [{
         name: "continue",

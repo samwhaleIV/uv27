@@ -129,7 +129,7 @@ addMove({
         target.state.money += 4;
         target.subText[0] = `${target.state.money} coin${target.state.money === 1 ? "" : "s"}`;
         const responses = [
-            "awe - your poor thing",
+            "awe - you poor thing",
             "what even are you?",
             "are humans wimps too?",
             "you're so cute",
@@ -226,7 +226,7 @@ function WimpyBlueElf() {
             "did you give up on\nshooting me",
             "i give up too",
             "*yawn*",
-            "i talked about\everything",
+            "i talked about\neverything",
             "there's nothing left\nto say",
             "just kill me",
             "*more yawning*"

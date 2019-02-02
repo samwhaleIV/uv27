@@ -241,13 +241,13 @@ if(localStorage.getItem("backgroundStreamMode") === "true") {
 }
 
 const render = timestamp => {
-    rendererState.render(timestamp);
     if(!paused) {
-        animationFrame = window.requestAnimationFrame(render);
         const gamepad = navigator.getGamepads()[0];
         if(gamepad) {
             processGamepad(gamepad);
         }
+        rendererState.render(timestamp);
+        animationFrame = window.requestAnimationFrame(render);  
     }
 };
 
