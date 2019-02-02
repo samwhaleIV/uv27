@@ -3,18 +3,19 @@ function IntroductionRenderer(endCallback) {
     this.endCallback = endCallback;
 
     this.messages = [
-        "the christmas elves have turned",
-        "an elite crew of elves has taken the reigns",
-        "these are not ordinary elves",
-        "these elves create weapons",
-        "these elves commit genocides",
-        "the world needs a hero...",
-        "the world needs...",
-        "you...",
-        "no one knows elves like you",
-        "i wish there was any other way"
+        "hey...",
+        "it's been a while.",
+        "i wish this message came on a lighter note.",
+        "but i'm afraid the inevitable is here.",
+        "an evil crew of elves has taken the reigns.",
+        "these are not ordinary elves.",
+        "these elves murder - kill - maim.",
+        "these elves are monsters.",
+        "the world needs a hero right now...",
+        "i wish there was any other way...",
+        "but no one else knows elves like you do."
     ];
-
+    
     let timeout = null;
 
     this.processClick = () => {
@@ -50,7 +51,7 @@ function IntroductionRenderer(endCallback) {
 
     this.start = timestamp => {
         this.startTime = timestamp + startTimeOffset;
-        const timeoutTime = (this.messages.length+1)*this.fadeIn + 14000;
+        const timeoutTime = (this.messages.length+1)*this.fadeIn + 10000;
         timeout = setTimeout(endCallback,timeoutTime);
     }
 
@@ -69,7 +70,7 @@ function IntroductionRenderer(endCallback) {
                 innerProgress = 1;
             }
     
-            let runningYOffset = 150;
+            let runningYOffset = 100;
             for(let i = 0;i<this.messages.length;i++) {
                 if(step >= i) {
                     const textArea = drawTextWhite(this.messages[i],20,runningYOffset,4);

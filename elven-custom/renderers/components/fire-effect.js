@@ -1,17 +1,36 @@
 "use strict";
-function FireEffect() {
+function FireEffect(time=40,blue=0) {
 
-    const height = 23; //Adjust height to have slight margin with the firestack
-    const width = Math.ceil(fullWidth / 20) + 1;
-    const texelSize = Math.ceil(fullWidth / width);
-    const horizontalOffset = texelSize / 4;
+    const height = 23;
+    const width = 30;
+    const texelSize = fullWidth / width;
 
     const fire = new Array(height);
     for(let i = 0;i<height;i++) {
         fire[i] = new Array(width).fill(0);
     }
 
-    const rowShiftTime = 40;
+    for(let i = 0;i<60;i++) {
+        const lastRow = fire.pop();
+        let i = 0;
+        while(i < width) {
+            lastRow[i] = Math.floor(Math.random() * 128) + 128;
+            i++;
+        }
+        fire.unshift(lastRow);
+
+        let y = 1;
+        while(y < height) {
+            let x = 0;
+            while(x < width) {
+                fire[y][x] -= Math.floor(Math.random() * 30) + 1;
+                x++;
+            }
+            y++;
+        }
+    }
+
+    const rowShiftTime = time;
     let lastShift = 0;
 
     this.render = timestamp => {
@@ -45,12 +64,12 @@ function FireEffect() {
                     fire[y][x] -= Math.floor(Math.random() * 30) + 1;
                 }
                 if(fire[y][x] > 0) {
-                    context.fillStyle = `rgb(${fire[y][x]},0,0)`;
+                    context.fillStyle = `rgb(${fire[y][x]},0,${blue})`;
                     context.beginPath();
                     context.rect(
-                        (x*texelSize)-horizontalOffset,
-                        (fullHeight-((y+verticalTexelOffset-1)*(texelSize))),
-                        texelSize,texelSize
+                        x*texelSize,
+                        (fullHeight-((y+verticalTexelOffset-1)*texelSize)),
+                        texelSize,texelSize+1
                     );
                     context.fill();
                 }
