@@ -10,18 +10,18 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             "intro_b":false,
             "loop_b":false
         };
-        if(index <= 9) {
-            manifest["intro_base"] = true;
-            manifest["loop_base"] = true;
-            manifest.index = 0;
-        } else if(index <= 19) {
+        if(index === 26) {
+            manifest["intro_b"] = true;
+            manifest["loop_b"] = true;
+            manifest.index = 2;
+        } else if(index >= 16) {
             manifest["intro_a"] = true;
             manifest["loop_a"] = true;
             manifest.index = 1;
         } else {
-            manifest["intro_b"] = true;
-            manifest["loop_b"] = true;
-            manifest.index = 2;
+            manifest["intro_base"] = true;
+            manifest["loop_base"] = true;
+            manifest.index = 0;
         }
         return manifest;
     }
