@@ -356,6 +356,10 @@ const moves = {
         type: "target",
         name: "senseless murder",
         process: (sequencer,user,target) => {
+            if(target.name === "murder elf") {
+                localStorage.setItem("pleadedGuilty",sequencer.playerBattleObject.state.guiltyCount);
+                localStorage.setItem("pleadedNotGuilty",sequencer.playerBattleObject.state.notGuiltyCount);
+            }
             sequencer.dropHealth(target,target.maxHealth);
             return {
                 text: `${target.name} got f****d up`

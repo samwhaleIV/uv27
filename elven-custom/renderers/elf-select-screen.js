@@ -422,13 +422,15 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     }
 
     this.fireEffect = new FireEffect();
+    this.fireFlies = new CrazyFlyingShitEffect();
 
     this.render = timestamp => {
 
         this.background.renderNormal(timestamp);
 
         if(this.currentIndex === 26) {
-            this.fireEffect.render();
+            this.fireEffect.render(timestamp);
+            this.fireFlies.render(timestamp);
         }
 
         if(this.elf.defaultRenderLayers) {

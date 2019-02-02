@@ -15,11 +15,13 @@ function IntroductionRenderer(endCallback) {
         "i wish there was any other way"
     ];
 
+    let timeout = null;
+
     this.processClick = () => {
         if(!this.transitioning) {
             playSound("click.mp3");
-            if(this.endTimeout !== null) {
-                clearTimeout(this.endTimeout);
+            if(timeout !== null) {
+                clearTimeout(timeout);
             }
             this.endCallback();
         }
@@ -30,8 +32,8 @@ function IntroductionRenderer(endCallback) {
             case "Enter":
             case "Space":
                 if(!this.transitioning) {
-                    if(this.endTimeout !== null) {
-                        clearTimeout(this.endTimeout);
+                    if(timeout !== null) {
+                        clearTimeout(timeout);
                     }
                     this.endCallback();
                 }
@@ -46,16 +48,13 @@ function IntroductionRenderer(endCallback) {
 
     this.fader = getFader();
 
-    this.endTimeout = null;
+    this.start = timestamp => {
+        this.startTime = timestamp + startTimeOffset;
+        const timeoutTime = (this.messages.length+1)*this.fadeIn + 14000;
+        timeout = setTimeout(endCallback,timeoutTime);
+    }
 
     this.render = timestamp => {
-
-        if(this.startTime === null) {
-            this.startTime = performance.now() + startTimeOffset;
-            const timeout = (this.messages.length+1)*this.fadeIn + 14000;
-            this.endTimeout = setTimeout(endCallback,timeout);
-
-        }
 
         context.clearRect(0,0,fullWidth,fullHeight);
 

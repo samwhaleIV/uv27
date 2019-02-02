@@ -296,7 +296,7 @@ function LeglessElf() {
             "how's the weather\nup there?",
             "have you learned \nabout combos?",
             "combos are broken if\nyou don't use\nmoves in the right order",
-            "dodge...\nuppercut...\nkick.\nn\nalways an effective combo",
+            "dodge...\nuppercut...\nkick.\n\nalways an effective combo",
             "i trained red elfette\n\nthis is for her",
             "you know - you are\njust another monster",
             "uppercuts can prevent\ntranquility\n(aka - healing)",

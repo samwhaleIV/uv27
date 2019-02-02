@@ -125,8 +125,6 @@ function MurderElf() {
                             moves["honorable suicide"],
                             moves["senseless murder"]
                         ]);
-                        localStorage.setItem("pleadedGuilty",sequencer.playerBattleObject.state.guiltyCount);
-                        localStorage.setItem("pleadedNotGuilty",sequencer.playerBattleObject.state.notGuiltyCount);
                         break;
                 }
                 sequencer.globalBattleState.speechIndex++;

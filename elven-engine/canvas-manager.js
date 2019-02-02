@@ -268,6 +268,9 @@ const startRenderer = function() {
         return;
     }
     animationFrame = window.requestAnimationFrame(render);
+    if(rendererState.start) {
+        rendererState.start(performance.now());
+    }
     console.log("Canvas handler: Renderer started");
 }
 
