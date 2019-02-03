@@ -390,10 +390,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.processMove = (x,y) => {
 
-        if(this.currentIndex === 20) {
-            this.particleField.bumpRegion(x,y);
-        }
-
         if(y >= this.buttonY && y <= this.buttonY + this.buttonHeight) {
             if(x > this.rightButtonX) {
                 if(x <= this.rightButtonX + this.buttonWidth) {
@@ -430,6 +426,8 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.fireFlies = new CrazyFlyingShitEffect();
 
     this.particleField = new ParticleFieldEffect();
+    this.particleWhammer = new ParticleWhammerEffect();
+    this.particleWhammer.calloutFunction = this.particleField.bumpRegion;
 
     this.render = timestamp => {
 
@@ -440,6 +438,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             this.fireFlies.render(timestamp);
         } else if(this.currentIndex === 20) {
             this.particleField.render(timestamp);
+            this.particleWhammer.render(timestamp);
         }
 
         if(this.elf.defaultRenderLayers) {

@@ -4,8 +4,8 @@ function ParticleFieldEffect() {
     const particleColor1 = "rgba(0, 232, 255,0.7)";
     const particleColor2 = "rgba(167, 33, 250,0.7)";
 
-    const particleResetVelocity = 3;
-    const particleDeacceleration = 100;
+    const particleResetVelocity = 1;
+    const particleDeacceleration = 1000;
 
     function bumpParticle(particle,xDelta,yDelta,dx,dy) {
         if(!xDelta && !yDelta) {
@@ -47,20 +47,13 @@ function ParticleFieldEffect() {
     const maxDelta = 200;
 
     this.bumpRegion = (mouseX,mouseY) => {
-        if(bumpTimeout !== null) {
-            clearTimeout(bumpTimeout);
-        }
-
         let xDelta = 0, yDelta = 0, size;
 
         if(lastMouseX !== null) {
             xDelta = (lastMouseX - mouseX) * 2;
             yDelta = (lastMouseY - mouseY) * 2;
             size = (Math.abs(xDelta) + Math.abs(yDelta)) / 2;
-            size *= 2;
-            if(size > 75) {
-                size = 75;
-            }
+            size = 50;
         } else {
             size = particlePushDistance;
         }
@@ -78,10 +71,6 @@ function ParticleFieldEffect() {
 
         lastMouseX = mouseX;
         lastMouseY = mouseY;
-        bumpTimeout = setTimeout(()=>{
-            lastMouseX = null;
-            lastMouseY = null;
-        },500);
         
         let y = 0;
         while(y < rows) {
