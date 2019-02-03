@@ -97,6 +97,10 @@ function gameLoop() {
         setRendererState(new IntroductionRenderer(
             getSelectScreen
         ));
+        rendererState.start(performance.now());
+        if(rendererState.song) {
+            playMusic(rendererState.song);
+        }
     } else {
         const lastCurrentIndex = localStorage.getItem("lastCurrentIndex");
         const parsedIndex = Number(lastCurrentIndex);

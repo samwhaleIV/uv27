@@ -6,7 +6,7 @@ function IntroductionRenderer(endCallback) {
         "the inevitable is here.",
         "the christmas elves have turned.",
         "they've taken the reigns.",
-        "but these are not ordinary elves.",
+        "but these are no ordinary elves.",
         "these elves murder - kill - maim.",
         "these elves create weapons.",
         "these elves are monsters.",
@@ -41,6 +41,8 @@ function IntroductionRenderer(endCallback) {
         }
     }
 
+    this.song = "hero";
+
     this.fadeIn = 3500;
     this.fadeRange = 0.5;
     this.startTime = null;
@@ -48,7 +50,7 @@ function IntroductionRenderer(endCallback) {
     this.fader = getFader();
 
     this.start = timestamp => {
-        this.startTime = timestamp + 2000;
+        this.startTime = timestamp + 500;
         const timeoutTime = (this.messages.length+1)*this.fadeIn + 10000;
         timeout = setTimeout(endCallback,timeoutTime);
     }

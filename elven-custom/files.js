@@ -12,7 +12,9 @@ EssentialSounds.push(
 
     GetFile("menu/loop_a.ogg",FileTypes.Music),
     GetFile("menu/loop_b.ogg",FileTypes.Music),
-    GetFile("menu/loop_base.ogg",FileTypes.Music)
+    GetFile("menu/loop_base.ogg",FileTypes.Music),
+
+    GetFile("menu/hero.ogg",FileTypes.Music)
 );
 NonEssentialSounds.push(
     GetFile("win.ogg",FileTypes.Music),
