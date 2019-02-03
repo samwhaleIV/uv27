@@ -49,6 +49,10 @@ function ParticleFieldEffect() {
     this.bumpRegion = (mouseX,mouseY) => {
         let xDelta = 0, yDelta = 0, size;
 
+        if(bumpTimeout) {
+            clearTimeout(bumpTimeout);
+        }
+
         if(lastMouseX !== null) {
             xDelta = (lastMouseX - mouseX) * 2;
             yDelta = (lastMouseY - mouseY) * 2;
@@ -70,6 +74,11 @@ function ParticleFieldEffect() {
 
         lastMouseX = mouseX;
         lastMouseY = mouseY;
+
+        bumpTimeout = setTimeout(()=>{
+            lastMouseX = null;
+            lastMouseY = null;
+        },50);
         
         let y = 0;
         while(y < rows) {
