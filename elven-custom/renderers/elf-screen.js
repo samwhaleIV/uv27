@@ -174,7 +174,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.drawHealthBar = (timestamp,healthBar,target) => {
 
         let xOffset = healthBar.x,yOffset = 0;
-        if(target.jitterHealthBar && !this.battleSequencer.battleOver) {
+        if(target.jitterHealthBar) {
             xOffset += Math.round(Math.random() * 4) - 2;
             yOffset += Math.round(Math.random() * 4) - 2;
         }

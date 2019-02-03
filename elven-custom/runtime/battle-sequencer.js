@@ -94,8 +94,6 @@ function BattleSequencer(renderer) {
             return;
         }
 
-        this.battleOver = true;
-
         this.bottomMessage = "everyone is dead";
         renderer.firstInputMask = "game over";
         let duration = endScreenLength;
@@ -119,8 +117,6 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
-
-        this.battleOver = true;
 
         this.bottomMessage =  this.elf.playerDeadText || "you are dead";
         renderer.firstInputMask = "game over";
@@ -158,8 +154,6 @@ function BattleSequencer(renderer) {
         if(!this.sequencerPersisting) {
             return;
         }
-
-        this.battleOver = true;
 
         this.bottomMessage = this.elf.elfDeadText || `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
@@ -277,7 +271,12 @@ function BattleSequencer(renderer) {
             }
         }
         setTimeout(()=>{
-            target.jitterHealthBar = false;
+            if(target.health > 0) {
+                target.jitterHealthBar = false;
+            }
+            if(target.health <= 0) {
+                this.battleOver = true;
+            }
         },100); 
     },
     this.addHealth = (target,amount) => {
