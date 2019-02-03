@@ -1,12 +1,11 @@
 function ParticleFieldEffect() {
 
-    const particleRadius = 4;
-    const particleColor = "rgba(0,255,255,0.5)";
+    const particleRadius = 5.5;
+    const particleColor1 = "rgba(0, 232, 255,0.7)";
+    const particleColor2 = "rgba(167, 33, 250,0.7)";
 
     const particleResetVelocity = 3;
     const particleDeacceleration = 100;
-
-    const particlePushDistance = 50;
 
     function bumpParticle(particle,xDelta,yDelta,dx,dy) {
         if(!xDelta && !yDelta) {
@@ -23,6 +22,8 @@ function ParticleFieldEffect() {
         this.x = 0;
         this.y = 0;
     }
+
+    const particlePushDistance = 0;
     
     const rows = 30;
     const columns = 30;
@@ -61,7 +62,7 @@ function ParticleFieldEffect() {
                 size = 75;
             }
         } else {
-            size = 0;
+            size = particlePushDistance;
         }
 
         if(xDelta > maxDelta) {
@@ -119,7 +120,6 @@ function ParticleFieldEffect() {
         const timeFactor = timeDiffference / frameTime;
         lastFrame = timestamp;
 
-        context.fillStyle = particleColor;
         let y = 0;
         while(y < rows) {
             let x = 0;
@@ -197,6 +197,7 @@ function ParticleFieldEffect() {
                 const drawX = (columnSpacing * x) + particle.x;
                 const drawY = (rowSpacing * y) + particle.y;
     
+                context.fillStyle = (x + y) % 2 === 0 ? particleColor1 : particleColor2;
                 context.beginPath();
                 context.arc(drawX,drawY,particleRadius,0,PI2);
                 context.fill();
