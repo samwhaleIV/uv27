@@ -53,7 +53,6 @@ function ParticleFieldEffect() {
             xDelta = (lastMouseX - mouseX) * 2;
             yDelta = (lastMouseY - mouseY) * 2;
             size = (Math.abs(xDelta) + Math.abs(yDelta)) / 2;
-            size *= 1.5;
         } else {
             size = particlePushDistance;
         }
