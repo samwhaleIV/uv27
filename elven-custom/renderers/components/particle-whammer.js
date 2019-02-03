@@ -19,7 +19,7 @@ function ParticleWhammerEffect() {
                 const timeNormal = (timestamp % this.rotationTime)/this.rotationTime;
 
 
-                const angle = Math.PI * (timeNormal*360) / 180;
+                const angle = timeNormal*PI2;
                 const x = this.centerX + (adjustedRadius * Math.cos(angle));
                 const y = this.centerY + (adjustedRadius * Math.sin(angle));
                 this.calloutFunction(x,y);

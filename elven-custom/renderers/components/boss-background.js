@@ -35,7 +35,7 @@ function BossBackground(cycleTime) {
             width: 119, height: 300,
         },            
     ];
-    this.rotationTime = 1000;
+    this.rotationTime = 2000;
     this.fragmentRadius = 50;
 
     this.globalYOffset = 29;
@@ -45,20 +45,8 @@ function BossBackground(cycleTime) {
 
         context.drawImage(imageDictionary["boss-layer-background"],0,this.globalYOffset);
 
-        let angle;
-        if(Math.floor(timestamp / this.rotationTime) % 2 === 0) {
-            angle = (timestamp % this.rotationTime) / this.rotationTime * 180;
-        } else {
-            angle = 1 - (timestamp % this.rotationTime) / this.rotationTime * 180;
-        }
-
-
-        let inverseAngle = Math.abs(angle - 180);
-
-        angle = Math.PI * angle / 180;
-        inverseAngle = Math.PI * inverseAngle / 180;
-
-
+        let angle = (timestamp % this.rotationTime) / this.rotationTime * PI2;
+        let inverseAngle = Math.PI - angle;
 
         let xOffset = (this.fragmentRadius * Math.cos(angle));
         let yOffset = (this.fragmentRadius * Math.sin(angle)) + this.globalYOffset;
