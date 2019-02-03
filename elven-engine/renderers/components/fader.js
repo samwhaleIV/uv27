@@ -2,24 +2,24 @@
 let faderInSound = null;
 let faderOutSound = null;
 let faderEffectsRenderer = null;
-const SetFaderInSound = soundName => {
-    faderInSound = soundName;
-}
-const SetFaderOutSound = soundName => {
-    faderOutSound = soundName;
-}
-const SetFaderEffectsRenderer = renderer => {
-    faderEffectsRenderer = renderer;
-}
 let faderTime = 0;
 let faderDelay = 0;
-const SetFaderDuration = time => {
+function SetFaderInSound(soundName) {
+    faderInSound = soundName;
+}
+function SetFaderOutSound(soundName) {
+    faderOutSound = soundName;
+}
+function SetFaderEffectsRenderer(renderer) {
+    faderEffectsRenderer = renderer;
+}
+function SetFaderDuration(time) {
     faderTime = time;
 }
-const SetFaderDelay = time => {
+function SetFaderDelay(time) {
     faderDelay = time;
 }
-const getFader = function() {
+function getFader() {
     const fader = {
         delta: 0,
         time: faderTime,

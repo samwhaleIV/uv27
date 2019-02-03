@@ -1,5 +1,5 @@
 "use strict";
-function FireEffect(time=40,blue=0) {
+function FireEffect(time=40,blue=0,prerender=true) {
 
     const height = 23;
     const width = 30;
@@ -10,23 +10,25 @@ function FireEffect(time=40,blue=0) {
         fire[i] = new Array(width).fill(0);
     }
 
-    for(let i = 0;i<60;i++) {
-        const lastRow = fire.pop();
-        let i = 0;
-        while(i < width) {
-            lastRow[i] = Math.floor(Math.random() * 128) + 128;
-            i++;
-        }
-        fire.unshift(lastRow);
-
-        let y = 1;
-        while(y < height) {
-            let x = 0;
-            while(x < width) {
-                fire[y][x] -= Math.floor(Math.random() * 30) + 1;
-                x++;
+    if(prerender) {
+        for(let i = 0;i<60;i++) {
+            const lastRow = fire.pop();
+            let i = 0;
+            while(i < width) {
+                lastRow[i] = Math.floor(Math.random() * 128) + 128;
+                i++;
             }
-            y++;
+            fire.unshift(lastRow);
+    
+            let y = 1;
+            while(y < height) {
+                let x = 0;
+                while(x < width) {
+                    fire[y][x] -= Math.floor(Math.random() * 30) + 1;
+                    x++;
+                }
+                y++;
+            }
         }
     }
 

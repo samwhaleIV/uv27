@@ -3,17 +3,16 @@ function IntroductionRenderer(endCallback) {
     this.endCallback = endCallback;
 
     this.messages = [
-        "hey...",
-        "it's been a while.",
-        "i wish this message came on a lighter note.",
-        "but i'm afraid the inevitable is here.",
-        "an evil crew of elves has taken the reigns.",
-        "these are not ordinary elves.",
+        "the inevitable is here.",
+        "the christmas elves have turned.",
+        "they've taken the reigns.",
+        "but these are not ordinary elves.",
         "these elves murder - kill - maim.",
+        "these elves create weapons.",
         "these elves are monsters.",
-        "the world needs a hero right now...",
+        "the world needs a hero.",
         "i wish there was any other way...",
-        "but no one else knows elves like you do."
+        "you know what to do."
     ];
     
     let timeout = null;
@@ -42,7 +41,6 @@ function IntroductionRenderer(endCallback) {
         }
     }
 
-    const startTimeOffset = 3200;
     this.fadeIn = 3500;
     this.fadeRange = 0.5;
     this.startTime = null;
@@ -50,7 +48,7 @@ function IntroductionRenderer(endCallback) {
     this.fader = getFader();
 
     this.start = timestamp => {
-        this.startTime = timestamp + startTimeOffset;
+        this.startTime = timestamp + 2000;
         const timeoutTime = (this.messages.length+1)*this.fadeIn + 10000;
         timeout = setTimeout(endCallback,timeoutTime);
     }

@@ -45,13 +45,10 @@ function EndScreenRenderer(endCallback) {
         }
     }
 
-    this.fireEffect = new FireEffect(100,200);
 
     this.render = timestamp => {
 
         context.clearRect(0,0,fullWidth,fullHeight);
-
-        this.fireEffect.render(timestamp);
 
         context.drawImage(
             imageDictionary["end-screen"],

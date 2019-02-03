@@ -1,178 +1,4 @@
 "use strict";
-const shuffleArrangements = "012301320213023103120321103210231230120313201302201320312103213023012310302130123120310232103201";
-const shuffleWithMask = items => {
-    const arrangement = shuffleArrangements.substr(Math.floor(Math.random() * 24)*4,4);
-    const shuffledItems = [];
-    for(let i = 0;i<4;i++) {
-        const item = items[i];
-        const mask = arrangement[i];
-        shuffledItems[mask] = item;
-    }
-    return shuffledItems;
-}
-
-const turboTextWordByWord = (sequencer,text,postText=null,postSpeech=null) => {
-    const events = text.split(" ").map(word => {return{text:word}});
-    events.push({
-        text: postText,
-        speech: postSpeech,
-        action: () => {
-            sequencer.disableTurboText();
-        }
-    });
-    events[0].action = sequencer.enableTurboText;
-    return events;
-}
-
-const getRandomSelections = (options,selectionCount,selectionMapper) => {
-
-    const selections = new Array(selectionCount);
-
-    for(let i = 0;i<selectionCount;i++) {
-        const optionIndex = Math.floor(Math.random()*options.length);
-        const option = options.splice(optionIndex,1);
-        if(selectionMapper) {
-            selections[i] = selectionMapper(option);
-        } else {
-            selections[i] = option;
-        }
-        
-    }
-    return selections;
-}
-
-const turboTextIncremental = (sequencer,introText,text) => {
-    const events = [{
-        text: introText
-    },...text.split("").map((item,index,arr)=>{
-        let text;
-        if(index !== 0) {
-            text = arr[index-1] + item;
-        } else {
-            text = arr[0];
-        }
-        arr[index] = text;
-        return {text:text}
-    })];
-    const startTurboValue = sequencer.turboTextVelocity;
-    events[1].action = () => sequencer.enableTurboText(40);
-    events[events.length-1].action = () => {
-        sequencer.disableTurboText();
-        sequencer.turboTextVelocity = startTurboValue;
-    };
-    return events;
-}
-
-const getStaticRadioSet = (options,questionID) => getRadioSet(options,questionID,false);
-const getRadioSet = (options,questionID,randomize=true) => {
-    const moves = [];
-    for(let i = 0;i<options.length;i++) {
-        moves[i] = getOptionMove(options[i],questionID,i);
-    }
-    return randomize ? shuffleWithMask(moves) : moves;
-}
-
-const overb = object => object.isPlayer ? "are" : "is";
-const oposv = object => object.isPlayer ? "your" : "their";
-
-const getOptionMove = (moveName,questionID,optionID) => {
-    return {
-        name: moveName,
-        type: "option",
-        process: (sequencer,user) => {
-            console.log(`Option '${moveName}' - ID '${optionID}' @ '${questionID}'`);
-            user.state[questionID] = optionID;
-            return {
-                failed: false
-            }
-        }
-    }
-}
-const getSelectionMove = (name,...options) => {
-    const optionMovesDictionary = {};
-    const justMoves = [];
-    const optionMoves = options.forEach(optionMove => {
-        const newObject = {
-            move: {
-                name: optionMove.name,
-                type: "option",
-                process: (sequencer,user) => {
-                    user.state.option = optionMove.name;
-                    sequencer.globalBattleState.endSelection = true;
-                    return null;
-                }
-            },
-            events: optionMove.events
-        }
-        optionMovesDictionary[optionMove.name] = newObject;
-        justMoves.push(newObject.move);
-    });
-    return {
-        move: {
-            name: name,
-            type: "interface",
-            process: (sequencer,user) => {
-                sequencer.globalBattleState.options = optionMovesDictionary;
-                sequencer.updatePlayerMoves(justMoves);
-                return null;
-            }
-        },
-        optionMoves: optionMoves
-    }
-}
-const selectionPostProcessor = sequencer => {
-    if(sequencer.globalBattleState.endSelection) {
-        const optionObject = sequencer.globalBattleState.options[
-            sequencer.playerBattleObject.state.option
-        ];
-        let result = null;
-        if(optionObject) {
-            if(optionObject.events) {
-                result = {
-                    events: optionObject.events
-                }
-            } else {
-                result = optionObject
-            }
-        }
-        sequencer.playerBattleObject.state.option = null;
-        sequencer.globalBattleState.endSelection = false;
-        if(result !== null) {
-            return result;
-        }
-    }
-    return null;
-}
-const protectPreProcessPlayer = (sequencer,move) => {
-    if(move.name === "protect") {
-        if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
-            if(sequencer.turnNumber >= sequencer.playerBattleObject.state.protectTurn+2) {
-                return move;
-            } else {
-                return moves["player variant protection preprocessor"];
-            }
-        } else {
-            return move;
-        }
-    }
-    return move;
-}
-const protectPreProcessElf = (sequencer,move) => {
-    if(move.type === "target" && sequencer.playerBattleObject.state.isProtected &&
-        sequencer.turnNumber == sequencer.playerBattleObject.state.protectTurn) {
-
-        sequencer.playerBattleObject.state.isProtected = false;
-        return moves['elf variant protection preprocessor'];
-    }
-    return move;
-}
-const addMove = move => {
-    if(moves[move.name]) {
-        console.error(`Error: Duplicated move name @ '${move.name}'!`);
-        return;
-    }
-    moves[move.name] = move;
-}
 const moves = {
     "nothing": {   
         type: "self",
@@ -604,3 +430,184 @@ const moves = {
         }      
     },
 };
+
+const shuffleArrangements = "012301320213023103120321103210231230120313201302201320312103213023012310302130123120310232103201";
+function shuffleWithMask(items) {
+    const arrangement = shuffleArrangements.substr(Math.floor(Math.random() * 24)*4,4);
+    const shuffledItems = [];
+    for(let i = 0;i<4;i++) {
+        const item = items[i];
+        const mask = arrangement[i];
+        shuffledItems[mask] = item;
+    }
+    return shuffledItems;
+}
+
+function turboTextWordByWord(sequencer,text,postText=null,postSpeech=null) {
+    const events = text.split(" ").map(word => {return{text:word}});
+    events.push({
+        text: postText,
+        speech: postSpeech,
+        action: () => {
+            sequencer.disableTurboText();
+        }
+    });
+    events[0].action = sequencer.enableTurboText;
+    return events;
+}
+
+function getRandomSelections(options,selectionCount,selectionMapper) {
+
+    const selections = new Array(selectionCount);
+
+    for(let i = 0;i<selectionCount;i++) {
+        const optionIndex = Math.floor(Math.random()*options.length);
+        const option = options.splice(optionIndex,1);
+        if(selectionMapper) {
+            selections[i] = selectionMapper(option);
+        } else {
+            selections[i] = option;
+        }
+        
+    }
+    return selections;
+}
+
+function turboTextIncremental(sequencer,introText,text) {
+    const events = [{
+        text: introText
+    },...text.split("").map((item,index,arr)=>{
+        let text;
+        if(index !== 0) {
+            text = arr[index-1] + item;
+        } else {
+            text = arr[0];
+        }
+        arr[index] = text;
+        return {text:text}
+    })];
+    const startTurboValue = sequencer.turboTextVelocity;
+    events[1].action = () => sequencer.enableTurboText(40);
+    events[events.length-1].action = () => {
+        sequencer.disableTurboText();
+        sequencer.turboTextVelocity = startTurboValue;
+    };
+    return events;
+}
+
+function getStaticRadioSet(options,questionID) {
+    return getRadioSet(options,questionID,false);
+}
+function getRadioSet(options,questionID,randomize=true) {
+    const moves = [];
+    for(let i = 0;i<options.length;i++) {
+        moves[i] = getOptionMove(options[i],questionID,i);
+    }
+    return randomize ? shuffleWithMask(moves) : moves;
+}
+
+function overb(object) {
+    return object.isPlayer ? "are" : "is";
+}
+function oposv(object) {
+    return object.isPlayer ? "your" : "their";
+}
+
+function getOptionMove(moveName,questionID,optionID) {
+    return {
+        name: moveName,
+        type: "option",
+        process: (sequencer,user) => {
+            console.log(`Option '${moveName}' - ID '${optionID}' @ '${questionID}'`);
+            user.state[questionID] = optionID;
+            return {
+                failed: false
+            }
+        }
+    }
+}
+function getSelectionMove(name,...options) {
+    const optionMovesDictionary = {};
+    const justMoves = [];
+    const optionMoves = options.forEach(optionMove => {
+        const newObject = {
+            move: {
+                name: optionMove.name,
+                type: "option",
+                process: (sequencer,user) => {
+                    user.state.option = optionMove.name;
+                    sequencer.globalBattleState.endSelection = true;
+                    return null;
+                }
+            },
+            events: optionMove.events
+        }
+        optionMovesDictionary[optionMove.name] = newObject;
+        justMoves.push(newObject.move);
+    });
+    return {
+        move: {
+            name: name,
+            type: "interface",
+            process: (sequencer,user) => {
+                sequencer.globalBattleState.options = optionMovesDictionary;
+                sequencer.updatePlayerMoves(justMoves);
+                return null;
+            }
+        },
+        optionMoves: optionMoves
+    }
+}
+function selectionPostProcessor(sequencer) {
+    if(sequencer.globalBattleState.endSelection) {
+        const optionObject = sequencer.globalBattleState.options[
+            sequencer.playerBattleObject.state.option
+        ];
+        let result = null;
+        if(optionObject) {
+            if(optionObject.events) {
+                result = {
+                    events: optionObject.events
+                }
+            } else {
+                result = optionObject
+            }
+        }
+        sequencer.playerBattleObject.state.option = null;
+        sequencer.globalBattleState.endSelection = false;
+        if(result !== null) {
+            return result;
+        }
+    }
+    return null;
+}
+function protectPreProcessPlayer(sequencer,move) {
+    if(move.name === "protect") {
+        if(!isNaN(sequencer.playerBattleObject.state.protectTurn)) {
+            if(sequencer.turnNumber >= sequencer.playerBattleObject.state.protectTurn+2) {
+                return move;
+            } else {
+                return moves["player variant protection preprocessor"];
+            }
+        } else {
+            return move;
+        }
+    }
+    return move;
+}
+function protectPreProcessElf(sequencer,move) {
+    if(move.type === "target" && sequencer.playerBattleObject.state.isProtected &&
+        sequencer.turnNumber == sequencer.playerBattleObject.state.protectTurn) {
+
+        sequencer.playerBattleObject.state.isProtected = false;
+        return moves['elf variant protection preprocessor'];
+    }
+    return move;
+}
+function addMove(move) {
+    if(moves[move.name]) {
+        console.error(`Error: Duplicated move name @ '${move.name}'!`);
+        return;
+    }
+    moves[move.name] = move;
+}

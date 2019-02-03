@@ -1,22 +1,12 @@
 "use strict";
 const canvas = document.getElementById("canvas");
-const getRelativeEventLocation = event => {
-    return {
-        x: Math.floor(
-            event.layerX / canvas.clientWidth * canvas.width
-        ),
-        y: Math.floor(
-            event.layerY / canvas.clientHeight * canvas.height
-        )
-    }
-}
-const touchEnabled = event => {
-    return !paused && event.isPrimary && rendererState;
-}
+const context = canvas.getContext("2d");
+context.imageSmoothingEnabled = false;
+const heightByWidth = canvas.height / canvas.width;
+const widthByHeight = canvas.width / canvas.height;
 
-const SetPageTitle = title => {
-    document.title = title;
-}
+let lastRelativeX = -1;
+let lastRelativeY = -1;
 const keyEventModes = {
     downOnly: Symbol("downOnly"),
     none: Symbol("none"),
@@ -37,7 +27,49 @@ const pointerEventTypes = {
 }
 let pointerEventMode = keyEventModes.none;
 let keyEventMode = pointerEventModes.none;
-const routeKeyEvent = (event,type) => {
+
+const pictureModeElement = document.getElementById("picture-mode-element");
+
+const defaultSizeMode = "fit";
+
+let canvasSizeMode = localStorage.getItem("canvasSizeMode") || defaultSizeMode;
+
+let pictureModeElementTimeout = null;
+
+
+
+let rendererState = null;
+let animationFrame = null;
+let paused = false;
+let backgroundStreamMode = false;
+
+if(localStorage.getItem("backgroundStreamMode") === "true") {
+    backgroundStreamMode = true;
+}
+
+const sizeModeDisplayNames = {
+    "fit":"fill",
+    "stretch":"stretch",
+    "center":"1:1 scale"
+}
+
+function getRelativeEventLocation(event) {
+    return {
+        x: Math.floor(
+            event.layerX / canvas.clientWidth * canvas.width
+        ),
+        y: Math.floor(
+            event.layerY / canvas.clientHeight * canvas.height
+        )
+    }
+}
+function touchEnabled(event) {
+    return !paused && event.isPrimary && rendererState;
+}
+function SetPageTitle(title) {
+    document.title = title;
+}
+function routeKeyEvent(event,type) {
     switch(keyEventMode) {
         case keyEventModes.none:
             break;
@@ -58,7 +90,7 @@ const routeKeyEvent = (event,type) => {
             break;
     }
 }
-const routePointerEvent = (event,type) => {
+function routePointerEvent(event,type) {
     const relativeEventLocation = getRelativeEventLocation(
         event
     );
@@ -103,8 +135,8 @@ canvas.onpointerdown = event => {
         routePointerEvent(event,pointerEventTypes.pointerDown);
     }
 }
-let lastRelativeX = -1, lastRelativeY = -1;
-const processMouseMove = event => {
+canvas.onpointermove = processMouseMove;
+function processMouseMove(event) {
     if(touchEnabled(event)) {
         const relativeEventLocation = getRelativeEventLocation(
             event
@@ -119,7 +151,6 @@ const processMouseMove = event => {
         }
     }
 }
-canvas.onpointermove = processMouseMove;
 window.onkeydown = event => {
     switch(event.code) {
         case "KeyP":
@@ -149,22 +180,12 @@ window.onkeyup = event => {
     }
     routeKeyEvent(event,keyEventTypes.keyUp);
 }
-
-const pictureModeElement = document.getElementById("picture-mode-element");
-
-const canvasHeightToWidth = canvas.height / canvas.width;
-const canvasWidthToHeight = canvas.width / canvas.height;
-
-const defaultSizeMode = "fit";
-
-let canvasSizeMode = localStorage.getItem("canvasSizeMode") || defaultSizeMode;
-
-const applySizeMode = () => {
+function applySizeMode() {
     switch(canvasSizeMode) {
         default:
         case "fit":
-            if(window.innerWidth / window.innerHeight > canvasWidthToHeight) {
-                const newWidth = window.innerHeight * canvasWidthToHeight;
+            if(window.innerWidth / window.innerHeight > widthByHeight) {
+                const newWidth = window.innerHeight * widthByHeight;
 
                 canvas.style.height = window.innerHeight + "px";
                 canvas.style.width = newWidth + "px";
@@ -172,7 +193,7 @@ const applySizeMode = () => {
                 canvas.style.top = "0px";
                 canvas.style.left = (window.innerWidth / 2) - (newWidth / 2) + "px";
             } else {
-                const newHeight = window.innerWidth * canvasHeightToWidth;
+                const newHeight = window.innerWidth * heightByWidth;
 
                 canvas.style.width = window.innerWidth + "px";
                 canvas.style.height = newHeight + "px";
@@ -195,10 +216,7 @@ const applySizeMode = () => {
             break;
     }
 }
-window.onresize = applySizeMode;
-applySizeMode();
-let pictureModeElementTimeout = null;
-const cycleSizeMode = () => {
+function cycleSizeMode() {
     let newMode = defaultSizeMode;
     switch(canvasSizeMode) {
         default:
@@ -225,22 +243,7 @@ const cycleSizeMode = () => {
     localStorage.setItem("canvasSizeMode",newMode);
     console.log(`Canvas handler: Set size mode to '${newMode}'`);
 }
-const sizeModeDisplayNames = {
-    "fit":"fill",
-    "stretch":"stretch",
-    "center":"1:1 scale"
-}
-
-const context = canvas.getContext("2d");
-context.imageSmoothingEnabled = false;
-
-let rendererState, animationFrame, paused = false, backgroundStreamMode = false;
-
-if(localStorage.getItem("backgroundStreamMode") === "true") {
-    backgroundStreamMode = true;
-}
-
-const render = timestamp => {
+function render(timestamp) {
     if(!paused) {
         const gamepad = navigator.getGamepads()[0];
         if(gamepad) {
@@ -249,9 +252,9 @@ const render = timestamp => {
         rendererState.render(timestamp);
         animationFrame = window.requestAnimationFrame(render);  
     }
-};
+}
 
-const stopRenderer = function() {
+function stopRenderer() {
     if(!rendererState) {
         console.warn("Warning: The renderer is already stopped and cannot be stopped further.");
         return;
@@ -261,7 +264,7 @@ const stopRenderer = function() {
     console.log("Renderer stopped");
 }
 
-const startRenderer = function() {
+function startRenderer() {
     paused = false;
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot start.");
@@ -274,7 +277,7 @@ const startRenderer = function() {
     console.log("Canvas handler: Renderer started");
 }
 
-const setRendererState = newRendererState => {
+function setRendererState(newRendererState) {
     rendererState = newRendererState;
     if(rendererState.processKey) {
         if(rendererState.processKeyUp) {
@@ -298,13 +301,13 @@ const setRendererState = newRendererState => {
     }
 }
 
-const pauseRenderer = function() {
+function pauseRenderer() {
     paused = true;
     window.cancelAnimationFrame(animationFrame);
     console.log("Canvas handler: Paused renderer");
 }
 
-const forceRender = function() {
+function forceRender() {
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot render.");
         return;
@@ -313,3 +316,6 @@ const forceRender = function() {
         context,performance.now()
     );
 }
+
+window.onresize = applySizeMode;
+applySizeMode();

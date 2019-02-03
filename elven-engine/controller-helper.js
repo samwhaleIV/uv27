@@ -1,6 +1,9 @@
 const gamepadDeadzone = 0.5;
 const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
-const applyDeadZone = value => {
+
+const fakeButtonPressEvent = {pressed:true};
+const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 180;
+function applyDeadZone(value) {
     if(value < 0) {
         value = value + gamepadDeadzone;
         if(value > 0) {
@@ -18,10 +21,7 @@ const applyDeadZone = value => {
     }
     return value;
 }
-
-const fakeButtonPressEvent = {pressed:true};
-const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 180;
-const processButton = (name,action,endAction,button,timestamp,isAxis) => {
+function processButton(name,action,endAction,button,timestamp,isAxis) {
     if(button.pressed) {
         if(!buttonStates[name]) {
             buttonStates[name] = {timestamp:timestamp};
@@ -37,64 +37,64 @@ const processButton = (name,action,endAction,button,timestamp,isAxis) => {
         }
     }
 };
-const leftBumperDown = ()=> {
+const leftBumperDown = () => {
     window.onkeydown(leftBumperCode);
 };
-const rightBumperDown = ()=> {
+const rightBumperDown = () => {
     window.onkeydown(rightBumperCode);
 };
-const aButtonDown = ()=> {
+const aButtonDown = () => {
     window.onkeydown(aButtonCode);
 };
-const yButtonDown = ()=> {
+const yButtonDown = () => {
     window.onkeydown(yButtonCode);
 };
-const bButtonDown = ()=> {
+const bButtonDown = () => {
     window.onkeydown(bButtonCode);
 };
-const upButtonDown = ()=> {
+const upButtonDown = () => {
     window.onkeydown(upButtonCode);
 };
-const downButtonDown = ()=> {
+const downButtonDown = () => {
     window.onkeydown(downButtonCode);
 };
-const leftButtonDown = ()=> {
+const leftButtonDown = () => {
     window.onkeydown(leftButtonCode);
 };
-const rightButtonDown = ()=> {
+const rightButtonDown = () => {
     window.onkeydown(rightButtonCode);
 };
-const startButtonDown = ()=> {
+const startButtonDown = () => {
     window.onkeydown(startButtonCode);
 };
-const leftBumperUp = ()=> {
+const leftBumperUp = () => {
     window.onkeyup(leftBumperCode);
 };
-const rightBumperUp = ()=> {
+const rightBumperUp = () => {
     window.onkeyup(rightBumperCode);
 };
-const aButtonUp = ()=> {
+const aButtonUp = () => {
     window.onkeyup(aButtonCode);
 };
-const yButtonUp = ()=> {
+const yButtonUp = () => {
     window.onkeyup(yButtonCode);
 };
-const bButtonUp = ()=> {
+const bButtonUp = () => {
     window.onkeyup(bButtonCode);
 };
-const upButtonUp = ()=> {
+const upButtonUp = () => {
     window.onkeyup(upButtonCode);
 };
-const downButtonUp = ()=> {
+const downButtonUp = () => {
     window.onkeyup(downButtonCode);
 };
-const leftButtonUp = ()=> {
+const leftButtonUp = () => {
     window.onkeyup(leftButtonCode);
 };
-const rightButtonUp = ()=> {
+const rightButtonUp = () => {
     window.onkeyup(rightButtonCode);
 };
-const startButtonUp = ()=> {
+const startButtonUp = () => {
     window.onkeyup(startButtonCode);
 };
 
@@ -109,7 +109,7 @@ const leftButtonCode = {code:"KeyA"};
 const rightButtonCode = {code:"KeyD"};
 const startButtonCode = {code:"Enter"};
 
-const processGamepad = gamepad => {
+function processGamepad(gamepad) {
 
     processButton("LeftBumper",leftBumperDown,leftBumperUp,gamepad.buttons[4],gamepad.timestamp);
     processButton("RightBumper",rightBumperDown,rightBumperUp,gamepad.buttons[5],gamepad.timestamp);

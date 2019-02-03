@@ -1,4 +1,5 @@
 "use strict";
+const elves = [];
 const loadingImage = new Image();
 loadingImage.onload = () => {
     setRendererState(new SidescrollRenderer(loadingImage));
@@ -24,13 +25,13 @@ loadingImage.src = "elven-custom/images/loading-animations.png";
 drawDefaultLoadingText();
 SetPageTitle("You Versus 27 Elves");
 
-const loadSongOnDemand = fileName => {
+function loadSongOnDemand(fileName) {
     SoundManager.loadOnDemand(`elven-custom/audio/music/${fileName}.ogg`);
 }
 
 let elfIndex = 0, highestIndex;
 
-const getWinSelectScreen = () => {
+function getWinSelectScreen() {
     if(elfIndex >= highestIndex) {
         highestIndex++;
         elfIndex = highestIndex;
@@ -39,7 +40,7 @@ const getWinSelectScreen = () => {
     localStorage.setItem("elfIndex",highestIndex);
 }
 
-const getSelectScreen = index => {
+function getSelectScreen(index) {
     if(!index && index !== 0) {
         index = elfIndex;
     }
@@ -50,21 +51,21 @@ const getSelectScreen = index => {
     );
 }
 
-const getBonusScreen = () => {
+function getBonusScreen() {
     rendererState.fader.fadeOut(
         BonusScreenRenderer,
         getSelectScreen
     );
 }
 
-const getEndScreen = () => {
+function getEndScreen() {
     rendererState.fader.fadeOut(
         EndScreenRenderer,
         getBonusScreen
     );
 }
 
-const getBattleScreen = battleIndex => {
+function getBattleScreen(battleIndex) {
     elfIndex = battleIndex;
     if(battleIndex === highestElfIndex) {
         rendererState.fader.fadeOut(
@@ -83,7 +84,7 @@ const getBattleScreen = battleIndex => {
     }
 }
 
-const gameLoop = () => {
+function gameLoop() {
     const localStorageResult = localStorage.getItem("elfIndex");
     if(localStorageResult !== null && localStorageResult >= 0) {
         elfIndex = Number(localStorageResult);
@@ -117,8 +118,7 @@ const gameLoop = () => {
     highestIndex = elfIndex;
 
 }
-const elves = [];
-const loadElves = () => {
+function loadElves() {
     const start = performance.now();
     const elfConstructors = [
         WimpyRedElf,

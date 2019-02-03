@@ -1,4 +1,33 @@
 "use strict";
+const timeouts = {};
+function setSkippableTimeout(handler,timeout,...args) {
+    const handle = setTimeout((...args)=>{
+
+        handler.apply(this,args);
+        delete timeouts[handle];
+
+    },timeout,...args);
+
+    timeouts[handle] = {
+        handler: handler,
+        args: args
+    }
+
+    return handle;
+}
+function clearSkippableTimeout(handle,suppress) {
+    clearTimeout(handle);
+
+    const timeout = timeouts[handle];
+
+    if(!suppress) {
+        timeout.handler.apply(
+            this,timeout.args
+        );
+    }
+    delete timeouts[handle];
+}
+
 function BattleSequencer(renderer) {
 
     this.renderer = renderer;
@@ -834,33 +863,4 @@ function BattleSequencer(renderer) {
             startEnd();
         }
     }
-}
-const timeouts = {};
-const setSkippableTimeout = (handler,timeout,...args) => {
-    const handle = setTimeout((...args)=>{
-
-        handler.apply(this,args);
-        delete timeouts[handle];
-
-    },timeout,...args);
-
-    timeouts[handle] = {
-        handler: handler,
-        args: args
-    }
-
-    return handle;
-}
-
-const clearSkippableTimeout = (handle,suppress) => {
-    clearTimeout(handle);
-
-    const timeout = timeouts[handle];
-
-    if(!suppress) {
-        timeout.handler.apply(
-            this,timeout.args
-        );
-    }
-    delete timeouts[handle];
 }

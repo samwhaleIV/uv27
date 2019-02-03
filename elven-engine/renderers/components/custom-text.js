@@ -19,7 +19,7 @@ const fontDictionary = {
     ">":{width:3},"<":{width:3},"[":{width:2},
     "]":{width:2},"=":{width:3},
 }
-const adjustFontPositions = () => {
+function adjustFontPositions() {
     const innerSpace = 1;
     const values = " abcdefghijklmnopqrstuvwxyz0123456789*'.:-!?()+:><[]=";
     let totalWidth = 0;
@@ -30,7 +30,7 @@ const adjustFontPositions = () => {
     }
 }
 adjustFontPositions();
-const drawTextTest = function(text,scale) {
+function drawTextTest(text,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
     const lastOffsetIndex = text.length-1;
@@ -47,7 +47,7 @@ const drawTextTest = function(text,scale) {
         height: drawHeight
     }
 }
-const drawTextWhite = function(text,x,y,scale) {
+function drawTextWhite(text,x,y,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
     const lastOffsetIndex = text.length-1;
@@ -73,7 +73,7 @@ const drawTextWhite = function(text,x,y,scale) {
     }
 }
 
-const drawTextBlack = function(text,x,y,scale) {
+function drawTextBlack(text,x,y,scale) {
     let xOffset = 0;
     const drawHeight = 5 * scale;
     const lastOffsetIndex = text.length-1;
@@ -103,13 +103,12 @@ const textTestData = drawTextTest("loading...",4);
 textTestData.width += 30;
 textTestData.height += 30;
 
-const drawDefaultLoadingText = function() {
+function drawDefaultLoadingText() {
     context.fillStyle = "white";
     context.font = "20px Arial";
     context.fillText("loading...",15,24);
 }
-
-const drawLoadingText = function() {
+function drawLoadingText() {
     context.fillStyle = "black";
     context.fillRect(0,0,textTestData.width,textTestData.height);
     drawTextWhite("loading...",15,15,4);

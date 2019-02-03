@@ -19,14 +19,20 @@ const audioBuffers = {};
 const failedBuffers = {};
 
 let audioBufferAddedCallback = null;
-const sendAudioBufferAddedCallback = name => {
+let musicNodes = {}, musicMuted = false, soundMuted = false;
+
+let startSyncTime = null;
+let introMuteManifest = {};
+let loopMuteManifest = {};
+
+function sendAudioBufferAddedCallback(name) {
     if(audioBufferAddedCallback) {
         audioBufferAddedCallback(name);
     }
 }
 
-let musicNodes = {}, musicMuted = false, soundMuted = false;
-const toggleMusicMute = () => {
+
+function toggleMusicMute() {
     if(musicMuted) {
         unmuteMusic();
     } else {
@@ -34,7 +40,7 @@ const toggleMusicMute = () => {
     }
 }
 
-const toggleSoundMute = () => {
+function toggleSoundMute() {
     if(soundMuted) {
         unmuteSound();
     } else {
@@ -42,7 +48,7 @@ const toggleSoundMute = () => {
     }
 }
 
-const muteMusic = () => {
+function muteMusic() {
     if(!musicMuted) {
         musicVolumeNode.gain.setValueAtTime(0,audioContext.currentTime);
         musicMuted = true;
@@ -51,7 +57,7 @@ const muteMusic = () => {
         console.warn("Audio manager: Music already muted");
     }
 }
-const muteSound = () => {
+function muteSound() {
     if(!soundMuted) {
         volumeNode.gain.setValueAtTime(0,audioContext.currentTime);
         soundMuted = true;
@@ -61,7 +67,7 @@ const muteSound = () => {
     }
 }
 
-const unmuteSound = () => {
+function unmuteSound() {
     if(soundMuted) {
         volumeNode.gain.setValueAtTime(soundGain,audioContext.currentTime);
         soundMuted = false;
@@ -71,7 +77,7 @@ const unmuteSound = () => {
     }
 }
 
-const unmuteMusic = () => {
+function unmuteMusic() {
     if(musicMuted) {
         musicVolumeNode.gain.setValueAtTime(musicNodeGain,audioContext.currentTime);
         musicMuted = false;
@@ -81,21 +87,18 @@ const unmuteMusic = () => {
     }
 }
 
-const muteTrack = name => {
+function muteTrack(name) {
     if(musicNodes[name]) {
         musicNodes[name].volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
     }
 }
-const unmuteTrack = name => {
+function unmuteTrack(name) {
     if(musicNodes[name]) {
         musicNodes[name].volumeControl.gain.setValueAtTime(1,audioContext.currentTime);
     }
 }
 
-let startSyncTime = null;
-let introMuteManifest = {};
-let loopMuteManifest = {};
-const playMusicWithIntro = (loopName,introName,withLoop=true) => {
+function playMusicWithIntro(loopName,introName,withLoop=true) {
     const introBuffer = audioBuffers[introName];
     const loopBuffer = audioBuffers[loopName];
     if(!introBuffer || !loopBuffer) {
@@ -140,7 +143,7 @@ const playMusicWithIntro = (loopName,introName,withLoop=true) => {
     }
 }
 
-const playMusic = (name,withLoop=true) => {
+function playMusic(name,withLoop=true) {
     const buffer = audioBuffers[name];
     if(!buffer) {
         console.warn(`Audio manager: '${name}' is missing from audio buffers. Did we fail to load it?`);
@@ -164,7 +167,7 @@ const playMusic = (name,withLoop=true) => {
     }
 }
 
-const deleteTrack = name => {
+function deleteTrack(name) {
     console.log(`Audio manager: Deleted track '${name}'`);
     const node = musicNodes[name];
     node.stop();
@@ -172,14 +175,14 @@ const deleteTrack = name => {
     delete musicNodes[name];
 }
 
-const stopMusic = () => {
+function stopMusic() {
     for(let key in musicNodes) {
         deleteTrack(key);
     }
     startSyncTime = null;
 }
 
-const playSound = (name,duration) => {
+function playSound(name,duration) {
     const buffer = audioBuffers[name];
     if(buffer) {
         const bufferSourceNode = audioContext.createBufferSource();
@@ -194,7 +197,7 @@ const playSound = (name,duration) => {
     }
 }
 
-const addBufferSource = (fileName,callback,errorCallback) => {
+function addBufferSource(fileName,callback,errorCallback) {
     let newName = fileName.split("/").pop();
     const newNameSplit = newName.split(".");
     newName = newNameSplit[newNameSplit.length-2];
