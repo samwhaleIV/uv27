@@ -426,8 +426,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.fireFlies = new CrazyFlyingShitEffect();
 
     this.particleField = new ParticleFieldEffect();
-    this.particleWhammer = new ParticleWhammerEffect();
+    this.particleWhammer = Math.random() > 0.5 ? new ParticleWhammerEffect() : new FigureEightEffect();
     this.particleWhammer.calloutFunction = this.particleField.bumpRegion;
+
 
     this.render = timestamp => {
 
@@ -513,6 +514,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 hoverEffectX - this.hoverEffectSize,hoverEffectY - this.hoverEffectSize,
                 hoverWidth + this.doubleHoverSize,hoverHeight + this.doubleHoverSize
             );
+
         }
 
         if(this.leftDisabled) {

@@ -12,13 +12,9 @@ function ParticleWhammerEffect() {
     this.render = timestamp => {
         if(timestamp - lastUpdate > this.tickRate) {
             if(this.calloutFunction) {
-                const secondTimeNormal = (timestamp % this.secondRotationTime)/this.secondRotationTime;
+                const secondTimeNormal = timestamp % this.secondRotationTime / this.secondRotationTime;
                 const adjustedRadius = this.radius + Math.sin(PI2 * secondTimeNormal) * 100;
-
-
                 const timeNormal = (timestamp % this.rotationTime)/this.rotationTime;
-
-
                 const angle = timeNormal*PI2;
                 const x = this.centerX + (adjustedRadius * Math.cos(angle));
                 const y = this.centerY + (adjustedRadius * Math.sin(angle));
