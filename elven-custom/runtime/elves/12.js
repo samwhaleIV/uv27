@@ -44,7 +44,7 @@ function LeglessElf() {
         type: "self",
     
         process: (sequencer,user) => {
-            if(user.state.comboState.length !== 0) {
+            if(user.state.comboState && user.state.comboState.length !== 0) {
                 user.state.comboState = [];
                 user.subText = [noComboChainText];
                 user.addHealth(30);
@@ -376,6 +376,8 @@ function LeglessElf() {
             return move;
         }
     };
+
+    this.playerHealth = 200;
 
     this.playerMoves = [
         moves["krazy kick"],

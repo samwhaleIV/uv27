@@ -34,7 +34,7 @@ function RogueElf() {
         type: "self",
         process: (sequencer,user) => {
             const defaultEvent = {
-                text: "rogue elf's hatred fuels their spirit",
+                text: `${user.name}'s hatred fuels their spirit`,
                 action: () => user.addHealth(user.state.phasedOut ? 150 : ihatesantaHealAmount)
             };
             if(user.state.phasedOut) {
@@ -43,7 +43,7 @@ function RogueElf() {
             const endEvents = [];
             if(user.state.inCombo) {
                 endEvents.push({
-                    text: "rogue elf broke their combo",
+                    text: `${user.name} broke their combo`,
                     action: () => {
                         user.state.inCombo = false;
                         updateComboSubText(sequencer);
@@ -51,14 +51,16 @@ function RogueElf() {
                 });
             } else {
                 endEvents.push({
-                    text: "rogue elf starts their combo",
+                    text: `${user.name} starts their combo`,
                     action: () => {
                         user.state.inCombo = true;
                         user.state.comboIndex = 0;
                         updateComboSubText(sequencer);
                     }
                 });
-                defaultEvent.speech = "prince of darkness...";
+                if(user.name === "rogue elf") {
+                    defaultEvent.speech = "prince of darkness...";
+                }
             }
             endEvents.push(defaultEvent);
             return {
@@ -77,9 +79,11 @@ function RogueElf() {
             if(user.state.inCombo) {
                 const endEvents = [];
                 if(user.state.comboIndex === 0) {
-                    defaultEvent.speech = "\n...i beg unto thee...";
+                    if(user.name === "rogue elf") {
+                        defaultEvent.speech = "\n...i beg unto thee...";
+                    }
                     endEvents.push({
-                        text: "rogue elf continues their combo",
+                        text: `${user.name} continues their combo`,
                         action: () => {
                             user.state.comboIndex = 1;
                             updateComboSubText(sequencer);
@@ -87,7 +91,7 @@ function RogueElf() {
                     });
                 } else {
                     endEvents.push({
-                        text: "rogue elf broke their combo",
+                        text: `${user.name} broke their combo`,
                         action: () => {
                             user.state.comboIndex = 0;
                             user.state.inCombo = false;
@@ -115,9 +119,11 @@ function RogueElf() {
             if(user.state.inCombo) {
                 const endEvents = [];
                 if(user.state.comboIndex === 1) {
-                    defaultEvent.speech = "\n\n...kill this heathen"
+                    if(user.name === "rogue elf") {
+                        defaultEvent.speech = "\n\n...kill this heathen";
+                    }
                     endEvents.push(defaultEvent,{
-                        text: "this also finishes rogue elf's combo",
+                        text: `this also finishes ${user.name}'s combo`,
                         action: () => {
                             user.state.comboIndex++;
                             updateComboSubText(sequencer);
@@ -133,7 +139,7 @@ function RogueElf() {
                     });
                 } else {
                     endEvents.push({
-                        text: "rogue elf broke their combo",
+                        text: `${user.name} broke their combo`,
                         action: () => {
                             user.state.inCombo = false;
                             updateComboSubText(sequencer);
@@ -150,7 +156,7 @@ function RogueElf() {
             } else {
                 return {
                     failed: true,
-                    text: `${user.name} must used tainted holiday first`
+                    text: `${user.name} must use tainted holiday first`
                 }
             }
     
@@ -346,13 +352,13 @@ function RogueElf() {
     const getBloodSubText = blood => `${blood} percent blood capacity`;
     
     const updateElfBloodSubText = sequencer =>
-        sequencer.elfBattleObject.subText[0] = getBloodSubText(sequencer.elfBattleObject.state.blood);
+        sequencer.elfBattleObject.subText[2] = getBloodSubText(sequencer.elfBattleObject.state.blood);
     
     const updatePlayerBloodSubText = sequencer =>
         sequencer.playerBattleObject.subText[0] = getBloodSubText(sequencer.playerBattleObject.state.blood);
     
     const updateComboSubText = sequencer =>
-        sequencer.elfBattleObject.subText[2] = sequencer.elfBattleObject.state.inCombo ? `combo stage - ${sequencer.elfBattleObject.state.comboIndex+1} of 3` : "";
+        sequencer.elfBattleObject.subText[0] = sequencer.elfBattleObject.state.inCombo ? `combo stage - ${sequencer.elfBattleObject.state.comboIndex+1} of 3` : "not in combo";
     
     const updateBloodSubTexts = sequencer => {
         updateElfBloodSubText(sequencer);

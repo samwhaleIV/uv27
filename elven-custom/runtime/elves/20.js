@@ -7,7 +7,6 @@ function UpsideDownElf() {
         sequencer.dropHealth(sequencer.elfBattleObject,sequencer.elfBattleObject.maxHealth);
     }
 
-
     const setElfRightSideUp = sequencer => {
         sequencer.setRenderLayer(0,false);
         sequencer.setRenderLayer(1,true);

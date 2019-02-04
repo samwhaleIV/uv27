@@ -456,7 +456,7 @@ function PhaseShiftElf() {
             const moveSets = [
                 ["quantum detangle","glitch punch","quantum detangle","phase shift",],
                 ["confusion","trapezoid","hungry hungry potato","quantum detangle"],
-                ["multiverse","eternal darkness","trapezoid","glitch punch"],
+                ["eternal darkness","trapezoid","glitch punch"],
             ];
             const moveSet = moveSets[sequencer.elfBattleObject.state.dimensionIndex];
             const moveName = moveSet[sequencer.turnNumber % moveSet.length];

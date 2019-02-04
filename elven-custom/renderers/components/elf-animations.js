@@ -46,6 +46,19 @@ const animationDictionary = {
         },
         playOnce: false
     },
+    eyeballMurder: {
+        realTime: true,
+        playOnce: false,
+        flickerToggleInterval: 100,
+        render: (timestamp,x,y,width,height) => {
+            if(Math.floor(timestamp/animationDictionary.eyeballMurder.flickerToggleInterval) % 2 === 0) {
+                context.fillStyle = "white";
+                context.beginPath();
+                context.arc(x+width/2,y+height*0.29,60,0,PI2);
+                context.fill();
+            }
+        }
+    },
     henry: {
         realTime: true,
         ratio: 26 / 42,
