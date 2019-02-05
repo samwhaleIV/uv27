@@ -51,7 +51,7 @@ function IntroductionRenderer(endCallback) {
 
     this.start = timestamp => {
         this.startTime = timestamp + 500;
-        const timeoutTime = (this.messages.length+1)*this.fadeIn + 10000;
+        const timeoutTime = (this.messages.length+1)*this.fadeIn + 13000;
         timeout = setTimeout(endCallback,timeoutTime);
     }
 

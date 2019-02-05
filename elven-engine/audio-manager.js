@@ -26,6 +26,7 @@ let loopSyncTime = null;
 let introMuteManifest = {};
 let loopMuteManifest = {};
 let startSpeedManifest = {};
+let startDetuneManifest = {};
 
 function sendAudioBufferAddedCallback(name) {
     if(audioBufferAddedCallback) {
@@ -109,6 +110,9 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
         if(startSpeedManifest[introName]) {
             musicNode.playbackRate.setValueAtTime(startSpeedManifest[introName],audioContext.currentTime);
         }
+        if(startDetuneManifest[introName]) {
+            musicNode.detune.setValueAtTime(startDetuneManifest[introName],audioContext.currentTime);
+        }
         musicNode.buffer = introBuffer;
         musicNode.loop = false;
 
@@ -127,6 +131,9 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
             const loopMusicNode = audioContext.createBufferSource();
             if(startSpeedManifest[loopName]) {
                 loopMusicNode.playbackRate.setValueAtTime(startSpeedManifest[loopName],audioContext.currentTime);
+            }
+            if(startDetuneManifest[loopName]) {
+                loopMusicNode.detune.setValueAtTime(startDetuneManifest[loopName],audioContext.currentTime);
             }
             loopMusicNode.buffer = loopBuffer;
             loopMusicNode.loop = withLoop;
@@ -198,6 +205,7 @@ function stopMusic() {
     startSpeedManifest = {};
     introMuteManifest = {};
     loopMuteManifest = {};
+    startDetuneManifest = {};
 }
 
 function playSound(name,duration) {

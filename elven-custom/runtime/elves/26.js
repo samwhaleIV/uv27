@@ -35,12 +35,29 @@ function MurderedElf() {
         type: "interface",
         process: (sequencer,user) => {
             sequencer.globalBattleState.speechIndex++;
+            updateDetune(sequencer);
             return null;
         }
     }];
 
     this.song = "dead_loop";
     this.songIntro = "dead_intro";
+
+    const updateDetune = sequencer => {
+        const detuneAmount = (sequencer.globalBattleState.speechIndex+1) * 50;
+        if(musicNodes[this.song]) {
+            musicNodes[this.song].detune.setValueAtTime(detuneAmount,audioContext.currentTime);
+        } else {
+            startDetuneManifest[this.song] = detuneAmount;
+        }
+        if(musicNodes[this.songIntro]) {
+            musicNodes[this.songIntro].detune.setValueAtTime(detuneAmount,audioContext.currentTime);
+        } else {
+            startDetuneManifest[this.songIntro] = detuneAmount;
+        }
+    }
+
+    this.setup = updateDetune;
 
     this.getDefaultGlobalState = () => {
         return {

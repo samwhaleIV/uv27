@@ -78,7 +78,7 @@ function BattleSequencer(renderer) {
         } else if(this.debugInfinity) {
             return Infinity;
         } else {
-            return 15000;
+            return 30000;
         }
     }
 
