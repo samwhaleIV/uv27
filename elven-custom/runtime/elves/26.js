@@ -39,6 +39,9 @@ function MurderedElf() {
         }
     }];
 
+    this.song = "dead_loop";
+    this.songIntro = "dead_intro";
+
     this.getDefaultGlobalState = () => {
         return {
             speechIndex: -1,

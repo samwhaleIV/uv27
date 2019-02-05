@@ -406,7 +406,15 @@ function PhaseShiftElf() {
     this.foregroundColor = "red";
     this.health = 100;
 
+    this.song = "phase_loop";
+    this.songIntro = "phase_intro";
+
     this.getSpeech = sequencer => {
+        if(sequencer.turnNumber === 0) {
+            return {
+                text: "time is\n\ni r r e l e v a n t"
+            }
+        }
         if(sequencer.playerBattleObject.lastMove === "phase shift" && sequencer.playerBattleObject.state.phasedOut) {
             return {
                 text: "what scares a ghost\nthe most?\n\nat most it's\njust another ghost"

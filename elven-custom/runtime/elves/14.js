@@ -823,5 +823,8 @@ function OldTimeyElf() {
         }
     };
 
+    this.song = "old_loop";
+    this.songIntro = "old_intro";
+
     this.playerMoves = [...oldTimeyMoveTree.home,moves["stall"]];
 }

@@ -379,6 +379,9 @@ function LeglessElf() {
 
     this.playerHealth = 200;
 
+    this.song = "legless_loop";
+    this.songIntro = "legless_intro";
+
     this.playerMoves = [
         moves["krazy kick"],
         moves["dodgy dodge"],

@@ -36,6 +36,20 @@ function ScorchedElf() {
         );
         sequencer.renderer.background.color = colorByTemperature;
         sequencer.renderer.rightHealthBar.foregroundColor = colorByTemperature;
+
+        const playbackRate = sequencer.globalBattleState.temperature / startingTemperature;
+
+        if(musicNodes["scorched_intro"]) {
+            musicNodes["scorched_intro"].playbackRate.setValueAtTime(playbackRate,audioContext.currentTime);
+        } else {
+            startSpeedManifest["scorched_intro"] = playbackRate;
+        }
+        if(musicNodes["scorched_loop"]) {
+            musicNodes["scorched_loop"].playbackRate.setValueAtTime(playbackRate,audioContext.currentTime);
+        } else {
+            startSpeedManifest["scorched_loop"] = playbackRate;
+        }
+
     }
     const updateTemperatureSubTexts = sequencer => {
         updatePlayerTemperatureSubtext(sequencer);
@@ -364,9 +378,14 @@ function ScorchedElf() {
             sequencer.elfBattleObject.state.bakedCookies = true;
             return moves["bake cookies"];
         }
+
+        const punchMove = sequencer.globalBattleState.temperature < 90 ? "decent punch" : "fiery fist";
+
+        if(sequencer.playerBattleObject.lastMove === "decent punch") {
+            return Math.random() > 0.5 ?  moves[punchMove] : moves["global warming"];
+        }
         
         //Pioneers used to rideeeeeee these babies for miles.
-        const punchMove = sequencer.globalBattleState.temperature < 60 ? "wimpy punch" : "fiery fist";
         if(sequencer.playerBattleObject.lastMove === "anti antifreeze") {
             return Math.random() > 0.25 ? moves["global warming"] : moves[punchMove];
         } else if(sequencer.playerBattleObject.lastMove === "glacial blast") {
@@ -444,4 +463,6 @@ function ScorchedElf() {
             }
         }
     }
+    this.song = "scorched_loop";
+    this.songIntro = "scorched_intro";
 }

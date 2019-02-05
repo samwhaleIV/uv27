@@ -22,15 +22,16 @@ let audioBufferAddedCallback = null;
 let musicNodes = {}, musicMuted = false, soundMuted = false;
 
 let startSyncTime = null;
+let loopSyncTime = null;
 let introMuteManifest = {};
 let loopMuteManifest = {};
+let startSpeedManifest = {};
 
 function sendAudioBufferAddedCallback(name) {
     if(audioBufferAddedCallback) {
         audioBufferAddedCallback(name);
     }
 }
-
 
 function toggleMusicMute() {
     if(musicMuted) {
@@ -105,6 +106,9 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
         console.warn(`Audio manager: '${loopName}' or '${introName}' is missing from audio buffers. Did we fail to load it?`);
     } else {
         const musicNode = audioContext.createBufferSource();
+        if(startSpeedManifest[introName]) {
+            musicNode.playbackRate.setValueAtTime(startSpeedManifest[introName],audioContext.currentTime);
+        }
         musicNode.buffer = introBuffer;
         musicNode.loop = false;
 
@@ -119,6 +123,29 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
             startSyncTime = audioContext.currentTime + 0.01;
         }
 
+        musicNode.onended = () => {
+            const loopMusicNode = audioContext.createBufferSource();
+            if(startSpeedManifest[loopName]) {
+                loopMusicNode.playbackRate.setValueAtTime(startSpeedManifest[loopName],audioContext.currentTime);
+            }
+            loopMusicNode.buffer = loopBuffer;
+            loopMusicNode.loop = withLoop;
+
+            if(loopSyncTime === null) {
+                loopSyncTime = audioContext.currentTime;
+            }
+    
+            loopMusicNode.volumeControl = audioContext.createGain();
+            if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
+                loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
+            }
+            loopMusicNode.volumeControl.connect(musicOutputNode);
+            loopMusicNode.connect(loopMusicNode.volumeControl);
+    
+            loopMusicNode.start(loopSyncTime);
+            musicNodes[loopName] = loopMusicNode;
+        }
+
         //This works so long as we can process everything within introBuffer.duration - which should never happen
         if(audioContext.currentTime > startSyncTime) {
             musicNode.start(audioContext.currentTime,audioContext.currentTime-startSyncTime);
@@ -127,19 +154,6 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
         }
         musicNodes[introName] = musicNode;
 
-        const loopMusicNode = audioContext.createBufferSource();
-        loopMusicNode.buffer = loopBuffer;
-        loopMusicNode.loop = withLoop;
-
-        loopMusicNode.volumeControl = audioContext.createGain();
-        if(loopMuteManifest[loopName] && !loopMuteManifest[loopName].shouldPlay) {
-            loopMusicNode.volumeControl.gain.setValueAtTime(0,audioContext.currentTime);
-        }
-        loopMusicNode.volumeControl.connect(musicOutputNode);
-        loopMusicNode.connect(loopMusicNode.volumeControl);
-
-        loopMusicNode.start(startSyncTime+introBuffer.duration);
-        musicNodes[loopName] = loopMusicNode;
     }
 }
 
@@ -180,6 +194,10 @@ function stopMusic() {
         deleteTrack(key);
     }
     startSyncTime = null;
+    loopSyncTime = null;
+    startSpeedManifest = {};
+    introMuteManifest = {};
+    loopMuteManifest = {};
 }
 
 function playSound(name,duration) {
