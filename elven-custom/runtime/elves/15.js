@@ -382,7 +382,7 @@ function ScorchedElf() {
         const punchMove = sequencer.globalBattleState.temperature < 90 ? "decent punch" : "fiery fist";
 
         if(sequencer.playerBattleObject.lastMove === "decent punch") {
-            return Math.random() > 0.5 ?  moves[punchMove] : moves["global warming"];
+            return Math.random() < 0.75 ?  moves[punchMove] : moves["global warming"];
         }
         
         //Pioneers used to rideeeeeee these babies for miles.

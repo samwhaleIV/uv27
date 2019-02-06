@@ -128,6 +128,9 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
         }
 
         musicNode.onended = () => {
+            if(!musicNodes[introName]) {
+                return;
+            }
             const loopMusicNode = audioContext.createBufferSource();
             if(startSpeedManifest[loopName]) {
                 loopMusicNode.playbackRate.setValueAtTime(startSpeedManifest[loopName],audioContext.currentTime);
@@ -149,8 +152,9 @@ function playMusicWithIntro(loopName,introName,withLoop=true) {
             loopMusicNode.volumeControl.connect(musicOutputNode);
             loopMusicNode.connect(loopMusicNode.volumeControl);
     
-            loopMusicNode.start(loopSyncTime);
+            loopMusicNode.start(audioContext.currentTime + (audioContext.currentTime - loopSyncTime));
             musicNodes[loopName] = loopMusicNode;
+            deleteTrack(introName);
         }
 
         //This works so long as we can process everything within introBuffer.duration - which should never happen
