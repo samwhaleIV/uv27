@@ -356,7 +356,7 @@ function BattleSequencer(renderer) {
         } else if(target.isDead && move.type === "target") {
             moveResult = {
                 failed: true,
-                text: "but their target is already dead"
+                text: `but ${user.isPlayer?'your':'their'} target is already dead`
             }
         } else {
             let skip = false;
