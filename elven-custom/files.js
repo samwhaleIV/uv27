@@ -1,4 +1,5 @@
 "use strict";
+SetCustomFileSector("elven-custom");
 EssentialSounds.push(
     GetFile("swish-1.mp3",FileTypes.Sound),
     GetFile("swish-2.mp3",FileTypes.Sound),

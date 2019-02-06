@@ -8,8 +8,12 @@ const FileTypes = {
     Renderer: Symbol(),
     RendererComponent: Symbol(),
 }
-const GetFile = (path,type,isCustom=true) => {
-    let engineSector = isCustom ? "elven-custom" : "elven-engine";
+let customSector = "elven-custom";
+function SetCustomFileSector(sectorName) {
+    customSector = sectorName;
+}
+function GetFile(path,type,isCustom=true) {
+    let engineSector = isCustom ? customSector : "elven-engine";
     switch(type) {
         case FileTypes.None:
         default:
