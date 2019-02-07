@@ -3,11 +3,6 @@ function OverworldTestRenderer() {
 
     this.playerAnimator = new PlayerAnimator();
 
-    const tileWidth = fullWidth / 50;
-    const tileHeight = fullHeight / 50;
-
-    const tileRolloverTime = 1000;
-
     let playerY = 50, playerX = halfWidth;
     let jumpOffset = 0;
 
@@ -37,11 +32,6 @@ function OverworldTestRenderer() {
     let playerAttackMode = "none";
     let releasedAttackToggleKey = true;
 
-    let leftMovementBlocked = false;
-    let rightMovementBlocked = false;
-    let upMovementBlocked = false;
-    let downMovementBlocked = false;
-
     let lastBulletTime = 0;
     const bulletDelay = 1;
     const bulletVelocityChange = 1000;
@@ -59,18 +49,45 @@ function OverworldTestRenderer() {
 
     const collisionObjects = [
         null,{
+            name: "sq1",
             x: halfWidth,
             y: fullHeight - 500,
-            width: 50,
+            width: 200,
             height: 50,
         },
         {
+            name: "sq2",
             x: halfWidth,
             y: fullHeight - 50,
             width: 50,
             height: 50,
         }
     ];
+
+    let swordEnabled = false;
+    let gunEnabled = true;
+
+    this.enableSwordMode = () => {
+        swordEnabled = true;
+    }
+    this.disableSwordMode = () => {
+        swordEnabled = false;
+        if(playerAttackMode === "sword") {
+            playerAttackMode = "none";
+            this.playerAnimator.SetArmsIdle();
+        }
+    }
+    this.enableGunMode = () => {
+        gunEnabled = true;
+    }
+    this.disableGunMode = () => {
+        gunEnabled = false;
+        if(playerAttackMode === "gun") {
+            this.playerAnimator.HideGunActive();
+            this.playerAnimator.SetArmsIdle();
+            playerAttackMode = "none";
+        }
+    }
 
     const gameTick = () => {
         if(!playerJumping) {
@@ -90,12 +107,23 @@ function OverworldTestRenderer() {
             if(releasedAttackToggleKey) {
                 switch(playerAttackMode) {
                     case "none":
-                        this.playerAnimator.SetSwordArms();
-                        playerAttackMode = "sword";
+                        if(swordEnabled) {
+                            this.playerAnimator.SetSwordArms();
+                            playerAttackMode = "sword";
+                        } else if(gunEnabled) {
+                            this.playerAnimator.SetGunArms();
+                            playerAttackMode = "gun";                            
+                        }
                         break;
                     case "sword":
-                        this.playerAnimator.SetGunArms();
-                        playerAttackMode = "gun";
+                        this.playerAnimator.SetSwordArmsUnactive();
+                        if(gunEnabled) {
+                            this.playerAnimator.SetGunArms();
+                            playerAttackMode = "gun";
+                        } else {
+                            this.playerAnimator.SetArmsIdle();
+                            playerAttackMode = "none";        
+                        }
                         break;
                     case "gun":
                         this.playerAnimator.HideGunActive();
@@ -119,6 +147,7 @@ function OverworldTestRenderer() {
             switch(playerAttackMode) {
                 case "sword":
                     this.playerAnimator.SetSwordArmsActive();
+                    //Todo: Implement sword attack/collision
                     break;
                 case "gun":
                     this.playerAnimator.ShowGunActive();
@@ -126,7 +155,7 @@ function OverworldTestRenderer() {
                         const xOffset = 4.75*playerScale;
                         bullets.push({
                             positionX: playerX + (playerFacingRight?xOffset:-xOffset),
-                            positionY: fullHeight - (playerY + jumpOffset + 6.5*playerScale) + (playerCrouched&&!playerJumping?3*playerScale:0),
+                            positionY: fullHeight - (playerY + jumpOffset + 6.5*playerScale) + getCrouchDifference(),
                             isRight: playerFacingRight
                         });
                         lastBulletTime = performance.now();
@@ -181,6 +210,9 @@ function OverworldTestRenderer() {
         }
 
     }
+
+    const getCrouchDifference = () => playerCrouched && !playerJumping ? playerScale * 3 : 0;
+
     const getPlayerCollisionState = () => {
         const collision = {
             up:false,
@@ -194,44 +226,55 @@ function OverworldTestRenderer() {
             rightPos:null,
         }
 
-        const playerCrouchDifference = playerCrouched && !playerJumping ? playerScale * 3 : 0;
+        const playerCrouchDifference = getCrouchDifference();
         const collisionHeight = playerCollisionHeight - playerCrouchDifference;
         const playerCollisionYStart = fullHeight-playerCollisionHeight-(playerY+jumpOffset)+playerCrouchDifference;
         const playerCollisionYCenter = playerCollisionYStart + (collisionHeight / 2);
+        const playerCollisionYEnd = playerCollisionYStart + collisionHeight;
 
         let collisionIndex = collisionObjects.length;
 
         while(--collisionIndex) {
             const collisionItem = collisionObjects[collisionIndex];
+            const collisionItemXCenter = collisionItem.x + (collisionItem.width/2);
+            const collisionItemYCenter = collisionItem.y + (collisionItem.height/2);
 
             const w = 0.5 * (playerCollisionWidth + collisionItem.width);
             const h = 0.5 * (collisionHeight + collisionItem.height);
-            const dx = playerX - (collisionItem.x + (collisionItem.width/2));
-            const dy = playerCollisionYCenter - (collisionItem.y + (collisionItem.height/2));
 
-            if (Math.abs(dx) <= w && Math.abs(dy) <= h) {
+            const dx = playerX - collisionItemXCenter;
+            const dy = playerCollisionYCenter - collisionItemYCenter;
 
-                const wy = w * dy;
-                const hx = h * dx;
-                if (wy > hx) {
-                    if (wy > -hx) {
-                        collision.up = true;
-                        collision.upPos = collisionItem.y + collisionItem.height;
-                    } else {
-                        collision.right = true;
-                        collision.rightPos = collisionItem.x;
-                    }
-                } else {
-                    if (wy > -hx) {
-                        collision.left = true;
-                        collision.leftPos = collisionItem.x + collisionItem.width;
-                    } else {
-                        collision.down = true;
-                        collision.downPos = collisionItem.y;
-                    }
+            if(Math.abs(dx) <= w && Math.abs(dy) <= h) {
+                if(playerCollisionYStart <= collisionItem.y + collisionItem.height && playerCollisionYStart >= collisionItemYCenter) {
+                    collision.up = true;
+                    collision.upPos = collisionItem.y + collisionItem.height;
+                } else if(playerCollisionYEnd >= collisionItem.y && playerCollisionYEnd <= collisionItemYCenter) {
+                    collision.down = true;
+                    collision.downPos = collisionItem.y;
+                }
+
+                if(playerX + halfPlayerCollisionWidth >= collisionItem.x && playerX + halfPlayerCollisionWidth <= collisionItemXCenter) {
+                    collision.right = true;
+                    collision.rightPos = collisionItem.x;
+                } else if(playerX - halfPlayerCollisionWidth <= collisionItem.x + collisionItem.width && playerX - halfPlayerCollisionWidth >= collisionItemXCenter) {
+                    collision.left = true;
+                    collision.leftPos = collisionItem.x + collisionItem.width;
                 }
             }
 
+        }
+        if(collision.right && collision.down) {
+            collision.right = false;
+        }
+        if(collision.left && collision.down) {
+            collision.left = false;
+        }
+        if(collision.right && collision.up) {
+            collision.right = false;
+        }
+        if(collision.left && collision.up) {
+            collision.left = false;
         }
         return collision;
     }
@@ -283,6 +326,9 @@ function OverworldTestRenderer() {
     let lastFrame = 0;
 
     this.showHitBox = false;
+    this.toggleHitBoxVisible = () => {
+        this.showHitBox = !this.showHitBox;
+    }
 
     const updateJumpPosition = delta => {
         const newPos = jumpOffset + delta;
@@ -362,33 +408,22 @@ function OverworldTestRenderer() {
     }
     const updateBulletPositionX = (bullet,delta) => {
         bullet.positionX += delta;
+        //Todo: Bullet collision
     }
 
     this.render = timestamp => {
-
+        
+        const timeDelta = timestamp - lastFrame;
         context.clearRect(0,0,fullWidth,fullHeight);
 
-        const timeDelta = timestamp - lastFrame;
 
-        const tileOffset = (timestamp % tileRolloverTime / tileRolloverTime) * -100;
-        
-        for(let x = 0;x<tileWidth+2;x++) {
-            for(let y = 0;y<tileHeight;y++) {
-                context.fillStyle = (x + y) % 2 === 0 ? "rgb(30,30,30)" : "black";
-                context.fillRect(x*50+tileOffset,y*50,50,50);
-            }
-        }
 
         if(playerJumping) {
             if(jumpPhase > 0) {
-                if(!upMovementBlocked) {
-                    if(!updateJumpPosition((timeDelta / changeTimeFactor) * jumpChange)) {
-                        jumpPhase = -1;
-                    } else if(jumpOffset >= jumpMaxHeight) {
-                        jumpOffset = jumpMaxHeight;
-                        jumpPhase = -1;
-                    }
-                } else {
+                if(!updateJumpPosition((timeDelta / changeTimeFactor) * jumpChange)) {
+                    jumpPhase = -1;
+                } else if(jumpOffset >= jumpMaxHeight) {
+                    jumpOffset = jumpMaxHeight;
                     jumpPhase = -1;
                 }
             } else {
@@ -437,9 +472,14 @@ function OverworldTestRenderer() {
         context.fillRect(collisionObjects[2].x,collisionObjects[2].y,collisionObjects[2].width,collisionObjects[2].height);
 
         if(this.showHitBox) {
-            const playerCrouchDifference = playerCrouched&&!playerJumping?playerScale*3:0;
+            const playerCrouchDifference = getCrouchDifference();
             context.fillStyle = "rgba(0,0,255,0.5)";
-            context.fillRect(playerX-playerCollisionWidth/2,fullHeight-playerCollisionHeight-(playerY+jumpOffset)+playerCrouchDifference,playerCollisionWidth,playerCollisionHeight-playerCrouchDifference)
+            context.fillRect(
+                playerX-playerCollisionWidth/2,
+                fullHeight-playerCollisionHeight-(playerY+jumpOffset)+playerCrouchDifference,
+                playerCollisionWidth,
+                playerCollisionHeight-playerCrouchDifference
+            );
         }
 
         this.playerAnimator.render(timestamp,playerX,playerY+jumpOffset,playerScale);
