@@ -8,14 +8,17 @@ function PlayerAnimator() {
     const mirroredHeadImage = imageDictionary["heads-mirrored"];
     const mirroredArmsImage = imageDictionary["arms-mirrored"];
     
+    const swordFrameTime = 1000 / 10;
     const legsFrameTime = 1000 / 6;
+    const crouchFrame = 5;
     const legWalkFrames = [0,1,2,3];
 
     const swordsIdleFrame = 2;
     const swordActiveFrames = [0,1];
 
     const gunIdleFrame = 4;
-    const gunActiveFrame = 5;
+    const gunActiveFrames = [5,4];
+    const gunFrameTime = 100;
 
     let isMirrored = false;
 
@@ -23,7 +26,6 @@ function PlayerAnimator() {
     const legIdleFrame = 4;
     const armIdleFrame = 6;
     const armAirFrame = 3;
-    const armAirFrameOffset = 1;
 
     const defaultHeadFrame = 0;
 
@@ -61,7 +63,41 @@ function PlayerAnimator() {
         walkingSpeed = speed;
     }
 
-    //todo set arms
+    let armState = 0;
+
+    this.SetArmsIdle = () => {
+        armState = 0;
+    }
+
+    this.SetGunArms = () => {
+        armState = 1;
+    }
+    let gunIsActive = false;
+    this.ShowGunActive = () => {
+        gunIsActive = true;
+    }
+    this.HideGunActive = () => {
+        gunIsActive = false;
+    }
+
+    let swordArmsActive = false;
+    this.SetSwordArms = () => {
+        armState = 2;
+    }
+    this.SetSwordArmsActive = () => {
+        swordArmsActive = true;
+    }
+    this.SetSwordArmsUnactive = () => {
+        swordArmsActive = false;
+    }
+
+    let crouched = false;
+    this.SetCrouched = () => {
+        crouched = true;
+    }
+    this.SetUncrouched = () => {
+        crouched = false;
+    }
 
     let globalXOffset;
     let globalYOffset;
@@ -101,19 +137,59 @@ function PlayerAnimator() {
         let legsFrame;
 
         const xOffset = -(headWidth / 2);
-        const yOffset = -totalHeight;
+        let yOffset = -totalHeight;
 
-        if(inAir) {
-            armsFrame = armAirFrame;
-            legsFrame = legAirFrame;
+        if(crouched) {
+            if(inAir) {
+                legsFrame = legAirFrame;
+            } else {
+                legsFrame = crouchFrame;
+                yOffset += scale * 3;
+            }
         } else {
             if(legsMoving) {
-                legsFrame = legWalkFrames[Math.floor((timestamp / legsFrameTime*walkingSpeed) % legWalkFrames.length)];
+                if(inAir) {
+                    legsFrame = legAirFrame;
+                } else {
+                    legsFrame = legWalkFrames[
+                        Math.floor((timestamp / legsFrameTime*walkingSpeed) % legWalkFrames.length)
+                    ];
+                }
             } else {
-                legsFrame = legIdleFrame;
+                if(inAir) {
+                    legsFrame = legAirFrame;
+                } else {
+                    legsFrame = legIdleFrame;
+                }
             }
-            armsFrame = armIdleFrame;
-            //todo set real arms frame
+        }
+
+        switch(armState) {
+            default:
+                if(inAir) {
+                    armsFrame = armAirFrame;
+                } else {
+                    armsFrame = armIdleFrame;
+                }
+                break;
+            case 1:
+                if(gunIsActive) {
+                    armsFrame = gunActiveFrames[
+                        Math.floor(timestamp / gunFrameTime % gunActiveFrames.length)
+                    ];
+                } else {
+                    armsFrame = gunIdleFrame;
+                }
+                break;
+            case 2:
+                if(swordArmsActive) {
+                    armsFrame = swordActiveFrames[
+                        Math.floor(timestamp / swordFrameTime % swordActiveFrames.length)
+                    ];
+                } else {
+                    armsFrame = swordsIdleFrame;
+                }
+                break;
         }
 
         context.drawImage(
@@ -132,7 +208,7 @@ function PlayerAnimator() {
             0,armsFrame*armsFrameHeight,
             armsFrameWidth,armsFrameHeight,
 
-            destinationX+xOffset+(inAir?isMirrored?scale:-scale:0)+(isMirrored?scale*-6:0),
+            destinationX+xOffset+(armsFrame===armAirFrame?isMirrored?scale:-scale:0)+(isMirrored?scale*-6:0),
             armsY+yOffset,
             armsWidth,armsHeight
         );

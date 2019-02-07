@@ -98,17 +98,6 @@ const startButtonUp = () => {
     window.onkeyup(startButtonCode);
 };
 
-const leftBumperCode = {code:"LeftBumper"};
-const rightBumperCode = {code:"RightBumper"};
-const aButtonCode = {code:"Enter"};
-const yButtonCode = {code:"KeyP"};
-const bButtonCode = {code:"Escape"};
-const upButtonCode = {code:"KeyW"};
-const downButtonCode = {code:"KeyS"};
-const leftButtonCode = {code:"KeyA"};
-const rightButtonCode = {code:"KeyD"};
-const startButtonCode = {code:"Enter"};
-
 function processGamepad(gamepad) {
 
     processButton("LeftBumper",leftBumperDown,leftBumperUp,gamepad.buttons[4],gamepad.timestamp);

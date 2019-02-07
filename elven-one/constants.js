@@ -1,5 +1,11 @@
 "use strict";
-const elfCount = 27;
-const elfSourceWidth = 11;
-const elfSourceHeight = 24;
-const highestElfIndex = elfCount-1;
+leftBumperCode = {code:"LeftBumper"};
+rightBumperCode = {code:"RightBumper"};
+aButtonCode = {code:"Enter"};
+yButtonCode = {code:"KeyP"};
+bButtonCode = {code:"KeyZ"};
+upButtonCode = {code:"KeyW"};
+downButtonCode = {code:"KeyS"};
+leftButtonCode = {code:"KeyA"};
+rightButtonCode = {code:"KeyD"};
+startButtonCode = {code:"Enter"};
