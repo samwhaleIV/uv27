@@ -359,7 +359,12 @@ function OverworldTestRenderer() {
         return false;
     }
     const updatePlayerPositionX = delta => {
-        const newPos = playerX + delta;
+        let newPos = playerX + delta;
+        if(newPos < 0) {
+            newPos += fullWidth;
+        } else if(newPos > fullWidth) {
+            newPos -= fullWidth;
+        }
         const collisionState = getPlayerCollisionState();
         if(delta > 0) {
             if(!collisionState.right) {

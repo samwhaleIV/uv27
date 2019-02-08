@@ -36,7 +36,7 @@ function ScorchedElf() {
         );
         sequencer.renderer.background.color = colorByTemperature;
         sequencer.renderer.rightHealthBar.foregroundColor = colorByTemperature;
-
+/*
         const playbackRate = sequencer.globalBattleState.temperature / startingTemperature;
 
         if(musicNodes["scorched_intro"]) {
@@ -48,7 +48,7 @@ function ScorchedElf() {
             musicNodes["scorched_loop"].playbackRate.setValueAtTime(playbackRate,audioContext.currentTime);
         } else {
             startSpeedManifest["scorched_loop"] = playbackRate;
-        }
+        }*/
 
     }
     const updateTemperatureSubTexts = sequencer => {

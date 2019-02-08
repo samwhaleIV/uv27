@@ -425,9 +425,9 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.fireEffect = new FireEffect();
     this.fireFlies = new CrazyFlyingShitEffect();
 
-    this.particleField = new ParticleFieldEffect();
-    this.particleWhammer = Math.random() > 0.5 ? new ParticleWhammerEffect() : new FigureEightEffect();
-    this.particleWhammer.calloutFunction = this.particleField.bumpRegion;
+    //this.particleField = new ParticleFieldEffect();
+    //this.particleWhammer = Math.random() > 0.5 ? new ParticleWhammerEffect() : new FigureEightEffect();
+    //this.particleWhammer.calloutFunction = this.particleField.bumpRegion;
 
 
     this.render = timestamp => {
@@ -438,8 +438,8 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
             this.fireEffect.render(timestamp);
             this.fireFlies.render(timestamp);
         } else if(this.currentIndex === 20) {
-            this.particleField.render(timestamp);
-            this.particleWhammer.render(timestamp);
+            //this.particleField.render(timestamp);
+            //this.particleWhammer.render(timestamp);
         }
 
         if(this.elf.defaultRenderLayers) {
