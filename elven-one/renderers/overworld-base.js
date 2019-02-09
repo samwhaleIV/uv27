@@ -88,6 +88,17 @@ function OverworldTestRenderer() {
             centerY: worldObject.y + (worldObject.height / 2)
         }
     }
+    
+    const getBulletCollisionBounds = bullet => {
+        return {
+            top: bullet.positionY,
+            bottom:bullet.positionY+bulletSize,
+            left:bullet.positionX,
+            right:bullet.positionX+bulletSize,
+            centerX:bullet.positionX+halfBulletSize,
+            centerY:bullet.positionY+halfBulletSize
+        }
+    }
 
     const currentID = 0;
     const worldObjects = {
@@ -238,8 +249,9 @@ function OverworldTestRenderer() {
                         const xOffset = 4.75*playerScale;
                         bullets.push({
                             positionX: playerObject.x + (playerFacingRight?xOffset:-xOffset),
-                            positionY: fullHeight - (playerObject.y + 6.5*playerScale) + getCrouchDifference(),
-                            isRight: playerFacingRight
+                            positionY: (playerObject.y + 6.5*playerScale) - getCrouchDifference(),
+                            isRight: playerFacingRight,
+                            getCollisionBounds: getBulletCollisionBounds
                         });
                         lastBulletTime = performance.now();
                     }
@@ -258,10 +270,10 @@ function OverworldTestRenderer() {
         if(!(pressedKeys["Left"] && pressedKeys["Right"]) && !playerCrouched) {
             if(pressedKeys["Left"]) {
                 //Start travel left
-                if(!(pressedKeys["Attack"] && playerAttackMode === "gun")) {
+                //if(!(pressedKeys["Attack"] && playerAttackMode === "gun")) {
                     playerFacingRight = false;
                     this.playerAnimator.SetMirrored();
-                }
+                //}
                 playerVelocity = -1;
                 playerMoving = true;
                 if(walkStartTime === null) {
@@ -269,10 +281,10 @@ function OverworldTestRenderer() {
                 }
             } else if(pressedKeys["Right"]) {
                 //Start travel right
-                if(!(pressedKeys["Attack"] && playerAttackMode === "gun")) {
+                //if(!(pressedKeys["Attack"] && playerAttackMode === "gun")) {
                     playerFacingRight = true;
                     this.playerAnimator.SetNotMirrored();
-                }
+                //}
                 playerVelocity = 1;
                 playerMoving = true;
                 if(walkStartTime === null) {
@@ -474,74 +486,86 @@ function OverworldTestRenderer() {
         } else if(newPos > fullWidth) {
             newPos -= fullWidth;
         }
-        let collisionState = getCollisionState(playerObject);
-        const playerBounds = collisionState.bounds;
-        if(collisionState.all) {
-            collisionState = collisionState.all[0];//To change in the future
-            applyCornerClipping(collisionState);
-        } else {
+        const collisionStateResult = getCollisionState(playerObject);
+        const playerBounds = collisionStateResult.bounds;
+        const collisionStates = collisionStateResult.all;
+        if(!collisionStates) {
             playerObject.x = newPos;
             return;
         }
+        let noCollision = true
         if(delta > 0) {
-            if(!collisionState.right) {
-                playerObject.x = newPos;
-                this.playerAnimator.SetLegsMoving();
-            } else {
-                if(playerBounds.right > collisionState.bounds.left) {
-                    playerObject.x = collisionState.bounds.left - halfPlayerCollisionWidth;
+            for(let i = 0; i<collisionStates.length;i++) {
+                const collisionState = collisionStates[i];
+                applyCornerClipping(collisionState);
+                if(collisionState.right) {
+                    if(playerBounds.right > collisionState.bounds.left) {
+                        playerObject.x = collisionState.bounds.left - halfPlayerCollisionWidth;
+                    }
+                    noCollision = false;
                 }
-                this.playerAnimator.SetLegsIdle();
             }
         } else if(delta < 0) {
-            if(!collisionState.left) {
-                playerObject.x = newPos;
-                this.playerAnimator.SetLegsMoving();
-            } else {
-                if(playerBounds.left < collisionState.bounds.right) {
-                    playerObject.x = collisionState.bounds.right + halfPlayerCollisionWidth;
+            for(let i = 0;i<collisionStates.length;i++) {
+                const collisionState = collisionStates[i];
+                applyCornerClipping(collisionState);
+                if(collisionState.left) {
+                    if(playerBounds.left < collisionState.bounds.right) {
+                        playerObject.x = collisionState.bounds.right + halfPlayerCollisionWidth;
+                    }
+                    noCollision = false;
                 }
-                this.playerAnimator.SetLegsIdle();
             }
+        }
+        if(noCollision) {
+            playerObject.x = newPos;
+            this.playerAnimator.SetLegsMoving();
+        } else {
+            this.playerAnimator.SetLegsIdle();
         }
     }
     const updatePlayerPositionY = delta => {
         const newPos = playerObject.y + delta;
-        let collisionState = getCollisionState(playerObject);
-        const playerBounds = collisionState.bounds;
-        if(collisionState.all) {
-            collisionState = collisionState.all[0];//To change in the future
-            applyCornerClipping(collisionState);
-        } else {
+        const collisionStateResult = getCollisionState(playerObject);
+        const playerBounds = collisionStateResult.bounds;
+        const collisionStates = collisionStateResult.all;
+        if(!collisionStates) {
             playerObject.y = newPos;
             return true;
-        }
+        }/*
         if(playerBounds.left === collisionState.bounds.right || playerBounds.right === collisionState.bounds.left) {
             playerObject.y = newPos;
             return true;
-        }
+        }*/
+        let noCollision = true;
         if(delta > 0) {
-            if(!collisionState.up) {
-                playerObject.y = newPos;
-                return true;
-            } else {
-                if(playerBounds.top > collisionState.bounds.bottom) {
-                    playerObject.y = collisionState.bounds.bottom - playerBounds.height;
+            for(let i = 0;i<collisionStates.length;i++) {
+                const collisionState = collisionStates[i];
+                applyCornerClipping(collisionState);
+                if(collisionState.up) {
+                    if(playerBounds.top > collisionState.bounds.bottom) {
+                        playerObject.y = collisionState.bounds.bottom - playerBounds.height;
+                    }
+                    noCollision = false;
                 }
-                return false;
             }
         } else if(delta < 0) {
-            if(!collisionState.down) {
-                playerObject.y = newPos;
-                return true;
-            } else {
-                if(playerBounds.bottom < collisionState.bounds.top) {
-                    playerObject.y = collisionState.bounds.top;
+            for(let i = 0;i<collisionStates.length;i++) {
+                const collisionState = collisionStates[i];
+                applyCornerClipping(collisionState);
+                if(collisionState.down) {
+                    if(playerBounds.bottom < collisionState.bounds.top) {
+                        playerObject.y = collisionState.bounds.top;
+                    }
+                    noCollision = false;
                 }
-                return false;
             }
         }
-        return false;
+
+        if(noCollision) {
+            playerObject.y = newPos;
+        }
+        return noCollision;
     }
     const updateBulletPositionX = (bullet,delta) => {
         const newPos = bullet.positionX + delta;
@@ -637,7 +661,7 @@ function OverworldTestRenderer() {
                 context.fillStyle = "white";
                 context.fillRect(
                     bullet.positionX-halfBulletSize,
-                    bullet.positionY-halfBulletSize,
+                    fullHeight-bullet.positionY-halfBulletSize,
                     bulletSize,bulletSize
                 );
             } else {
