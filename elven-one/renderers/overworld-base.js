@@ -13,7 +13,7 @@ function OverworldTestRenderer() {
         this.ID = "player";
         this.type = "player";
         this.y = 50;
-        this.x = halfWidth;
+        this.x = 0;
         this.noCollide = false;
         this.zIndex = 100;
         this.getCollisionBounds = () => {
@@ -29,7 +29,7 @@ function OverworldTestRenderer() {
             }
         }
         this.render = timestamp => {
-            playerAnimator.render(timestamp,this.x,this.y,playerScale);
+            playerAnimator.render(timestamp,halfWidth,this.y,playerScale);
         }
     });
     const changeTimeFactor = 1000;
@@ -67,10 +67,10 @@ function OverworldTestRenderer() {
     let playerCrouched = false;
     let worldObjectsList = null;
 
-    const genericSquareRender = (timestamp,worldObject) => {
+    const genericSquareRender = (timestamp,worldObject,xOffset) => {
         context.fillStyle = worldObject.isCollided ? "blue" : "red";
         context.fillRect(
-            worldObject.x,
+            worldObject.x+xOffset,
             fullHeight-worldObject.y-worldObject.height,
             worldObject.width,
             worldObject.height
@@ -107,19 +107,22 @@ function OverworldTestRenderer() {
             ID: "sq1",
             x: 0,
             y: 0,
-            width: halfWidth,
-            height: 200,
-            horizontalVelocity: -100,
+            width: 150,
+            height: 50,
+            horizontalVelocity: 0,
+            verticalVelocity: 0,
+            collisionMode: "push",
             render: genericSquareRender,
             getCollisionBounds: genericBoundsGenerator
         },
         sq2: {
             ID: "sq2",
-            x: fullWidth-50,
-            y: 0,
-            width: 50,
+            x: 200,
+            y: 300,
+            width: fullWidth,
             height: 50,
-            horizontalVelocity: 50,
+            horizontalVelocity: 0,
+            verticalVelocity: 70,
             collisionMode: "push",
             render: genericSquareRender,
             getCollisionBounds: genericBoundsGenerator
@@ -152,7 +155,7 @@ function OverworldTestRenderer() {
         return removedObject;
     }
 
-    regenerateWordObjectsList();//DEBUG ONLY
+    regenerateWordObjectsList();//Put this in some initialization function
 
     this.updateObjectZIndex = (objectID,zIndex) => {
         worldObjects[objectID].zIndex = zIndex;
@@ -304,6 +307,10 @@ function OverworldTestRenderer() {
             this.playerAnimator.SetLegsIdle();
         }
 
+        if(worldObjects.sq2.y > fullHeight || worldObjects.sq2.y < -10) {
+            worldObjects.sq2.verticalVelocity = -worldObjects.sq2.verticalVelocity;
+        }
+
     }
 
     const applyCornerClipping = collisionResult => {
@@ -375,7 +382,7 @@ function OverworldTestRenderer() {
                     bounds: collisionItemBounds
                 };
                 let shouldAdd = false;
-                if(worldObjectBounds.top >= collisionItemBounds.bottom && worldObjectBounds.top <= collisionItemBounds.centerY) {
+                if(worldObjectBounds.top >= collisionItemBounds.bottom && worldObjectBounds.bottom < collisionItemBounds.bottom) {
                     collisionResult.up = true;
                     if(collision.up) {
                         collision.up.push(collisionResult);
@@ -384,7 +391,7 @@ function OverworldTestRenderer() {
                     }
                     shouldAdd = true;
                 }
-                if(worldObjectBounds.bottom <= collisionItemBounds.top && worldObjectBounds.bottom >= collisionItemBounds.centerY) {
+                if(worldObjectBounds.bottom <= collisionItemBounds.top && worldObjectBounds.bottom > collisionItemBounds.bottom) {
                     collisionResult.down = true;
                     if(collision.down) {
                         collision.down.push(collisionResult);
@@ -480,12 +487,7 @@ function OverworldTestRenderer() {
     }
 
     const updatePlayerPositionX = delta => {
-        let newPos = playerObject.x + delta;
-        if(newPos < 0) {
-            newPos += fullWidth;
-        } else if(newPos > fullWidth) {
-            newPos -= fullWidth;
-        }
+        const newPos = playerObject.x + delta;
         const collisionStateResult = getCollisionState(playerObject);
         const playerBounds = collisionStateResult.bounds;
         const collisionStates = collisionStateResult.all;
@@ -497,8 +499,10 @@ function OverworldTestRenderer() {
         if(delta > 0) {
             for(let i = 0; i<collisionStates.length;i++) {
                 const collisionState = collisionStates[i];
-                applyCornerClipping(collisionState);
-                if(collisionState.right) {
+                if(playerObject.y >= collisionState.worldObject.y) {
+                    applyCornerClipping(collisionState);
+                }
+                if(collisionState.right && !playerBounds.top >= collisionState.bounds.bottom) {
                     if(playerBounds.right > collisionState.bounds.left) {
                         playerObject.x = collisionState.bounds.left - halfPlayerCollisionWidth;
                     }
@@ -508,8 +512,10 @@ function OverworldTestRenderer() {
         } else if(delta < 0) {
             for(let i = 0;i<collisionStates.length;i++) {
                 const collisionState = collisionStates[i];
-                applyCornerClipping(collisionState);
-                if(collisionState.left) {
+                if(playerObject.y >= collisionState.worldObject.y) {
+                    applyCornerClipping(collisionState);
+                }
+                if(collisionState.left && !playerBounds.top >= collisionState.bounds.bottom) {
                     if(playerBounds.left < collisionState.bounds.right) {
                         playerObject.x = collisionState.bounds.right + halfPlayerCollisionWidth;
                     }
@@ -532,11 +538,7 @@ function OverworldTestRenderer() {
         if(!collisionStates) {
             playerObject.y = newPos;
             return true;
-        }/*
-        if(playerBounds.left === collisionState.bounds.right || playerBounds.right === collisionState.bounds.left) {
-            playerObject.y = newPos;
-            return true;
-        }*/
+        }
         let noCollision = true;
         if(delta > 0) {
             for(let i = 0;i<collisionStates.length;i++) {
@@ -577,12 +579,7 @@ function OverworldTestRenderer() {
         return true;
     }
     const updateObjectPositionX = (worldObject,delta) => {
-        let newPos = worldObject.x + delta;
-        if(newPos < -worldObject.width) {
-            newPos += fullWidth+worldObject.width;
-        } else if(newPos > fullWidth) {
-            newPos = 0 - worldObject.width;
-        }
+        const newPos = worldObject.x + delta;
         if(worldObject.collisionMode === "push") {
             worldObject.x = newPos;
             const collisionState = getCollisionState(worldObject,null,worldObject.pushFilter);
@@ -591,24 +588,47 @@ function OverworldTestRenderer() {
                 for(let i = 0; i < collisionState.left.length;i++) {
                     const collidedWithObject = collisionState.left[i];
                     if(collidedWithObject.up || delta < 0) {
-                        collidedWithObject.worldObject.x += delta;
+                        updateObjectPositionX(collidedWithObject.worldObject,delta);
                     }
                 }
             }
             if(collisionState.right) {
                 for(let i = 0; i < collisionState.right.length;i++) {
                     const collidedWithObject = collisionState.right[i];
-                    if(!collidedWithObject.left && (collidedWithObject.up || delta > 1)) {
-                        collidedWithObject.worldObject.x += delta;
+                    if(!collidedWithObject.left && (collidedWithObject.up || delta > 0)) {
+                        updateObjectPositionX(collidedWithObject.worldObject,delta);
                     }
                 }
             }
+        } else {
+            worldObject.x = newPos;
         }
     }
     const updateObjectPositionY = (worldObject,delta) => {
-        const newPos = worldObject.y + delta;
-        const collisionState = getCollisionState(worldObject);
-        //Todo: Implement multiple collision modes, process here, implement functional getCollisionState filters
+        let newPos = worldObject.y + delta;
+        if(worldObject.collisionMode === "push") {
+            worldObject.y = newPos;
+            const collisionState = getCollisionState(worldObject,null,worldObject.pushFilter);
+
+            if(collisionState.up) {
+                const collidedWithObject = collisionState.up.sort((a,b)=>{
+                    a.worldObject.y > b.worldObject.y ? -1 : 1;
+                })[0];
+                if(collidedWithObject.worldObject.type === "player") {
+                    collidedWithObject.worldObject.y = collisionState.bounds.top;
+                } else {
+                    updateObjectPositionY(collidedWithObject.worldObject,delta);
+                }
+            }/*
+            if(collisionState.down) {
+                for(let i = 0; i < collisionState.down.length;i++) {
+                    const collidedWithObject = collisionState.down[i];
+                    updateObjectPositionY(collidedWithObject.worldObject,delta);
+                }
+            }*/
+        } else {
+            worldObject.y = newPos;
+        }
     }
 
     let jumpEnd = false;
@@ -616,6 +636,10 @@ function OverworldTestRenderer() {
         const timeDelta = timestamp - lastFrame;
         const timeDeltaFactor = timeDelta / changeTimeFactor;
         lastFrame = timestamp;
+        if(timeDeltaFactor > 0.1) {
+            console.info("Dropped a renderer frame");
+            return;
+        }
         if(playerJumping && !jumpEnd) {
             if(updatePlayerPositionY(timeDeltaFactor * jumpChange)) {
                 if(playerObject.y >= jumpStart + jumpMaxHeight) {
@@ -631,16 +655,15 @@ function OverworldTestRenderer() {
                     jumpEnd = false;
                     playerJumping = false;
                 }
-
             }
-            if(playerObject.y < 0) {
-                if(jumpEnd) {
-                    this.playerAnimator.SetOnLand();
-                    jumpEnd = false;
-                    playerJumping = false;
-                }
-                playerObject.y = 0;
+        }
+        if(playerObject.y < 0) {
+            if(jumpEnd) {
+                jumpEnd = false;
+                playerJumping = false;
             }
+            this.playerAnimator.SetOnLand();
+            playerObject.y = 0;
         }
         if(playerMoving && timestamp >= walkStartDelay + walkStartTime) {
             this.playerAnimator.SetLegsMoving();
@@ -681,7 +704,7 @@ function OverworldTestRenderer() {
             }
 
             if(worldObject.render) {
-                worldObject.render(timestamp,worldObject);
+                worldObject.render(timestamp,worldObject,halfWidth-playerObject.x);
             }
         }
 
