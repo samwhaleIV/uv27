@@ -38,7 +38,7 @@ function BonusScreenRenderer(endCallback) {
         context.clearRect(0,0,fullWidth,fullHeight);
         drawTextWhite("death is only the beginning of something new.",15,15,3);
 
-        drawTextWhite("see you around.",15,45,3);
+        drawTextWhite("i'll see you around... :)",15,45,3);
         this.fader.render(timestamp);
     }
 }

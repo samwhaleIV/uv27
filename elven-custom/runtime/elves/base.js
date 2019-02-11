@@ -171,8 +171,12 @@ const moves = {
     "honorable suicide": {
         type: "self",
         name: "honorable suicide",
-        process: (sequencer,user) => {
-            sequencer.dropHealth(user,user.maxHealth);
+        process: (sequencer,user,target) => {
+            if(target.name === "the boss elf") {
+                sequencer.dropHealth(user,user.maxHealth-1);
+            } else {
+                sequencer.dropHealth(user,user.maxHealth);
+            }
             return {
                 text: `${user.name} made an honor bound choice`
             }
@@ -186,7 +190,11 @@ const moves = {
                 localStorage.setItem("pleadedGuilty",sequencer.playerBattleObject.state.guiltyCount);
                 localStorage.setItem("pleadedNotGuilty",sequencer.playerBattleObject.state.notGuiltyCount);
             }
-            sequencer.dropHealth(target,target.maxHealth);
+            if(target.name === "the boss elf") {
+                sequencer.dropHealth(target,target.maxHealth-1);
+            } else {
+                sequencer.dropHealth(target,target.maxHealth);
+            }
             return {
                 text: `${target.name} got f****d up`
             }

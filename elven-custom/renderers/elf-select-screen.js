@@ -247,11 +247,11 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.muteButton2TextY = this.muteButton2Y + Math.floor(muteButtonHalfHeight - (muteButton2TextTest.height / 2));
 
     this.replayButtonX = 15;
-    this.replayButtonWidth = this.muteButtonWidth + 50;
+    this.replayButtonWidth = this.muteButtonWidth + 60;
     this.replayButtonHeight = this.muteButtonHeight;
     this.replayButtonY = this.muteButton1Y;
 
-    const replayButtonTextWidth = drawTextTest("introduction",this.muteButtonTextScale).width;
+    const replayButtonTextWidth = drawTextTest("play intro (again)",this.muteButtonTextScale).width;
 
     this.replayButtonTextX = this.replayButtonX + Math.floor((this.replayButtonWidth / 2) - (replayButtonTextWidth / 2));
     this.replayButtonTextY = this.muteButton1TextY;
@@ -580,7 +580,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                 this.replayButtonHeight
             );
 
-            drawTextBlack("introduction",this.replayButtonTextX,this.replayButtonTextY,this.muteButtonTextScale);
+            drawTextBlack("play intro (again)",this.replayButtonTextX,this.replayButtonTextY,this.muteButtonTextScale);
         }
 
         drawTextBlack(musicMuted ? "no music" : "music on",this.muteButton1TextX,this.muteButton1TextY,this.muteButtonTextScale);

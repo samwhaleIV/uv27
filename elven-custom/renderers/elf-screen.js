@@ -278,7 +278,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         if(!activeAnimation.complete) {
                             const timestampDifference = timestamp-activeAnimation.startTime;
                             if(animation.realTime) {
-    
                                 if(timestampDifference >= animation.fullDuration) {
                                     activeAnimation.complete = true;
                                     activeAnimation.playing = false;
@@ -315,6 +314,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     }
                     i++;
                 }
+            }
+        } else {
+            for(let i = 0;i<this.battleSequencer.activeAnimations.length;i++) {
+                const activeAnimation = this.battleSequencer.activeAnimations[i];
+                const animation = animationDictionary[activeAnimation.name];
+                animation.render(timestamp);
             }
         }
 

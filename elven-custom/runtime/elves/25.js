@@ -114,7 +114,7 @@ function MurderElf() {
                         break;
                     case 22:
                         //corrupt
-                        s = "trapped in a\nlimbo-like hell forever";
+                        s = "question answering\nrelated death";
                         break;
                     case 23:
                         s = "blinded and incinerated\nby an led flashlight";

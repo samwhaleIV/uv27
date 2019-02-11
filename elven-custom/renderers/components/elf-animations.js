@@ -23,6 +23,11 @@ const loadElfAnimationMetadata = () => {
     }
 }
 const animationDictionary = {
+    fire: {
+        realTime: true,
+        fireEffect: null,
+        render: timestamp => animationDictionary.fire.fireEffect.render(timestamp)
+    },
     crying: {
         realTime: true,
         fullDuration: 750,
