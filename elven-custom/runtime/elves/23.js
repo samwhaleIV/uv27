@@ -34,6 +34,8 @@ function CorruptElf() {
                 return "battle had puns?";
             case "hasWhiteGloves":
                 return "wears white gloves?";
+            case "wantsToDie":
+                return "wanted to die?";
         }
     }
 
@@ -80,6 +82,8 @@ function CorruptElf() {
                 return `${prefix}battle involved puns?\n${answerString}`;
             case "hasWhiteGloves":
                 return `${prefix}wearing white gloves?\n${answerString}`;
+            case "wantsToDie":
+                return `${prefix}wanted to die?\n${answerString}`;
         }
     }
 
@@ -95,7 +99,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Unknown,
             hasAGoodSenseOfHumor: guessAnswers.Unknown,
             makesPuns: guessAnswers.Unknown,
-            hasWhiteGloves: guessAnswers.Unknown
+            hasWhiteGloves: guessAnswers.Unknown,
+            wantsToDie: guessAnswers.Unknown
         }
     }
     const elfProperties = [
@@ -111,7 +116,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[1].name,
@@ -125,7 +131,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[2].name,
@@ -139,7 +146,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[3].name,
@@ -153,7 +161,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[4].name,
@@ -167,7 +176,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[5].name,
@@ -181,7 +191,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[6].name,
@@ -195,7 +206,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.Probably,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[7].name,
@@ -209,7 +221,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.Kinda,
             makesPuns: guessAnswers.Yes,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[8].name,
@@ -223,7 +236,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.Probably
         },
         {
             name: elves[9].name,
@@ -237,7 +251,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.Probably
         },
         {
             name: elves[10].name,
@@ -251,7 +266,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.Yes,
             makesPuns: guessAnswers.Yes,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.Kinda
         },
         {
             name: elves[11].name,
@@ -265,7 +281,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.Kinda,
             makesPuns: guessAnswers.Kinda,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.Probably
         },
         {
             name: elves[12].name,
@@ -279,7 +296,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[13].name,
@@ -293,7 +311,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.Probably
         },
         {
             name: elves[14].name,
@@ -307,7 +326,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.NotSure,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[15].name,
@@ -321,7 +341,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.NotSure
+            hasWhiteGloves: guessAnswers.NotSure,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[16].name,
@@ -335,7 +356,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.No
+            hasWhiteGloves: guessAnswers.No,
+            wantsToDie: guessAnswers.Probably
         },
         {
             name: elves[17].name,
@@ -349,7 +371,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.Yes,
             hasAGoodSenseOfHumor: guessAnswers.NotSure,
             makesPuns: guessAnswers.Kinda,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[18].name,
@@ -363,7 +386,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.No,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[19].name,
@@ -377,7 +401,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.Probably,
             makesPuns: guessAnswers.No,
-            hasWhiteGloves: guessAnswers.Yes
+            hasWhiteGloves: guessAnswers.Yes,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[20].name,
@@ -391,7 +416,8 @@ function CorruptElf() {
             hasACheckeredBackground: guessAnswers.No,
             hasAGoodSenseOfHumor: guessAnswers.NotSure,
             makesPuns: guessAnswers.Yes,
-            hasWhiteGloves: guessAnswers.No
+            hasWhiteGloves: guessAnswers.No,
+            wantsToDie: guessAnswers.No
         },
         {
             name: elves[21].name,
@@ -403,9 +429,10 @@ function CorruptElf() {
             hasBeigeSkin: guessAnswers.Kinda,
             hasAMouth: guessAnswers.No,
             hasACheckeredBackground: guessAnswers.No,
-            hasAGoodSenseOfHumor: guessAnswers.Yes,
-            makesPuns: guessAnswers.Yes,
-            hasWhiteGloves: guessAnswers.No
+            hasAGoodSenseOfHumor: guessAnswers.No,
+            makesPuns: guessAnswers.No,
+            hasWhiteGloves: guessAnswers.No,
+            wantsToDie: guessAnswers.Yes
         }
     ];
 
