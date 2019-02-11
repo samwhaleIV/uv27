@@ -4,7 +4,9 @@ drawDefaultLoadingText();
 
 function loadCallback() {
     if(SoundManager.soundsLoaded && ImageManager.imagesLoaded) {
-        setRendererState(new OverworldTestRenderer());
+        setRendererState(new OverworldBase(
+            new ParallaxBackground("level-0-0","level-0-1")
+        ));
         startRenderer();
     }
 }
