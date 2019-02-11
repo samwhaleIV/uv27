@@ -302,6 +302,13 @@ function NotRedElfette() {
         }
     });
 
+    this.startSpeech = {
+        text: "my clothes are made of\nthe finest materials!\n\nnot even an\nelfmart sword can\npull a thread!"
+    }
+
+    this.loseSpeech = "you not only\ntook my life...\n\nyou took my\ndignity!";
+    this.winSpeech = "serves you right\npervert!\n\n*cries*";
+
     this.name = "not red elfette";
     this.background = "background-1";
     this.backgroundColor = "rgb(255,215,181)";
