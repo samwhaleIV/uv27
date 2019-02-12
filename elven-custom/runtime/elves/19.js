@@ -227,7 +227,7 @@ function BeachElf() {
                         speech: "that'll teach you\nto mess with me when\ni'm trying to relax"
                     },
                     {
-                        speech: "especially when i'm relaxing"
+                        speech: "especially when\ni'm relaxing"
                     },
                     {
                         text: "beach elf continues to relax"

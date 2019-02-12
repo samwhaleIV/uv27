@@ -75,7 +75,7 @@ function CorruptElf() {
             case "hasAMouth":
                 return `${prefix}has a mouth?\n${answerString}`;
             case "hasACheckeredBackground":
-                return `${prefix}has a checkered background?\n${answerString}`;
+                return `${prefix}has a checkered\nbackground?\n${answerString}`;
             case "hasAGoodSenseOfHumor":
                 return `${prefix}has a good sense of humor?\n${answerString}`;
             case "makesPuns":

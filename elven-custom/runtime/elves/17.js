@@ -254,6 +254,12 @@ function RogueElf() {
                 action: () => {
                     user.addBlood(vampireBloodSwapAmount);
                     target.dropBlood(vampireBloodSwapAmount);
+                    if(target.state.blood <= 0) {
+                        return {
+                            text: "rogue died from complete blood loss",
+                            action: () => sequencer.elfBattleObject.dropHealth(sequencer.elfBattleObject.maxHealth)          
+                        }             
+                    }
                 }
             }
         }

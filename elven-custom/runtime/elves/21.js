@@ -22,7 +22,7 @@ function TinyArmElf() {
                 events: [
                     {
                         text: "you bandage up your bullet holes",
-                        action: () => user.addHealth(30)
+                        action: () => user.addHealth(35)
                     },
                     {
                         text: "in a hurry - you dropped some of your bullets",
@@ -273,12 +273,8 @@ function TinyArmElf() {
     this.startSpeech = {
         text: "don't let my tiny arms\ndeceive you.\ntiny arms...\nalso known as...\nsmall arms! >:)\n\nas usual prepare to die."
     }
-    this.loseSpeech = {
-        text: "you only won because\ni'm at a disadvantage"
-    }
-    this.winSpeech = {
-        text: "tiny arms: 1\nyou: 0\n\ndid you want a hug?\nwell too bad!\nmy arms are too short\nanyways"
-    }
+    this.loseSpeech = "you only won because\ni'm at a disadvantage";
+    this.winSpeech = "tiny arms: 1\nyou: 0\n\ndid you want a hug?\nwell too bad!\nmy arms are too short\nanyways";
     this.name = "tiny arm elf";
     this.background = "background-4";
     this.backgroundColor = "cyan";

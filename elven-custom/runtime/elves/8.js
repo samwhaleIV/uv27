@@ -297,7 +297,7 @@ addMove({
                 return {
                     failed: true,
                     events: [{
-                        text: `${target.name} got too lit`
+                        text: `${user.name} got too lit`
                     }]
                 }
             } else {

@@ -351,7 +351,7 @@ function OldTimeyElf() {
             } else {
                 return {
                     text: "their shot hit you!",
-                    action: () => target.dropHealth(Math.ceil(target.maxHealth / 2))
+                    action: () => target.dropHealth(Math.ceil(target.maxHealth / 3))
                 }
             }
         }

@@ -131,7 +131,7 @@ function InvisibleElf() {
                 return {
                     failed: true,
                     events: [{
-                        text: "but invisible elf couldn't be sleuthed"
+                        text: "invisible elf couldn't be sleuthed"
                     },{
                         text: `maybe you need ${sequencer.globalBattleState.smokeDoses <= 0 ? "some" : "more"} smoke?`
                     }]
