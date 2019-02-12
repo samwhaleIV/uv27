@@ -5,6 +5,13 @@ context.imageSmoothingEnabled = false;
 const heightByWidth = canvas.height / canvas.width;
 const widthByHeight = canvas.width / canvas.height;
 
+let electron = null;
+let electronWindow = null;
+if(typeof(require) !== "undefined") {
+    electron = require("electron");
+    electronWindow = electron.remote.getCurrentWindow();
+}
+
 let lastRelativeX = -1;
 let lastRelativeY = -1;
 const keyEventModes = {
@@ -37,7 +44,6 @@ let canvasSizeMode = localStorage.getItem("canvasSizeMode") || defaultSizeMode;
 let pictureModeElementTimeout = null;
 
 
-
 let rendererState = null;
 let animationFrame = null;
 let paused = false;
@@ -45,6 +51,11 @@ let backgroundStreamMode = false;
 
 if(localStorage.getItem("backgroundStreamMode") === "true") {
     backgroundStreamMode = true;
+}
+if(electron) {
+    if(localStorage.getItem("windowIsFullScreen") === "true") {
+        electronWindow.setFullScreen(true);
+    }
 }
 
 const sizeModeDisplayNames = {
@@ -153,10 +164,28 @@ function processMouseMove(event) {
 }
 window.onkeydown = event => {
     switch(event.code) {
+        case "F11":
+            if(!electron) {
+                break;
+            }
+            const isFullScreen = !electronWindow.isFullScreen();
+            electronWindow.setFullScreen(isFullScreen);
+            if(pictureModeElementTimeout) {
+                clearTimeout(pictureModeElementTimeout);
+            }
+            pictureModeElement.textContent = isFullScreen ? "fullscreen" : "not fullscreen";
+            pictureModeElementTimeout = setTimeout(()=>{
+                pictureModeElement.textContent = "";
+                pictureModeElementTimeout = null;
+            },600);
+            localStorage.setItem("windowIsFullScreen",isFullScreen);
+            break;
         case "KeyP":
+        case "F10":
             cycleSizeMode();
             break;
         case "KeyO":
+        case "F9":
             backgroundStreamMode = !backgroundStreamMode;
             if(pictureModeElementTimeout) {
                 clearTimeout(pictureModeElementTimeout);

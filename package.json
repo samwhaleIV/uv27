@@ -1,0 +1,14 @@
+{
+  "name": "uv27",
+  "version": "1.0.0",
+  "description": "The Christmas elves have turned",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "mistopportunity",
+  "license": "CC-BY-NC-4.0",
+  "devDependencies": {
+    "electron": "^4.0.4"
+  }
+}
