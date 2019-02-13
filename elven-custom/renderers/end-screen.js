@@ -45,7 +45,6 @@ function EndScreenRenderer(endCallback) {
         }
     }
 
-
     this.render = timestamp => {
 
         context.clearRect(0,0,fullWidth,fullHeight);

@@ -30,6 +30,9 @@ function BonusScreenRenderer(endCallback) {
     }
 
     this.start = () => {
+        if(!electron) {
+            window.location = "https://goo.gl/forms/t5OJrUXNfkJ1iTgr1";
+        }
         timeout = setTimeout(endCallback,10000);
     }
 
