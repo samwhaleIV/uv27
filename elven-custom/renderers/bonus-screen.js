@@ -31,7 +31,7 @@ function BonusScreenRenderer(endCallback) {
 
     this.start = () => {
         if(!electron) {
-            window.location = "https://goo.gl/forms/t5OJrUXNfkJ1iTgr1";
+            window.location = "https://docs.google.com/forms/d/e/1FAIpQLSdPJ5ANLsmVN0If7DSA8gDJfKuyO73bTmzmjGWBs5yQ4Sy9pA/viewform?usp=sf_link";
         }
         timeout = setTimeout(endCallback,10000);
     }
