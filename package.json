@@ -9,7 +9,6 @@
   "author": "mistopportunity",
   "license": "CC-BY-NC-4.0",
   "devDependencies": {
-    "electron": "^4.0.4",
-    "electron-packager": "^13.0.1"
+    "electron": "^4.0.4"
   }
 }

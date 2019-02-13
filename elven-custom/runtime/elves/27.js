@@ -149,7 +149,7 @@ function TheBossElf() {
                         speech: "\n\n\nsuffer..."
                     },
                     {
-                        speech: "\n\n\n\nand suffer..."
+                        speech: "\n\n\n\nand suffer."
                     },
                     {
                         speech: "let your conscience\neat you at\nevery bite."
@@ -596,7 +596,7 @@ function TheBossElf() {
     this.health = 1000;
     this.playerHealth = 1000;
     this.startSpeech = {
-        text: "so this it it... huh?\n\nthe big f***ing finally?",
+        text: "so this it it... huh?\n\nthe big f***ing finale?",
         persist: true
     }
 }

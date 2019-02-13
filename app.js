@@ -7,8 +7,8 @@ let window;
 
 function createWindow() {
     window = new BrowserWindow({
-        width: 750,
-        height: 650,
+        width: 748,
+        height: 668,
         nodeIntegration: true,
         backgroundColor: "#000000",
         backgroundThrottling: false,
