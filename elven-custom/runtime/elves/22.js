@@ -1,5 +1,9 @@
 "use strict";
 function ElfmasTree() {
+
+    this.song = "tree_loop";
+    this.songIntro = "tree_intro";
+
     const showHenry = sequencer => {
         sequencer.showAnimation({name:"henry"});
         sequencer.setRenderLayer(0,true);

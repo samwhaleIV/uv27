@@ -5,6 +5,10 @@ function InvisibleElf() {
     const sluethPunchDamage = 30;
     const sneakyPunchDamage = 17;
     const trapDamage = 50;
+
+    this.song = "inv_loop";
+    this.songIntro = "inv_intro";
+
     addMove({
         name: "search",
         type: "target",

@@ -1,6 +1,7 @@
 "use strict";
 function JesterElf() {
-    
+    this.song = "jester_loop";
+    this.songIntro = "jester_intro";
     addMove({
         name: "tell me a joke",
         type: "option",

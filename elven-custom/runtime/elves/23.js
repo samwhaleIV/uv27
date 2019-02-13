@@ -1,6 +1,9 @@
 "use strict";
 function CorruptElf() {
 
+    this.song = "corrupt_loop";
+    this.songIntro = "corrupt_intro";
+
     const guessAnswers = {
         Unknown: Symbol("Unknown"),
         Yes: Symbol("Yes"),

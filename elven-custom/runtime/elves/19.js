@@ -1,6 +1,9 @@
 "use strict";
 function BeachElf() {
 
+    this.song = "beach_loop";
+    this.songIntro = "beach_intro";
+
     const updateHeldItemSubtext = sequencer => {
         sequencer.playerBattleObject.subText[0] = `held item: ${sequencer.playerBattleObject.state.heldItem}`
     }

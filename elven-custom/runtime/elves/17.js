@@ -18,6 +18,9 @@ addMove({
 });
 function RogueElf() {
 
+    this.song = "rogue_loop";
+    this.songIntro = "rogue_intro";
+
     const taintedHolidayDamage = 40;
     const pureHatredDamage = 40;
     const extraComboDamage = 40;

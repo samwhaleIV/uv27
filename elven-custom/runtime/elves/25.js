@@ -1,5 +1,9 @@
 "use strict";
 function MurderElf() {
+
+    this.song = "murder_loop";
+    this.songIntro = "murder_intro";
+
     this.name = "murder elf";
     this.background = "background-2";
     this.backgroundColor = "rgb(114,114,114)";

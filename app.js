@@ -9,13 +9,12 @@ function createWindow() {
     window = new BrowserWindow({
         width: 750,
         height: 650,
-        icon: "favicon.png",
         nodeIntegration: true,
         backgroundColor: "#000000",
         backgroundThrottling: false,
         show: false
     });
-    window.webContents.openDevTools();
+    //window.webContents.openDevTools();
     window.setMenu(null);
     window.loadFile("index.html");
     window.on("closed",() => {

@@ -1,5 +1,6 @@
 "use strict";
 function MurderedElf() {
+
     const speeches = [
         "you don't remember me?\n\nfigures",
         "it's true what they said\n\nso true...",
@@ -17,9 +18,6 @@ function MurderedElf() {
         "i'll show you my true\npurpose.",
         "i'll show them all."
     ];
-
-    this.songIntro = "wimpy_intro";
-    this.song = "wimpy_loop";
 
     this.name = "murdered elf";
     this.background = "background-1";

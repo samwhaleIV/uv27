@@ -1,6 +1,9 @@
 "use strict";
 function UpsideDownElf() {
 
+    this.song = "upside_loop";
+    this.songIntro = "upside_intro";
+
     const explodeElfHead = sequencer => {
         sequencer.showAnimation({name:"headExplode"});
         sequencer.setRenderLayer(2,false);

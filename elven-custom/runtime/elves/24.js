@@ -1,6 +1,8 @@
 "use strict";
 function DarkElf() {
 
+    this.song = "dark_loop";
+    this.songIntro = "dark_intro";
 
     const lightsOnColor = "rgb(114,114,114)";
     const lightsOffColor = "black";

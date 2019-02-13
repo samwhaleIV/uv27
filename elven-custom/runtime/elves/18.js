@@ -1,6 +1,9 @@
 "use strict";
 function NotRedElfette() {
 
+    this.song = "naked_loop";
+    this.songIntro = "naked_intro";
+
     const setElfLayers = sequencer => {
         sequencer.setRenderLayer(1,sequencer.elfBattleObject.state.layerCount>=1);
         sequencer.setRenderLayer(2,sequencer.elfBattleObject.state.layerCount>=2);

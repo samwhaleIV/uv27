@@ -17,10 +17,6 @@ EssentialSounds.push(
 
     GetFile("menu/hero.ogg",FileTypes.Music)
 );
-NonEssentialSounds.push(
-    GetFile("win.ogg",FileTypes.Music),
-    GetFile("lose.ogg",FileTypes.Music)
-);
 ImagePaths.push(
     GetFile("henry.png",FileTypes.Image),
 

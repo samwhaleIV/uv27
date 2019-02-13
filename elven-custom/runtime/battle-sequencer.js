@@ -85,7 +85,6 @@ function BattleSequencer(renderer) {
     this.elf = renderer.elf;
 
     const endScreenLength = 15000;
-    const postSongDelay = 1000;
 
     this.battleOver = false;
 
@@ -100,14 +99,10 @@ function BattleSequencer(renderer) {
         if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(!musicMuted && renderer.elf.name !== "the boss elf") {
+        if(renderer.elf.name !== "the boss elf") {
             stopMusic();
-            let songDuration = playMusic("lose",0,false) * 1000;
-            if(songDuration > duration) {
-                duration = songDuration + postSongDelay;
-            } else if (duration < songDuration + postSongDelay) {
-                duration += (postSongDelay + songDuration) - duration;
-            }
+        } else {
+            duration = 120000;
         }
 
         this.skipHandles.push(setSkippableTimeout(renderer.loseCallback,duration));
@@ -137,17 +132,9 @@ function BattleSequencer(renderer) {
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(!musicMuted && renderer.elf.name !== "the boss elf") {
+        if(renderer.elf.name !== "the boss elf") {
             stopMusic();
-            let songDuration = playMusic("lose",0,false) * 1000;
-            if(songDuration > duration) {
-                duration = songDuration + postSongDelay;
-            } else if (duration < songDuration + postSongDelay) {
-                duration += (postSongDelay + songDuration) - duration;
-            }
-        }
-
-        if(renderer.elf.name === "the boss elf") {
+        } else {
             duration = 120000;
         }
 
@@ -178,17 +165,9 @@ function BattleSequencer(renderer) {
         } else if(this.showingPersistentSpeech) {
             duration += this.persistentSpeechDuration;
         }
-        if(!musicMuted && renderer.elf.name !== "the boss elf") {
+        if(renderer.elf.name !== "the boss elf") {
             stopMusic();
-            let songDuration = playMusic("win.ogg",0,false) * 1000;
-            if(songDuration > duration) {
-                duration = songDuration + postSongDelay;
-            } else if (duration < songDuration + postSongDelay) {
-                duration += (postSongDelay + songDuration) - duration;
-            }
-        }
-
-        if(renderer.elf.name === "the boss elf") {
+        } else {
             duration = 120000;
         }
 

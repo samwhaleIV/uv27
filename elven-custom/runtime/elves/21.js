@@ -1,6 +1,9 @@
 "use strict";
 function TinyArmElf() {
 
+    this.song = "tiny_loop";
+    this.songIntro = "tiny_intro";
+
     const updateVestSubText = sequencer => {
         sequencer.playerBattleObject.subText[1] = `${sequencer.playerBattleObject.state.vests} bullet proof vest${sequencer.playerBattleObject.state.vests!==1?"s":""}`;
     }

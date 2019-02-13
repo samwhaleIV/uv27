@@ -18,7 +18,6 @@ loadingImage.onload = () => {
     }
     ImageManager.loadImages(loadCallback);
     SoundManager.loadSounds(loadCallback);
-    SoundManager.loadNonEssentialSounds();
 }
 loadingImage.src = "elven-custom/images/loading-animations.png";
 
