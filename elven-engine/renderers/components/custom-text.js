@@ -451,44 +451,32 @@ function compileComplexScaleMatrices() {
     })
 }
 compileComplexScaleMatrices();
-function drawLetter(character,x,y,scale) {
-    let i = 0;
-
-    const characterMatrices = ScaleMatrices[scale][character.width];
-
-    while(i < character.glyph.length) {
-        if(character.glyph[i]) {
-
-            const characterRegion = characterMatrices[i];
-
-            context.rect(
-                x + characterRegion.x,
-                y + characterRegion.y,
-                characterRegion.w,
-                characterRegion.h
-            );
-        }
-        i++;
-    }
-}
 const allScales = {};
 function drawTextColor(color,text,x,y,scale) {
     let xOffset = 0;
-    const drawHeight = 5 * scale;
-    const lastOffsetIndex = text.length-1;
+    const scaleMatrix = ScaleMatrices[scale];
     let i = 0;
     context.beginPath();
     context.fillStyle = color;
     while(i < text.length) {
         const character = fontDictionary[text[i]];
         const drawWidth = character.width * scale;
-        drawLetter(
-            character,
-            x+xOffset,y,
-            scale,drawHeight
-        );
+        const characterMatrix = scaleMatrix[character.width];
+        let i2 = 0;
+        while(i2 < character.glyph.length) {
+            if(character.glyph[i2]) {
+                const characterRegion = characterMatrix[i2];
+                context.rect(
+                    x+xOffset + characterRegion.x,
+                    y + characterRegion.y,
+                    characterRegion.w,
+                    characterRegion.h
+                );
+            }
+            i2++;
+        }
         xOffset += drawWidth;
-        if(i < lastOffsetIndex) {
+        if(i < text.length-1) {
             xOffset += scale;
         }
         i++;
@@ -496,7 +484,7 @@ function drawTextColor(color,text,x,y,scale) {
     context.fill();
     return {
         width: xOffset,
-        height: drawHeight
+        height: 5 * scale
     }
 }
 function drawTextWhite(text,x,y,scale) {
