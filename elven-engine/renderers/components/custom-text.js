@@ -471,19 +471,6 @@ function drawLetter(character,x,y,scale) {
         i++;
     }
 }
-function drawLetterSlant(character,x,y,scale) {
-    let i = 0;
-    while(i < character.glyph.length) {
-        if(character.glyph[i]) {
-            context.rect(
-                x + i % character.width * scale,
-                y + i / character.width * scale,
-                scale,scale
-            );
-        }
-        i++;
-    }
-}
 const allScales = {};
 function drawTextColor(color,text,x,y,scale) {
     let xOffset = 0;
