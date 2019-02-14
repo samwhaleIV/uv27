@@ -275,7 +275,8 @@ function cycleSizeMode() {
 function render(timestamp) {
     if(!paused) {
         const gamepad = navigator.getGamepads()[0];
-        if(gamepad) {
+        
+        if(gamepad && gamepad.mapping === "standard") {
             processGamepad(gamepad);
         }
         rendererState.render(timestamp);
