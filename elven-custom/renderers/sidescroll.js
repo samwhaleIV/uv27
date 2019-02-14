@@ -92,11 +92,7 @@ function SidescrollRenderer(image,endCallback) {
             elfX,elfY,elfWidth,elfHeight
         );
 
-        if(imageDictionary["fontspace"]) {
-            drawLoadingText();
-        } else {
-            drawDefaultLoadingText();
-        }
+        drawLoadingText();
 
         rendererState.fader.render(timestamp);
     }

@@ -82,14 +82,14 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.healthBarHeight = 24;
     const healthBarTop = 0;
     const healthBarTextMargin = 8;
-    this.healthBarTextSize = 3.5;
+    this.healthBarTextSize = 3.5
     
     const healthBarTextY = healthBarTop + this.healthBarHeight + healthBarMargin + healthBarTextMargin;
     
     const healthBarY = healthBarTop + healthBarMargin;
 
     this.leftHealthBar = {
-        x: healthBarMargin,
+        x: Math.floor(healthBarMargin),
         y: !isBoss ? healthBarY : 75,
         textY: !isBoss ? healthBarTextY : 75 + this.healthBarHeight + healthBarTextMargin,
         foregroundColor: "white",
@@ -98,7 +98,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
 
     this.rightHealthBar = {
         y: healthBarY,
-        x: !isBoss ? fullWidth - healthBarMargin - this.healthBarWidth : healthBarMargin,
+        x: Math.floor(!isBoss ? fullWidth - healthBarMargin - this.healthBarWidth : healthBarMargin),
         textY: healthBarTextY,
         foregroundColor: this.elf.foregroundColor ? this.elf.foregroundColor : this.elf.backgroundColor,
         backgroundColor: "rgb(0,0,0)"
@@ -110,11 +110,12 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.bottomMessageY = 332;
 
     this.subTextScale = 2.5;
+    this.subTextMargin = 20;
 
     const healthBarTextHeight = drawTextTest("",this.healthBarTextSize).height;
 
-    this.subTextY = (healthBarTextY + healthBarTextHeight + healthBarTextMargin) +
-        Math.floor(Math.round(healthBarTextHeight/2)-(drawTextTest("",this.subTextScale).height/2));
+    this.subTextY = Math.floor((healthBarTextY + healthBarTextHeight + healthBarTextMargin) +
+        Math.floor(Math.round(healthBarTextHeight/2)-(drawTextTest("",this.subTextScale).height/2)));
 
     this.bottomMessageTextScale = 4;
 
@@ -230,7 +231,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 drawTextWhite(
                     this.battleSequencer.playerBattleObject.subText[i],
                     this.leftHealthBar.x,
-                    this.subTextY + (i*20),this.subTextScale
+                    this.subTextY + (i*this.subTextMargin),this.subTextScale
                 );
                 i++;
             }
@@ -376,7 +377,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 drawTextWhite(
                     this.battleSequencer.elfBattleObject.subText[i],
                     this.rightHealthBar.x,
-                    this.subTextY + (i*20),this.subTextScale
+                    this.subTextY + (i*this.subTextMargin),this.subTextScale
                 );
                 i++;
             }
@@ -478,7 +479,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }
 
         if(this.inEscapeMenu) {
-            context.fillColor = "rgba(0,0,0,0.8)";
+            context.fillStyle = "rgba(0,0,0,0.8)";
             context.fillRect(0,0,fullWidth,fullHeight);
             switch(this.escapeMenuIndex) {
                 case 0:
@@ -515,7 +516,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                 this.escapeMenuNoButton.height
             );
             drawTextWhite(this.escapeMenuText,this.escapeMenuTextX,this.escapeMenuTextY,this.escapeMenuTextScale);
-
             drawTextWhite(this.yesButtonText.text,this.yesButtonText.x,this.yesButtonText.y,this.yesButtonText.scale);
             drawTextWhite(this.noButtonText.text,this.noButtonText.x,this.noButtonText.y,this.noButtonText.scale);
         }

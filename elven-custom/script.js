@@ -21,7 +21,7 @@ loadingImage.onload = () => {
 }
 loadingImage.src = "elven-custom/images/loading-animations.png";
 
-drawDefaultLoadingText();
+drawLoadingText();
 SetPageTitle("You Versus 27 Elves");
 
 function loadSongOnDemand(fileName) {
