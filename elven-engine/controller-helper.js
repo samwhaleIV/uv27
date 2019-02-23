@@ -2,7 +2,7 @@ const gamepadDeadzone = 0.5;
 const deadzoneNormalizer = 1 / (1 - gamepadDeadzone);
 
 const fakeButtonPressEvent = {pressed:true};
-const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 180;
+const buttonStates = {}, buttonRollverTimeout = 150, axisRolloverTimeout = 180, firstPressRepeatDelay = 400, firstPressRepeatDelayAxis = 200;
 function applyDeadZone(value) {
     if(value < 0) {
         value = value + gamepadDeadzone;
@@ -24,9 +24,15 @@ function applyDeadZone(value) {
 function processButton(name,action,endAction,button,timestamp,isAxis) {
     if(button.pressed) {
         if(!buttonStates[name]) {
-            buttonStates[name] = {timestamp:timestamp};
+            buttonStates[name] = {
+                timestamp:timestamp,
+                start:timestamp + (isAxis ? firstPressRepeatDelayAxis : firstPressRepeatDelay)
+            };
             action();
-        } else if(timestamp >= buttonStates[name].timestamp + (isAxis ? axisRolloverTimeout : buttonRollverTimeout)) {
+        } else if(
+                timestamp >= buttonStates[name].timestamp + (isAxis ? axisRolloverTimeout : buttonRollverTimeout) &&
+                timestamp >= buttonStates[name].start
+            ) {
             buttonStates[name].timestamp = timestamp;
             action();
         }

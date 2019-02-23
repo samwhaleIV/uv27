@@ -188,30 +188,31 @@ function TheBossElf() {
     }
 
     this.getPlayerMoves = sequencer => {
-        if(sequencer.globalBattleState.mode === "setup") {
-            return [abdictateMove];
-        } else if(sequencer.globalBattleState.mode === "normal") {
-            return [
-                moves["nothing"],
-                moves["also nothing"],
-                moves["senseless murder"],
-                moves["honorable suicide"]
-            ]
-        } else if(sequencer.globalBattleState.mode === "postNormal") {
-            return [surrenderMove,moves["decent punch"]]
-        } else if(sequencer.globalBattleState.mode === "postPunch") {
-            return [moves["cry"],giveUpMove,playDeadMove]
-        } else if(sequencer.globalBattleState.mode === "playingDead") {
-            return [stealSwordMove,justKiddingMove]
-        } else if(sequencer.globalBattleState.mode === "hasSword") {
-            return [elfmartSwordMove,strikeGroundMove,sacrificeSelfMove]
-        } else if(sequencer.globalBattleState.mode === "strikedGround") {
-            return [elfmartSwordMove,sacrificeSwordMove,sacrificeSelfMove,jumpIntoHell]
-        } else if(sequencer.globalBattleState.mode === "end") {
-            return [spartaKickMove,jumpIntoHell]
+        switch(sequencer.globalBattleState.mode) {
+            case "mode":
+                return [abdictateMove];
+            case "normal":
+                return [
+                    moves["nothing"],
+                    moves["also nothing"],
+                    moves["senseless murder"],
+                    moves["honorable suicide"]
+                ];
+            case "postNormal":
+                return [surrenderMove,moves["decent punch"]];
+            case "postPunch":
+                return [moves["cry"],giveUpMove,playDeadMove];
+            case "playingDead":
+                return [stealSwordMove,justKiddingMove];
+            case "hasSword":
+                return [elfmartSwordMove,strikeGroundMove,sacrificeSelfMove];
+            case "strikedGround":
+                return [elfmartSwordMove,sacrificeSwordMove,sacrificeSelfMove,jumpIntoHell];
+            case "end":
+                return [spartaKickMove,jumpIntoHell];
+            default:
+                return [moves["nothing"]];
         }
-
-        return [moves["nothing"]];
     }
 
     this.setup = sequencer => {

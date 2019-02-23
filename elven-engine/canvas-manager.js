@@ -274,13 +274,17 @@ function cycleSizeMode() {
 }
 function render(timestamp) {
     if(!paused) {
-        const gamepad = navigator.getGamepads()[0];
-        
-        if(gamepad && gamepad.mapping === "standard") {
-            processGamepad(gamepad);
+        animationFrame = window.requestAnimationFrame(render); 
+
+        const gamepads = navigator.getGamepads();
+        for(let i = 0;i<gamepads.length;i++) {
+            if(gamepads[i] && gamepads[i].mapping === "standard") {
+                processGamepad(gamepads[i]);
+                break;
+            }
         }
+
         rendererState.render(timestamp);
-        animationFrame = window.requestAnimationFrame(render);  
     }
 }
 

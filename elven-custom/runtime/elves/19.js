@@ -167,7 +167,7 @@ function BeachElf() {
         type: "self",
         process: () => {
             return {
-                speech: "ahhhhhh\n\nsuch a nice beach"
+                speech: "ahhhhhh\n\nsuch a nice beach\n\nand no sharks..."
             }
         }
     }
@@ -176,7 +176,7 @@ function BeachElf() {
         type: "self",
         process: () => {
             return {
-                speech: "i love the beach"
+                speech: "i love the beach\n\nbut i hate sharks\n\nthey always try\nand eat me"
             }
         }
     }
@@ -185,7 +185,7 @@ function BeachElf() {
         type: "self",
         process: () => {
             return {
-                speech: "beach + beer -> winning"
+                speech: "beach + beer -> winning\n\nalso i heard the\nsharks here are so\nhungry they'd\neven come on land"
             }
         }
     }
@@ -203,7 +203,7 @@ function BeachElf() {
         type: "self",
         process: () => {
             return {
-                speech: "why all the killing?\n\njust relax.\nhit some waves"
+                speech: "why all the killing?\n\njust relax.\nhit some waves\n\n- but don't bring back\nany sharks"
             }
         }
     }
@@ -278,8 +278,8 @@ function BeachElf() {
             relaxMove,
             doingMyOwnThingMove,
             crackOpenAColdOneMove,
-            thisIsTheLifeMove,
             itWouldSuckToBeYouMove,
+            thisIsTheLifeMove,
             superRelaxMove,
             moves["nothing"],
             moves["also nothing"]
