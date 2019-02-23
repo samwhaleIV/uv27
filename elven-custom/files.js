@@ -7,15 +7,15 @@ EssentialSounds.push(
     GetFile("reverse-clip.mp3",FileTypes.Sound),
     GetFile("transform.mp3",FileTypes.Sound),
 
-    GetFile("menu/intro_a.ogg",FileTypes.Music),
-    GetFile("menu/intro_b.ogg",FileTypes.Music),
-    GetFile("menu/intro_base.ogg",FileTypes.Music),
+    GetFile("intro_a.ogg",FileTypes.Music),
+    GetFile("intro_b.ogg",FileTypes.Music),
+    GetFile("intro_base.ogg",FileTypes.Music),
 
-    GetFile("menu/loop_a.ogg",FileTypes.Music),
-    GetFile("menu/loop_b.ogg",FileTypes.Music),
-    GetFile("menu/loop_base.ogg",FileTypes.Music),
+    GetFile("loop_a.ogg",FileTypes.Music),
+    GetFile("loop_b.ogg",FileTypes.Music),
+    GetFile("loop_base.ogg",FileTypes.Music),
 
-    GetFile("menu/hero.ogg",FileTypes.Music)
+    GetFile("hero.ogg",FileTypes.Music)
 );
 ImagePaths.push(
     GetFile("henry.png",FileTypes.Image),

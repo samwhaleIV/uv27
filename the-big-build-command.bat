@@ -1,0 +1,1 @@
+electron-packager . --icon "C:\Users\jedisammy4\Documents\uv27\icon.ico" --win32metadata.ProductName="uv27" --win32metadata.CompanyName="Samuel Robinson" --arch all --appname "uv27"
