@@ -1,17 +1,18 @@
 "use strict";
 
-drawDefaultLoadingText();
+drawLoadingText();
 
 function loadCallback() {
     if(SoundManager.soundsLoaded && ImageManager.imagesLoaded) {
         setRendererState(new OverworldBase(
-            new ParallaxBackground("level-0-0","level-0-1")
+            new ParallaxBackground("levels/0/0","levels/0/1")
         ));
         startRenderer();
     }
 }
 
 SetPageTitle("One Night at Elfmart");
+SetImageIndexMode(IndexModes.LoseRoot);
 ImageManager.loadImages(loadCallback);
 SoundManager.loadSounds(loadCallback);
 SoundManager.loadNonEssentialSounds();

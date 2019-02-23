@@ -8,9 +8,31 @@ const FileTypes = {
     Renderer: Symbol(),
     RendererComponent: Symbol(),
 }
+const IndexModes = {
+    NameOnly: Symbol(),
+    LoseRoot: Symbol()
+}
+function validIndexMode(mode) {
+    switch(mode) {
+        case IndexModes.LoseRoot:
+            return true;
+        case IndexModes.NameOnly:
+            return true;
+        default:
+            return false;
+    }
+}
 let customSector = "elven-custom";
 function SetCustomFileSector(sectorName) {
     customSector = sectorName;
+}
+let imageIndexMode = IndexModes.NameOnly;
+function SetImageIndexMode(mode) {
+    if(!validIndexMode(mode)) {
+        console.error("Unknown image indexing mode");
+        return;
+    }
+    imageIndexMode = mode;
 }
 function GetFile(path,type,isCustom=true) {
     let engineSector = isCustom ? customSector : "elven-engine";
@@ -61,10 +83,30 @@ const ImageManager = {
             const image = new Image();
             (image=>{
                 image.onload = () => {
-                    const sourcePath = image.src.split("/");
-                    const fileName = sourcePath[sourcePath.length-1].split(".");
-                    const name = fileName[fileName.length-2];
-
+                    let name;
+                    switch(imageIndexMode) {
+                        default:
+                        case IndexModes.NameOnly: {
+                                const sourcePath = image.src.split("/");
+                                const fileName = sourcePath[sourcePath.length-1].split(".");
+                                name = fileName[fileName.length-2];
+                            }
+                            break;
+                        case IndexModes.LoseRoot: {
+                                const sourcePath = image.src.split("/");
+                                let startIndex;
+                                for(startIndex = 0;startIndex<sourcePath.length;startIndex++) {
+                                    if(sourcePath[startIndex] === "images") {
+                                        const dotSplit = sourcePath[sourcePath.length-1].split(".");
+                                        sourcePath[sourcePath.length-1] = dotSplit[0];
+                                        name = sourcePath.slice(startIndex+1).join("/");
+                                        console.log(name);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                    }
                     imageDictionary[name] = image;
                     if(++loadedImages === ImagePaths.length) {
                         console.log("Image manager: All images loaded");

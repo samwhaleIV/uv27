@@ -14,6 +14,6 @@ ImagePaths.push(
     GetFile("player/heads-mirrored.png",FileTypes.Image),
     GetFile("player/legs-mirrored.png",FileTypes.Image),
 
-    GetFile("levels/level-0-0.png",FileTypes.Image),
-    GetFile("levels/level-0-1.png",FileTypes.Image)
+    GetFile("levels/0/0.png",FileTypes.Image),
+    GetFile("levels/0/1.png",FileTypes.Image)
 );

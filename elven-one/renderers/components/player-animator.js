@@ -1,12 +1,12 @@
 function PlayerAnimator() {
 
-    const legsImage = imageDictionary["legs"];
-    const headImage = imageDictionary["heads"];
-    const armsImage = imageDictionary["arms"];
+    const legsImage = imageDictionary["player/legs"];
+    const headImage = imageDictionary["player/heads"];
+    const armsImage = imageDictionary["player/arms"];
 
-    const mirroredLegsImage = imageDictionary["legs-mirrored"];
-    const mirroredHeadImage = imageDictionary["heads-mirrored"];
-    const mirroredArmsImage = imageDictionary["arms-mirrored"];
+    const mirroredLegsImage = imageDictionary["player/legs-mirrored"];
+    const mirroredHeadImage = imageDictionary["player/heads-mirrored"];
+    const mirroredArmsImage = imageDictionary["player/arms-mirrored"];
     
     const swordFrameTime = 1000 / 10;
     const legsFrameTime = 1000 / 6;
