@@ -274,7 +274,7 @@ function render(timestamp) {
         const gamepads = navigator.getGamepads();
         for(let i = 0;i<gamepads.length;i++) {
             if(gamepads[i] && gamepads[i].mapping === "standard") {
-                processGamepad(gamepads[i]);
+                processGamepad(gamepads[i],timestamp);
                 break;
             }
         }
