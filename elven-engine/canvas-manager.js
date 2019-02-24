@@ -53,11 +53,6 @@ let backgroundStreamMode = false;
 if(localStorage.getItem("backgroundStreamMode") === "true") {
     backgroundStreamMode = true;
 }
-if(electron) {
-    if(localStorage.getItem("windowIsFullScreen") === "true") {
-        electronWindow.setFullScreen(true);
-    }
-}
 
 const sizeModeDisplayNames = {
     "fit":"fill",
@@ -179,7 +174,6 @@ window.onkeydown = event => {
                 pictureModeElement.textContent = "";
                 pictureModeElementTimeout = null;
             },600);
-            localStorage.setItem("windowIsFullScreen",isFullScreen);
             break;
         case "KeyP":
         case "F10":
