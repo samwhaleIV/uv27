@@ -104,26 +104,26 @@ const startButtonUp = () => {
     window.onkeyup(startButtonCode);
 };
 
-function processGamepad(gamepad) {
+function processGamepad(gamepad,timestamp=0) {
 
-    processButton("LeftBumper",leftBumperDown,leftBumperUp,gamepad.buttons[4],gamepad.timestamp);
-    processButton("RightBumper",rightBumperDown,rightBumperUp,gamepad.buttons[5],gamepad.timestamp);
-    processButton("a",aButtonDown,aButtonUp,gamepad.buttons[0],gamepad.timestamp);
-    processButton("y",yButtonDown,yButtonUp,gamepad.buttons[3],gamepad.timestamp);
-    processButton("b",bButtonDown,bButtonUp,gamepad.buttons[1],gamepad.timestamp);
-    processButton("up",upButtonDown,upButtonUp,gamepad.buttons[12],gamepad.timestamp);
-    processButton("down",downButtonDown,downButtonUp,gamepad.buttons[13],gamepad.timestamp);
-    processButton("left",leftButtonDown,leftButtonUp,gamepad.buttons[14],gamepad.timestamp);
-    processButton("right",rightButtonDown,rightButtonUp,gamepad.buttons[15],gamepad.timestamp);
-    processButton("start",startButtonDown,startButtonUp,gamepad.buttons[9],gamepad.timestamp);
+    processButton("LeftBumper",leftBumperDown,leftBumperUp,gamepad.buttons[4],timestamp);
+    processButton("RightBumper",rightBumperDown,rightBumperUp,gamepad.buttons[5],timestamp);
+    processButton("a",aButtonDown,aButtonUp,gamepad.buttons[0],timestamp);
+    processButton("y",yButtonDown,yButtonUp,gamepad.buttons[3],timestamp);
+    processButton("b",bButtonDown,bButtonUp,gamepad.buttons[1],timestamp);
+    processButton("up",upButtonDown,upButtonUp,gamepad.buttons[12],timestamp);
+    processButton("down",downButtonDown,downButtonUp,gamepad.buttons[13],timestamp);
+    processButton("left",leftButtonDown,leftButtonUp,gamepad.buttons[14],timestamp);
+    processButton("right",rightButtonDown,rightButtonUp,gamepad.buttons[15],timestamp);
+    processButton("start",startButtonDown,startButtonUp,gamepad.buttons[9],timestamp);
 
     const leftXAxis = applyDeadZone(gamepad.axes[0]);
     const leftYAxis = applyDeadZone(gamepad.axes[1]);
 
     if(leftXAxis > 0) {
-        processButton("leftXAxis",rightButtonDown,rightButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("leftXAxis",rightButtonDown,rightButtonUp,fakeButtonPressEvent,timestamp,true);
     } else if(leftXAxis < 0) {
-        processButton("leftXAxis",leftButtonDown,leftButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("leftXAxis",leftButtonDown,leftButtonUp,fakeButtonPressEvent,timestamp,true);
     } else {
         if(buttonStates["leftXAxis"]) {
             leftButtonUp();
@@ -132,9 +132,9 @@ function processGamepad(gamepad) {
         }
     }
     if(leftYAxis > 0) {
-        processButton("leftYAxis",downButtonDown,downButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("leftYAxis",downButtonDown,downButtonUp,fakeButtonPressEvent,timestamp,true);
     } else if(leftYAxis < 0) {
-        processButton("leftYAxis",upButtonDown,upButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("leftYAxis",upButtonDown,upButtonUp,fakeButtonPressEvent,timestamp,true);
     } else {
         if(buttonStates["leftYAxis"]) {
             downButtonUp();
@@ -147,9 +147,9 @@ function processGamepad(gamepad) {
     const rightYAxis = applyDeadZone(gamepad.axes[3]);
 
     if(rightXAxis > 0) {
-        processButton("rightXAxis",rightButtonDown,rightButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("rightXAxis",rightButtonDown,rightButtonUp,fakeButtonPressEvent,timestamp,true);
     } else if(rightXAxis < 0) {
-        processButton("rightXAxis",leftButtonDown,leftButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("rightXAxis",leftButtonDown,leftButtonUp,fakeButtonPressEvent,timestamp,true);
     } else {
         if(buttonStates["rightXAxis"]) {
             leftButtonUp();
@@ -158,9 +158,9 @@ function processGamepad(gamepad) {
         }
     }
     if(rightYAxis > 0) {
-        processButton("rightYAxis",downButtonDown,downButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("rightYAxis",downButtonDown,downButtonUp,fakeButtonPressEvent,timestamp,true);
     } else if(rightYAxis < 0) {
-        processButton("rightYAxis",upButtonDown,upButtonUp,fakeButtonPressEvent,gamepad.timestamp,true);
+        processButton("rightYAxis",upButtonDown,upButtonUp,fakeButtonPressEvent,timestamp,true);
     } else {
         if(buttonStates["rightYAxis"]) {
             downButtonUp();
