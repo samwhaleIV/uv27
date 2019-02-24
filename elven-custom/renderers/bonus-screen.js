@@ -3,14 +3,9 @@ function BonusScreenRenderer(endCallback) {
     this.endCallback = endCallback;
     this.fader = getFader();
 
-    let timeout = null;
-
     this.processClick = () => {
         if(!this.transitioning) {
             playSound("click.mp3");
-            if(timeout !== null) {
-                clearTimeout(timeout);
-            }
             this.endCallback();
         }
     }
@@ -20,28 +15,30 @@ function BonusScreenRenderer(endCallback) {
             case "Enter":
             case "Space":
                 if(!this.transitioning) {
-                    if(timeout !== null) {
-                        clearTimeout(timeout);
-                    }
                     this.endCallback();
                 }
                 break;
         }
     }
 
-    this.start = () => {
-        if(!electron) {
-            window.location = "https://docs.google.com/forms/d/e/1FAIpQLSdPJ5ANLsmVN0If7DSA8gDJfKuyO73bTmzmjGWBs5yQ4Sy9pA/viewform?usp=sf_link";
-        }
-        timeout = setTimeout(endCallback,10000);
-    }
+    const creditLines = [
+        "special thanks to all the following people...",
+        "(in no particular order)",
+        "",
+        "kyndrajauna - the goddess of patience",
+        "jim - the music god",
+        "the gods who made chromium",
+        "the gods who made electron",
+        "you - for playing the game :)",
+    ];
 
     this.render = timestamp => {
 
         context.clearRect(0,0,fullWidth,fullHeight);
-        drawTextWhite("death is only the beginning of something new.",15,15,3);
+        for(let i = 0;i<creditLines.length;i++) {
+            drawTextWhite(creditLines[i],15,15+(i*50),4);
+        }
 
-        drawTextWhite("i'll see you around... :)",15,45,3);
         this.fader.render(timestamp);
     }
 }

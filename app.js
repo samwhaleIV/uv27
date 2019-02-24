@@ -14,7 +14,7 @@ function createWindow() {
         backgroundThrottling: false,
         show: false
     });
-    //window.webContents.openDevTools();
+    window.webContents.openDevTools();
     window.setMenu(null);
     window.loadFile("index.html");
     window.on("closed",() => {

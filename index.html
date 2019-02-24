@@ -11,10 +11,8 @@
 <body>
     <canvas id="canvas" width="750" height="650"></canvas>
     <p id="picture-mode-element"></p>
-    <script>
-    let startKeys = Object.keys(this);
-    startKeys = startKeys.reduce((pv,cv)=>{pv[cv]=true;return pv},{});
-    </script>
+
+    <script src="steam-helper.js"></script>
 
     <!-- Begin load engine -->
     <script src="elven-engine/canvas-manager.js"></script>
@@ -93,18 +91,5 @@
     <!-- Begin expected runtime initializer -->
     <script src="elven-custom/script.js"></script>
     <!-- End expected custom engine -->
-
-    <script>
-    (function(){
-        const endKeys = Object.keys(this);
-        console.log("New keys",endKeys.filter(endKey => {
-            if(!startKeys[endKey]) {
-                return true;
-            } else {
-                return false;
-            }
-        }));
-    })();
-    </script>
 </body>
 </html>

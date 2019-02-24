@@ -146,6 +146,8 @@ function BattleSequencer(renderer) {
             return;
         }
 
+        setAchievement(getDefeatAchievementName(elfIndex));
+
         this.bottomMessage = this.elf.elfDeadText || `${this.elf.name} is dead`;
         renderer.firstInputMask = "a job well done";
 

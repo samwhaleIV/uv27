@@ -189,7 +189,7 @@ function TheBossElf() {
 
     this.getPlayerMoves = sequencer => {
         switch(sequencer.globalBattleState.mode) {
-            case "mode":
+            case "setup":
                 return [abdictateMove];
             case "normal":
                 return [

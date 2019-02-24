@@ -11,6 +11,7 @@ if(typeof(require) !== "undefined") {
     electron = require("electron");
     electronWindow = electron.remote.getCurrentWindow();
 }
+steamSetup();
 
 let lastRelativeX = -1;
 let lastRelativeY = -1;
