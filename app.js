@@ -14,7 +14,7 @@ function createWindow() {
         backgroundThrottling: false,
         show: false
     });
-    window.webContents.openDevTools();
+    //window.webContents.openDevTools();
     window.setMenu(null);
     window.loadFile("index.html");
     window.on("closed",() => {
@@ -28,13 +28,11 @@ function createWindow() {
 app.on("ready",createWindow);
 
 app.on("window-all-closed",() => {
-    if(process.platform !== "darwin") {
-        app.quit();
-    }
+    app.quit();
 });
 
 app.on("activate",() => {
-    if(win === null) {
+    if(window === null) {
         createWindow()
     }
 });
