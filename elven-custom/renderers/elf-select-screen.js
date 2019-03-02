@@ -289,6 +289,11 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.processKey = key => {
         switch(key) {
+            case "Escape":
+                if(electron) {
+                    electronWindow.close();
+                }
+                break;
             case "LeftBumper":
                 if(!this.transitioning) {
                     this.goLeft();

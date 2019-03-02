@@ -1,6 +1,8 @@
 "use strict";
 const canvas = document.getElementById("canvas");
+const backgroundCanvas = document.getElementById("background-canvas");
 const context = canvas.getContext("2d");
+const backgroundContext = backgroundCanvas.getContext("2d");
 context.imageSmoothingEnabled = false;
 const heightByWidth = canvas.height / canvas.width;
 const widthByHeight = canvas.width / canvas.height;
@@ -268,9 +270,12 @@ function cycleSizeMode() {
     console.log(`Canvas handler: Set size mode to '${newMode}'`);
 }
 function render(timestamp) {
+
+    backgroundContext.fill = "black";
+    backgroundContext.fillRect(0,0,1,1);
+
     if(!paused) {
         animationFrame = window.requestAnimationFrame(render); 
-
         const gamepads = navigator.getGamepads();
         for(let i = 0;i<gamepads.length;i++) {
             if(gamepads[i] && gamepads[i].mapping === "standard") {
@@ -294,6 +299,7 @@ function stopRenderer() {
 }
 
 function startRenderer() {
+    const wasPaused = paused;
     paused = false;
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot start.");
@@ -332,7 +338,6 @@ function setRendererState(newRendererState) {
 
 function pauseRenderer() {
     paused = true;
-    window.cancelAnimationFrame(animationFrame);
     console.log("Canvas handler: Paused renderer");
 }
 
