@@ -9,8 +9,13 @@
     <meta name="theme-color" content="#000000"/>
 </head>
 <body>
+    <canvas id="background-canvas" width="1" height="1"></canvas>
     <canvas id="canvas" width="800" height="600"></canvas>
+
     <p id="picture-mode-element"></p>
+
+    <script src="steam-helper.js"></script>
+
     <script>
     let startKeys = Object.keys(this);
     startKeys = startKeys.reduce((pv,cv)=>{pv[cv]=true;return pv},{});
