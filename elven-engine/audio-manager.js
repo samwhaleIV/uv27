@@ -1,9 +1,6 @@
 "use strict";
 const audioContext = new AudioContext();
 
-const soundGain = 3 / 4;
-const musicNodeGain = 0.2;
-
 const volumeNode = audioContext.createGain();
 volumeNode.gain.setValueAtTime(soundGain,audioContext.currentTime);
 volumeNode.connect(audioContext.destination);

@@ -6,3 +6,5 @@ const highestElfIndex = elfCount-1;
 const backgroundStreamMode = false;
 const internalWidth = 750;
 const internalHeight = 650;
+const soundGain = 3 / 4;
+const musicNodeGain = 0.2;
