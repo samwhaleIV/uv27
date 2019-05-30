@@ -24,6 +24,10 @@ loadingImage.src = "elven-custom/images/loading-animations.png";
 drawLoadingText();
 setPageTitle("You Versus 27 Elves");
 
+function getDefeatAchievementName(index) {
+    return `ACH_DEFEAT_${index+1}`;
+}
+
 let elfIndex = 0, highestIndex;
 
 function getWinSelectScreen() {
