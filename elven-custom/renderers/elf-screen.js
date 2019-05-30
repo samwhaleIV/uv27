@@ -581,29 +581,25 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         scale: this.playerInputTextScale
     };
 
+    this.forcedSizeMode = sizeModes.classic.name;
+
     this.processKey = key => {
         if(this.inEscapeMenu) {
             switch(key) {
-                case "Escape":
+                case kc.cancel:
                     this.lastEventWasKeyBased = true;
-                    if(!this.transitioning) {
-                        this.inEscapeMenu = false;
-                        this.escapeMenuIndex = null;
-                    }
+                    this.inEscapeMenu = false;
+                    this.escapeMenuIndex = null;
                     break;
-                case "KeyW":
-                case "KeyA":
-                case "ArrowUp":
-                case "ArrowLeft":
+                case kc.up:
+                case kc.left:
                     this.lastEventWasKeyBased = true;
                     if(this.escapeMenuIndex === null || this.escapeMenuIndex !== 0) {
                         this.escapeMenuIndex = 0;
                     }
                     break;
-                case "KeyD":
-                case "KeyS":
-                case "ArrowDown":
-                case "ArrowRight":
+                case kc.down:
+                case kc.right:
                     this.lastEventWasKeyBased = true;
                     if(this.escapeMenuIndex === null) {
                         this.escapeMenuIndex = 0;
@@ -611,8 +607,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                         this.escapeMenuIndex = 1;
                     }
                     break;
-                case "Enter":
-                case "Space":
+                case kc.accept:
+                case kc.open:
                     this.lastEventWasKeyBased = true;
                     this.processClick();
                     return;
@@ -620,17 +616,13 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             return;
         }
         switch(key) {
-            case "Escape":
+            case kc.cancel:
                 this.lastEventWasKeyBased = true;
-                if(!this.transitioning) {
-                    this.inEscapeMenu = true;
-                    this.escapeMenuIndex = 0;
-                }
+                this.inEscapeMenu = true;
+                this.escapeMenuIndex = 0;
                 break;
-            case "KeyW":
-            case "KeyA":
-            case "ArrowUp":
-            case "ArrowLeft":
+            case kc.up:
+            case kc.left:
                 this.lastEventWasKeyBased = true;
                 if(!this.playerInputsEnabled) {
                     if(this.hoverEffectIndex === null) {
@@ -647,10 +639,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     this.hoverEffectIndex = 0;
                 }
                 break;
-            case "KeyD":
-            case "KeyS":
-            case "ArrowDown":
-            case "ArrowRight":
+            case kc.down:
+            case kc.right:
                 this.lastEventWasKeyBased = true;
                 if(!this.playerInputsEnabled) {
                     if(this.hoverEffectIndex === null) {
@@ -668,8 +658,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
                     this.hoverEffectIndex = 0;
                 }
                 break;
-            case "Enter":
-            case "Space":
+            case kc.accept:
+            case kc.open:
                 this.lastEventWasKeyBased = true;
                 this.processClick();
                 return;
@@ -709,14 +699,9 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         }
     }
 
-    this.transitioning = false;
-
     this.atWinState = false;
 
     this.processClick = (x,y) => {
-        if(this.transitioning) {
-            return;
-        }
         if(this.inEscapeMenu) {
             if(x > -1 && y > -1) {
                 this.escapeMenuIndex = this.getHitRegisterEscapeMenu(x,y);
@@ -724,7 +709,7 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             } else {
                 this.lastEventWasKeyBased;
             }
-            if(this.escapeMenuIndex !== null && !this.transitioning) {
+            if(this.escapeMenuIndex !== null) {
                 if(this.escapeMenuIndex === 0) {
                     playSound("click");
                     this.battleSequencer.murderSequencerGracefully();

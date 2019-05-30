@@ -4,11 +4,11 @@ const loadingImage = new Image();
 loadingImage.onload = () => {
     setRendererState(new SidescrollRenderer(loadingImage));
     startRenderer();
-    SetFaderOutSound("swish-1");
-    SetFaderInSound("swish-2");
-    SetFaderDelay(400);
-    SetFaderDuration(600);
-    SetFaderEffectsRenderer(new FaderStaticEffect());
+    setFaderOutSound("swish-1");
+    setFaderInSound("swish-2");
+    setFaderDelay(400);
+    setFaderDuration(600);
+    setFaderEffectsRenderer(new FaderStaticEffect());
     loadElves();
     loadElfAnimationMetadata();
     const loadCallback = () => {
@@ -22,11 +22,7 @@ loadingImage.onload = () => {
 loadingImage.src = "elven-custom/images/loading-animations.png";
 
 drawLoadingText();
-SetPageTitle("You Versus 27 Elves");
-
-function loadSongOnDemand(fileName) {
-    SoundManager.loadOnDemand(`elven-custom/audio/music/${fileName}.ogg`);
-}
+setPageTitle("You Versus 27 Elves");
 
 let elfIndex = 0, highestIndex;
 

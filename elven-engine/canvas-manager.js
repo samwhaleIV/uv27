@@ -1,11 +1,53 @@
 "use strict";
 const canvas = document.getElementById("canvas");
+
+let fullWidth;
+let fullHeight;
+let halfWidth;
+let halfHeight;
+let doubleWidth;
+let doubleHeight;
+let verticalSizeRatio;
+let horizontalSizeRatio;
+let largestDimension;
+let halfLargestDimension;
+
+let adaptiveTextScale;
+let adaptiveTextSpacing;
+
+let rainbowGradient;
+
+function setSizeConstants() {
+    fullWidth = canvas.width;
+    fullHeight = canvas.height;
+    halfWidth = fullWidth / 2;
+    halfHeight = fullHeight / 2;
+    doubleWidth = fullWidth * 2;
+    doubleHeight = fullHeight * 2;
+    horizontalSizeRatio = fullWidth / internalWidth;
+    verticalSizeRatio = fullHeight / internalHeight;
+    largestDimension = fullWidth > fullHeight ? fullWidth : fullHeight;
+    halfLargestDimension = largestDimension / 2;
+}
+
+function createRainbowGradient() {
+    const gradient = context.createLinearGradient(fullWidth*0.3,0,fullWidth*0.7,0);
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(1/6,"orange");
+    gradient.addColorStop(2/6,"yellow");
+    gradient.addColorStop(3/6,"green");
+    gradient.addColorStop(4/6,"blue");
+    gradient.addColorStop(5/6,"indigo");
+    gradient.addColorStop(1,"violet");
+    return gradient;
+}
+
+const heightByWidth = internalHeight / internalWidth;
+let widthByHeight = internalWidth / internalHeight;
+
 const backgroundCanvas = document.getElementById("background-canvas");
 const context = canvas.getContext("2d");
 const backgroundContext = backgroundCanvas.getContext("2d");
-context.imageSmoothingEnabled = false;
-const heightByWidth = canvas.height / canvas.width;
-const widthByHeight = canvas.width / canvas.height;
 
 let electron = null;
 let electronWindow = null;
@@ -13,8 +55,9 @@ if(typeof(require) !== "undefined") {
     electron = require("electron");
     electronWindow = electron.remote.getCurrentWindow();
 }
-steamSetup();
-
+if(ENV_FLAGS.DO_STEAM_SETUP) {
+    steamSetup();
+}
 let lastRelativeX = -1;
 let lastRelativeY = -1;
 const keyEventModes = {
@@ -40,27 +83,35 @@ let keyEventMode = pointerEventModes.none;
 
 const pictureModeElement = document.getElementById("picture-mode-element");
 
-const defaultSizeMode = "fit";
+const sizeModes = {
+    fit: {
+        name: "fit",
+        classicName: "fill",
+        displayName: "box fill"
+    },
+    stretch: {
+        name: "stretch",
+        classicName: "stretch",
+        displayName: "fill"
+    },
+    center: {
+        name: "center",
+        classicName: "1:1 scale",
+        displayName: "box 1:1"
+    },
+    classic: {
+        name: "classic",
+        displayName: "none"
+    }
+}
 
+const defaultSizeMode = sizeModes.stretch.name;
 let canvasSizeMode = localStorage.getItem("canvasSizeMode") || defaultSizeMode;
-
 let pictureModeElementTimeout = null;
-
 
 let rendererState = null;
 let animationFrame = null;
 let paused = false;
-let backgroundStreamMode = false;
-
-if(localStorage.getItem("backgroundStreamMode") === "true") {
-    backgroundStreamMode = true;
-}
-
-const sizeModeDisplayNames = {
-    "fit":"fill",
-    "stretch":"stretch",
-    "center":"1:1 scale"
-}
 
 function getRelativeEventLocation(event) {
     return {
@@ -73,27 +124,35 @@ function getRelativeEventLocation(event) {
     }
 }
 function touchEnabled(event) {
-    return !paused && event.isPrimary && rendererState;
+    return !paused && event.isPrimary && rendererState && !rendererState.transitioning;
 }
-function SetPageTitle(title) {
+function keyinputEnabled(event) {
+    if(!rendererState) {
+        return false;
+    } else if((paused && !rendererState.allowKeysDuringPause) || rendererState.transitioning) {
+        return false;
+    }
+    return true;
+}
+function setPageTitle(title) {
     document.title = title;
 }
-function routeKeyEvent(event,type) {
+function routeKeyEvent(keyCode,type) {
     switch(keyEventMode) {
         case keyEventModes.none:
             break;
         case keyEventModes.downOnly:
             if(type === keyEventTypes.keyDown) {
-                rendererState.processKey(event.code);
+                rendererState.processKey(keyCode);
             }
             break;
         case keyEventModes.upAndDown:
             switch(type) {
                 case keyEventTypes.keyDown:
-                    rendererState.processKey(event.code);
+                    rendererState.processKey(keyCode);
                     break;
                 case keyEventTypes.keyUp:
-                    rendererState.processKeyUp(event.code);
+                    rendererState.processKeyUp(keyCode);
                     break;
             }
             break;
@@ -160,9 +219,52 @@ function processMouseMove(event) {
         }
     }
 }
-window.onkeydown = event => {
-    switch(event.code) {
-        case "F11":
+let keyBindings = (function(){
+    const savedBinds = localStorage.getItem(KEY_BINDS_KEY);
+    if(savedBinds) {
+        return JSON.parse(savedBinds);
+    } else {
+        localStorage.setItem(KEY_BINDS_KEY,DEFAULT_KEY_BINDS);
+        return JSON.parse(DEFAULT_KEY_BINDS);
+    }
+})();
+const saveKeyBinds = () => {
+    localStorage.setItem(KEY_BINDS_KEY,JSON.stringify(keyBindings));
+}
+const setKeyBinds = newBinds => {
+    let hasFullscreen = false;
+    let usesF11 = false;
+    Object.entries(newBinds).forEach(entry => {
+        if(entry[0] === "F11") {
+            usesF11 = true;
+        }
+        if(entry[1] === kc.fullscreen) {
+            hasFullscreen = true;
+        }
+    });
+    if(!hasFullscreen && !usesF11) {
+        newBinds["F11"] = kc.fullscreen;
+    }
+    keyBindings = newBinds;
+    saveKeyBinds();
+}
+const rewriteKeyboardEventCode = eventCode => {
+    if(kc_inverse[eventCode]) {
+        return eventCode;
+    }
+    return keyBindings[eventCode];
+}
+
+const keyup = event => {
+    if(!keyinputEnabled()) {
+        return;
+    }
+    routeKeyEvent(rewriteKeyboardEventCode(event.code),keyEventTypes.keyUp);
+}
+const keydown = event => {
+    const keyCode = rewriteKeyboardEventCode(event.code)
+    switch(keyCode) {
+        case kc.fullscreen:
             if(!electron) {
                 break;
             }
@@ -177,116 +279,220 @@ window.onkeydown = event => {
                 pictureModeElementTimeout = null;
             },600);
             break;
-        case "KeyP":
-        case "F10":
+        case kc.picture_mode:
             cycleSizeMode();
             break;
-        case "KeyO":
-        case "F9":
-            backgroundStreamMode = !backgroundStreamMode;
-            if(pictureModeElementTimeout) {
-                clearTimeout(pictureModeElementTimeout);
+    }
+    if(!keyinputEnabled()) {
+        return;
+    }
+    routeKeyEvent(keyCode,keyEventTypes.keyDown);
+};
+window.addEventListener("keydown",keydown);
+window.addEventListener("keyup",keyup);
+
+function applyLowResolutionTextAdapations() {
+    adaptiveTextScale = lowResolutionAdaptiveTextScale;
+    adaptiveTextSpacing = lowResolutionAdpativeTextSpacing;
+}
+
+function applyHighResolutionTextAdaptions() {
+    adaptiveTextScale = highResolutionAdaptiveTextScale;
+    adaptiveTextSpacing = highResolutionAdaptiveTextSpacing;
+}
+function applyMediumResolutionTextAdapations() {
+    adaptiveTextScale = mediumResolutionAdaptiveTextScale;
+    adaptiveTextSpacing = mediumResolutionAdaptiveTextSpacing;
+}
+
+let sizeApplicationDeferred = false;
+function applySizeMode(forced=false) {
+    if(!rendererState) {
+        return;
+    }
+    if(!forced && rendererState.transitioning) {
+        sizeApplicationDeferred = true;
+        return;
+    }
+    if(rendererState.forcedSizeMode === sizeModes.classic.name) {
+        canvas.width = internalWidth;
+        canvas.height = internalHeight;
+        switch(canvasSizeMode) {
+            default:
+            case "fit":
+                if(window.innerWidth / window.innerHeight > widthByHeight) {
+                    const newWidth = window.innerHeight * widthByHeight;
+                    canvas.style.height = window.innerHeight + "px";
+                    canvas.style.width = newWidth + "px";
+                    canvas.style.top = "0px";
+                    canvas.style.left = (window.innerWidth / 2) - (newWidth / 2) + "px";
+                } else {
+                    const newHeight = window.innerWidth * heightByWidth;
+                    canvas.style.width = window.innerWidth + "px";
+                    canvas.style.height = newHeight + "px";
+                    canvas.style.top = ((window.innerHeight / 2) - (newHeight / 2)) + "px";
+                    canvas.style.left = "0px";
+                }
+                break;
+            case "stretch":
+                canvas.style.width = "100%";
+                canvas.style.height = "100%";
+                canvas.style.left = "0";
+                canvas.style.top = "0";
+                break;
+            case "center":
+                canvas.style.width = canvas.width + "px";
+                canvas.style.height = canvas.height + "px";
+                canvas.style.left = ((window.innerWidth / 2) - (canvas.width / 2)) + "px";
+                canvas.style.top = "4vh";
+                break;
+        }
+    } else {
+        let sizeMode;
+        if(rendererState.forcedSizeMode) {
+            sizeMode = rendererState.forcedSizeMode;
+            if(canvasSizeMode === sizeModes.center.name && rendererState.forcedSizeMode === sizeModes.fit.name) {
+                sizeMode = sizeModes.center.name;
+            } else if(canvasSizeMode === sizeModes.fit.name && rendererState.forcedSizeMode === sizeModes.center.name) {
+                sizeMode = sizeModes.fit.name;
             }
-            pictureModeElement.textContent = `stream mode ${backgroundStreamMode ? "on" : "off"}`
-            pictureModeElementTimeout = setTimeout(()=>{
-                pictureModeElement.textContent = "";
-                pictureModeElementTimeout = null;
-            },600);
-            localStorage.setItem("backgroundStreamMode",backgroundStreamMode) 
-            break;
-    }
-    if(paused || !rendererState) {
-        return;
-    }
-    routeKeyEvent(event,keyEventTypes.keyDown);
-}
-window.onkeyup = event => {
-    if(paused || !rendererState) {
-        return;
-    }
-    routeKeyEvent(event,keyEventTypes.keyUp);
-}
-function applySizeMode() {
-    switch(canvasSizeMode) {
-        default:
-        case "fit":
-            if(window.innerWidth / window.innerHeight > widthByHeight) {
-                const newWidth = window.innerHeight * widthByHeight;
-
-                canvas.style.height = window.innerHeight + "px";
-                canvas.style.width = newWidth + "px";
-
-                canvas.style.top = "0px";
-                canvas.style.left = (window.innerWidth / 2) - (newWidth / 2) + "px";
-            } else {
-                const newHeight = window.innerWidth * heightByWidth;
-
+        } else {
+            sizeMode = canvasSizeMode;
+        }
+        if(sizeMode === sizeModes.stretch.name &&
+            (
+                window.innerWidth / window.innerHeight > maximumWidthToHeightRatio ||
+                window.innerHeight / window.innerWidth > maximumHeightToWidthRatio
+            ) && !rendererState.disableAdapativeFill
+        ) {
+            sizeMode = sizeModes.fit.name;
+        }
+        switch(sizeMode) {
+            case sizeModes.fit.name:
+                applyLowResolutionTextAdapations();
+                canvas.width = internalWidth;
+                canvas.height = internalHeight;
+                if(window.innerWidth / window.innerHeight > widthByHeight) {
+                    const newWidth = window.innerHeight * widthByHeight;
+    
+                    canvas.style.height = window.innerHeight + "px";
+                    canvas.style.width = newWidth + "px";
+    
+                    canvas.style.top = "0px";
+                    canvas.style.left = (window.innerWidth / 2) - (newWidth / 2) + "px";
+                } else {
+                    const newHeight = window.innerWidth * heightByWidth;
+    
+                    canvas.style.width = window.innerWidth + "px";
+                    canvas.style.height = newHeight + "px";
+    
+                    canvas.style.top = ((window.innerHeight / 2) - (newHeight / 2)) + "px";
+                    canvas.style.left = "0px";
+                }
+                break;
+            default:
+            case sizeModes.stretch.name:
+                let zoomDivider = rendererState ? rendererState.zoomDivider || defaultFullScreenZoom : defaultFullScreenZoom;
+                if(window.innerWidth >= maxHorizontalResolution) {
+                    zoomDivider = (window.innerWidth / maxHorizontalResolution) * defaultFullScreenZoom;
+                    applyHighResolutionTextAdaptions();
+                } else if(window.innerWidth < smallScaleSnapPoint) {
+                    zoomDivider = smallFullScreenZoom;
+                    applyLowResolutionTextAdapations();
+                } else if(window.innerWidth < mediumScaleSnapPoint) {
+                    zoomDivider = mediumFullScreenZoom;
+                    applyMediumResolutionTextAdapations();
+                } else {
+                    applyHighResolutionTextAdaptions();
+                }
+    
+                canvas.width = (window.innerWidth/zoomDivider)
+                canvas.height = (window.innerHeight/zoomDivider);
+    
                 canvas.style.width = window.innerWidth + "px";
-                canvas.style.height = newHeight + "px";
-
-                canvas.style.top = ((window.innerHeight / 2) - (newHeight / 2)) + "px";
+                canvas.style.height = window.innerHeight + "px";
                 canvas.style.left = "0px";
-            }
-            break;
-        case "stretch":
-            canvas.style.width = window.innerWidth + "px";
-            canvas.style.height = window.innerHeight + "px";
-            canvas.style.left = "0px";
-            canvas.style.top = "0px";
-            break;
-        case "center":
-            canvas.style.width = canvas.width + "px";
-            canvas.style.height = canvas.height + "px";
-            canvas.style.left = ((window.innerWidth / 2) - (canvas.width / 2)) + "px";
-            canvas.style.top = "4vh";
-            break;
+                canvas.style.top = "0px";
+                break;
+            case sizeModes.center.name:
+                applyLowResolutionTextAdapations();
+                canvas.width = internalWidth;
+                canvas.height = internalHeight;
+                canvas.style.width = canvas.width + "px";
+                canvas.style.height = canvas.height + "px";
+                canvas.style.left = ((window.innerWidth / 2) - (canvas.width / 2)) + "px";
+                canvas.style.top = "4vh";
+                break;
+        }
     }
+    setSizeConstants();
+    rainbowGradient = createRainbowGradient();
+    if(rendererState.updateSize) {
+        rendererState.updateSize();
+    }
+    context.imageSmoothingEnabled = false;
 }
 function cycleSizeMode() {
     let newMode = defaultSizeMode;
+    let displayNameType =  rendererState.forcedSizeMode === sizeModes.classic.name ? "classicName" : "displayName";
     switch(canvasSizeMode) {
         default:
-        case "fit":
-            newMode = "center";
+        case sizeModes.fit.name:
+            newMode = sizeModes.center.name;
             break;
-        case "stretch":
-            newMode = "fit";
+        case sizeModes.stretch.name:
+            newMode = sizeModes.fit.name;
             break;
-        case "center":
-            newMode = "stretch";
+        case sizeModes.center.name:
+            newMode = sizeModes.stretch.name;
             break;
     }
     if(pictureModeElementTimeout) {
         clearTimeout(pictureModeElementTimeout);
     }
-    pictureModeElement.textContent = sizeModeDisplayNames[newMode];
+    pictureModeElement.textContent = sizeModes[newMode][displayNameType];
     pictureModeElementTimeout = setTimeout(()=>{
         pictureModeElement.textContent = "";
         pictureModeElementTimeout = null;
     },600);
     canvasSizeMode = newMode;
-    applySizeMode();
+    applySizeMode(false);
     localStorage.setItem("canvasSizeMode",newMode);
     console.log(`Canvas handler: Set size mode to '${newMode}'`);
 }
-function render(timestamp) {
 
-    backgroundContext.fill = "black";
-    backgroundContext.fillRect(0,0,1,1);
-
-    if(!paused) {
-        animationFrame = window.requestAnimationFrame(render); 
-        const gamepads = navigator.getGamepads();
-        for(let i = 0;i<gamepads.length;i++) {
-            if(gamepads[i] && gamepads[i].mapping === "standard") {
-                processGamepad(gamepads[i],timestamp);
-                break;
+const render = (function(){
+    if(ENV_FLAGS.CONTROLLER_DISABLED) {
+        return function render(timestamp) {
+            animationFrame = window.requestAnimationFrame(render); 
+            backgroundContext.fill = "black";
+            backgroundContext.fillRect(0,0,1,1);
+            if(!paused) {
+                rendererState.render(timestamp);
+                rendererState.fader.render(timestamp);
             }
         }
-
-        rendererState.render(timestamp);
+    } else {
+        return function render(timestamp) {
+            animationFrame = window.requestAnimationFrame(render); 
+            backgroundContext.fill = "black";
+            backgroundContext.fillRect(0,0,1,1);
+            if(!paused) {
+                const gamepads = navigator.getGamepads();
+                let i = 0;
+                while(i < gamepads.length) {
+                    if(gamepads[i] && gamepads[i].mapping === "standard") {
+                        processGamepad(gamepads[i],timestamp);
+                        i = gamepads.length;
+                    }
+                    i++;
+                }
+                rendererState.render(timestamp);
+                rendererState.fader.render(timestamp);
+            }
+        }
     }
-}
+})();
 
 function stopRenderer() {
     if(!rendererState) {
@@ -294,12 +500,11 @@ function stopRenderer() {
         return;
     }
     window.cancelAnimationFrame(animationFrame);
-    rendererState = null;
+     rendererState = null;
     console.log("Renderer stopped");
 }
 
 function startRenderer() {
-    const wasPaused = paused;
     paused = false;
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot start.");
@@ -314,6 +519,10 @@ function startRenderer() {
 
 function setRendererState(newRendererState) {
     rendererState = newRendererState;
+    if(!rendererState.fader) {
+        rendererState.fader = getFader();
+    }
+    applySizeMode(true);
     if(rendererState.processKey) {
         if(rendererState.processKeyUp) {
             keyEventMode = keyEventModes.upAndDown;
@@ -340,16 +549,21 @@ function pauseRenderer() {
     paused = true;
     console.log("Canvas handler: Paused renderer");
 }
+function resumeRenderer() {
+    paused = false;
+    console.log("Canvas handler: Resumed renderer");
+}
 
 function forceRender() {
     if(!rendererState) {
         console.error("Error: Missing renderer state; the renderer cannot render.");
         return;
     }
+    console.log("Canvas handler: Forced render");
     rendererState.render(
         context,performance.now()
     );
 }
-
-window.onresize = applySizeMode;
-applySizeMode();
+window.onresize = () => {
+    applySizeMode(false);
+};

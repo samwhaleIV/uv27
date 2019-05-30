@@ -1,6 +1,8 @@
 "use strict";
 function SidescrollRenderer(image,endCallback) {
 
+    this.forcedSizeMode = sizeModes.classic.name;
+
     const spriteWidth = 11;
     const spriteHeight = 24;
 
@@ -41,8 +43,8 @@ function SidescrollRenderer(image,endCallback) {
     const halfElfWidth = elfWidth / 2;
     const halfElfHeight = elfHeight / 2;
 
-    const elfX = halfWidth-halfElfWidth;
-    const elfY = halfHeight-halfElfHeight;
+    const elfX = internalWidth/2-halfElfWidth;
+    const elfY = internalHeight/2-halfElfHeight;
 
     this.animationStartTime = 0;
     this.animationState = "walking-right";

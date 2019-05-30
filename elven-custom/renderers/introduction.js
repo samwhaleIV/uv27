@@ -16,27 +16,25 @@ function IntroductionRenderer(endCallback) {
     ];
     
     let timeout = null;
+    
+    this.forcedSizeMode = sizeModes.classic.name;
 
     this.processClick = () => {
-        if(!this.transitioning) {
-            playSound("click.mp3");
-            if(timeout !== null) {
-                clearTimeout(timeout);
-            }
-            this.endCallback();
+        playSound("click.mp3");
+        if(timeout !== null) {
+            clearTimeout(timeout);
         }
+        this.endCallback();
     }
 
     this.processKey = key => {
         switch(key) {
-            case "Enter":
-            case "Space":
-                if(!this.transitioning) {
-                    if(timeout !== null) {
-                        clearTimeout(timeout);
-                    }
-                    this.endCallback();
+            case kc.accept:
+            case kc.open:
+                if(timeout !== null) {
+                    clearTimeout(timeout);
                 }
+                this.endCallback();
                 break;
         }
     }

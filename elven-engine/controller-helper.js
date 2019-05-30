@@ -44,64 +44,64 @@ function processButton(name,action,endAction,button,timestamp,isAxis) {
     }
 };
 const leftBumperDown = () => {
-    window.onkeydown(leftBumperCode);
+    keydown(leftBumperCode);
 };
 const rightBumperDown = () => {
-    window.onkeydown(rightBumperCode);
+    keydown(rightBumperCode);
 };
 const aButtonDown = () => {
-    window.onkeydown(aButtonCode);
+    keydown(aButtonCode);
 };
 const yButtonDown = () => {
-    window.onkeydown(yButtonCode);
+    keydown(yButtonCode);
 };
 const bButtonDown = () => {
-    window.onkeydown(bButtonCode);
+    keydown(bButtonCode);
 };
 const upButtonDown = () => {
-    window.onkeydown(upButtonCode);
+    keydown(upButtonCode);
 };
 const downButtonDown = () => {
-    window.onkeydown(downButtonCode);
+    keydown(downButtonCode);
 };
 const leftButtonDown = () => {
-    window.onkeydown(leftButtonCode);
+    keydown(leftButtonCode);
 };
 const rightButtonDown = () => {
-    window.onkeydown(rightButtonCode);
+    keydown(rightButtonCode);
 };
 const startButtonDown = () => {
-    window.onkeydown(startButtonCode);
+    keydown(startButtonCode);
 };
 const leftBumperUp = () => {
-    window.onkeyup(leftBumperCode);
+    keyup(leftBumperCode);
 };
 const rightBumperUp = () => {
-    window.onkeyup(rightBumperCode);
+    keyup(rightBumperCode);
 };
 const aButtonUp = () => {
-    window.onkeyup(aButtonCode);
+    keyup(aButtonCode);
 };
 const yButtonUp = () => {
-    window.onkeyup(yButtonCode);
+    keyup(yButtonCode);
 };
 const bButtonUp = () => {
-    window.onkeyup(bButtonCode);
+    keyup(bButtonCode);
 };
 const upButtonUp = () => {
-    window.onkeyup(upButtonCode);
+    keyup(upButtonCode);
 };
 const downButtonUp = () => {
-    window.onkeyup(downButtonCode);
+    keyup(downButtonCode);
 };
 const leftButtonUp = () => {
-    window.onkeyup(leftButtonCode);
+    keyup(leftButtonCode);
 };
 const rightButtonUp = () => {
-    window.onkeyup(rightButtonCode);
+    keyup(rightButtonCode);
 };
 const startButtonUp = () => {
-    window.onkeyup(startButtonCode);
+    keyup(startButtonCode);
 };
 
 function processGamepad(gamepad,timestamp=0) {

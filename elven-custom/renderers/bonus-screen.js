@@ -4,22 +4,20 @@ function BonusScreenRenderer(endCallback) {
     this.fader = getFader();
 
     this.processClick = () => {
-        if(!this.transitioning) {
-            playSound("click.mp3");
-            this.endCallback();
-        }
+        playSound("click.mp3");
+        this.endCallback();
     }
 
     this.processKey = key => {
         switch(key) {
-            case "Enter":
-            case "Space":
-                if(!this.transitioning) {
-                    this.endCallback();
-                }
+            case kc.accept:
+            case kc.open:
+                this.endCallback();
                 break;
         }
     }
+
+    this.forcedSizeMode = sizeModes.classic.name;
 
     const creditLines = [
         "special thanks to all the following people...",

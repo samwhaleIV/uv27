@@ -1,6 +1,8 @@
 "use strict";
 function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
+    this.forcedSizeMode = sizeModes.classic.name;
+
     this.getSongSegmentsForIndex = index => {
         const manifest = {
             "intro_base":false,
@@ -132,9 +134,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.buttonY = this.elfY + verticalSpacing + this.elfHeight;
 
     this.goLeft = () => {
-        if(this.transitioning) {
-            return;
-        }
         this.currentIndex--;
         if(this.currentIndex < 0) {
             this.currentIndex = 0;
@@ -146,9 +145,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     }
 
     this.goRight = () => {
-        if(this.transitioning) {
-            return;
-        }
         this.currentIndex++;
         if(this.currentIndex > this.highestElfIndex) {
             this.currentIndex = this.highestElfIndex;
@@ -159,12 +155,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         localStorage.setItem("lastCurrentIndex",this.currentIndex);
     }
 
-    this.transitioning = false;
-
     this.elfClicked = () => {
-        if(this.transitioning) {
-            return;
-        }
         if(this.currentIndex <= highestElfIndex) {
             playSound("click");
             this.endCallback(this.currentIndex);
@@ -172,9 +163,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     }
 
     this.introductionClicked = () => {
-        if(this.transitioning) {
-            return;
-        }
         playSound("click");
         rendererState.fader.fadeOut(
             IntroductionRenderer,
@@ -257,9 +245,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
     this.replayButtonTextY = this.muteButton1TextY;
 
     this.processClick = (x,y) => {
-        if(this.transitioning) {
-            return;
-        }
         if(x && y) {
             this.processMove(x,y);
         }
@@ -289,23 +274,18 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
 
     this.processKey = key => {
         switch(key) {
-            case "Escape":
+            case kc.cancel:
                 if(electron) {
                     electronWindow.close();
                 }
                 break;
-            case "LeftBumper":
-                if(!this.transitioning) {
-                    this.goLeft();
-                }
+            case kc.nav_left:
+                this.goLeft();
                 break;
-            case "RightBumper":
-                if(!this.transitioning) {
-                    this.goRight();
-                }
+            case kc.nav_right:
+                this.goRight();
                 break;
-            case "KeyW":
-            case "ArrowUp":
+            case kc.up:
                 if(this.hoverEffectIndex === null) {
                     this.hoverEffectIndex = 1;
                 } else {
@@ -320,8 +300,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                     }
                 }
                 break;
-            case "KeyD":
-            case "ArrowRight":
+            case kc.right:
                 if(this.hoverEffectIndex === null) {
                      this.hoverEffectIndex = 1;
                 } else {
@@ -341,8 +320,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                     }
                 }
                 break;
-            case "KeyS":
-            case "ArrowDown":
+            case kc.down:
                 if(this.hoverEffectIndex === null) {
                     this.hoverEffectIndex = 1;
                 } else {
@@ -363,8 +341,7 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                     }
                 }
                 break;
-            case "KeyA":
-            case "ArrowLeft":
+            case kc.left:
                 if(this.hoverEffectIndex === null) {
                     this.hoverEffectIndex = 1;
                 } else {
@@ -386,8 +363,8 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
                     }
                 }
                 break;
-            case "Space":
-            case "Enter":
+            case kc.accept:
+            case kc.open:
                 this.processClick();
                 break;
         }

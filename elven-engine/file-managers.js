@@ -1,16 +1,16 @@
 "use strict";
 const FileTypes = {
-    None: Symbol(),
-    Sound: Symbol(),
-    Music: Symbol(),
-    Image: Symbol(),
-    BackgroundImage: Symbol(),
-    Renderer: Symbol(),
-    RendererComponent: Symbol(),
+    None: Symbol("None"),
+    Sound: Symbol("Sound"),
+    Music: Symbol("Music"),
+    Image: Symbol("Image"),
+    BackgroundImage: Symbol("BackgroundImage"),
+    Renderer: Symbol("Renderer"),
+    RendererComponent: Symbol("RendererComponent"),
 }
 const IndexModes = {
-    NameOnly: Symbol(),
-    LoseRoot: Symbol()
+    NameOnly: Symbol("NameOnly"),
+    LoseRoot: Symbol("LoseRoot")
 }
 function validIndexMode(mode) {
     switch(mode) {
@@ -23,18 +23,18 @@ function validIndexMode(mode) {
     }
 }
 let customSector = "elven-custom";
-function SetCustomFileSector(sectorName) {
+function setCustomFileSector(sectorName) {
     customSector = sectorName;
 }
 let imageIndexMode = IndexModes.NameOnly;
-function SetImageIndexMode(mode) {
+function setImageIndexMode(mode) {
     if(!validIndexMode(mode)) {
         console.error("Unknown image indexing mode");
         return;
     }
     imageIndexMode = mode;
 }
-function GetFile(path,type,isCustom=true) {
+function getFile(path,type,isCustom=true) {
     let engineSector = isCustom ? customSector : "elven-engine";
     switch(type) {
         case FileTypes.None:
@@ -47,7 +47,7 @@ function GetFile(path,type,isCustom=true) {
         case FileTypes.Sound:
             return `${engineSector}/audio/${path}`;
         case FileTypes.Music:
-            return `${engineSector}/audio/music/${path}`;
+            return `${engineSector}/audio/music/${path}.${MUSIC_FILE_FORMAT}`;
         case FileTypes.Image:
             return `${engineSector}/images/${path}`;
         case FileTypes.BackgroundImage:
@@ -63,7 +63,9 @@ const SoundManager = {
             if(++loadedSounds === EssentialSounds.length) {
                 console.log("Sound manager: All sounds loaded");
                 SoundManager.soundsLoaded = true;
-                callback();
+                if(ImageManager.imagesLoaded) {
+                    callback();
+                }
             }
         }
         EssentialSounds.forEach(value => addBufferSource(value,soundProcessed,soundProcessed));
@@ -100,7 +102,6 @@ const ImageManager = {
                                         const dotSplit = sourcePath[sourcePath.length-1].split(".");
                                         sourcePath[sourcePath.length-1] = dotSplit[0];
                                         name = sourcePath.slice(startIndex+1).join("/");
-                                        console.log(name);
                                         break;
                                     }
                                 }
@@ -111,11 +112,16 @@ const ImageManager = {
                     if(++loadedImages === ImagePaths.length) {
                         console.log("Image manager: All images loaded");
                         ImageManager.imagesLoaded = true;
-                        callback();
+                        if(SoundManager.soundsLoaded) {
+                            callback();
+                        }
                     }
                 };
             })(image);
             image.src = ImagePaths[i];
         }
     }
+}
+function loadSongOnDemand(fileName,fileType=MUSIC_FILE_FORMAT) {
+    SoundManager.loadOnDemand(`${customSector}/audio/music/${fileName}.${fileType}`);
 }

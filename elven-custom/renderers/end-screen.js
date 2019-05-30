@@ -25,22 +25,18 @@ function EndScreenRenderer(endCallback) {
     this.bottomTextY = fullHeight - this.textMargin - bottomTextTestResult.height;
     this.topTextY = this.textMargin;
 
-    this.transitioning = false;
+    this.forcedSizeMode = sizeModes.classic.name;
 
     this.processClick = () => {
-        if(!this.transitioning) {
-            playSound("click.mp3");
-            this.endCallback();
-        }
+        playSound("click.mp3");
+        this.endCallback();
     }
 
     this.processKey = key => {
         switch(key) {
-            case "Enter":
-            case "Space":
-                if(!this.transitioning) {
-                    this.endCallback();
-                }
+            case kc.accept:
+            case kc.open:
+                this.endCallback();
                 break;
         }
     }
