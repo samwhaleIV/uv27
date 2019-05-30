@@ -1,7 +1,6 @@
 "use strict";
 function BonusScreenRenderer(endCallback) {
     this.endCallback = endCallback;
-    this.fader = getFader();
 
     this.processClick = () => {
         playSound("click.mp3");
@@ -37,6 +36,5 @@ function BonusScreenRenderer(endCallback) {
             drawTextWhite(creditLines[i],15,15+(i*50),4);
         }
 
-        this.fader.render(timestamp);
     }
 }

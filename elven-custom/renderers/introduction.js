@@ -45,8 +45,6 @@ function IntroductionRenderer(endCallback) {
     this.fadeRange = 0.5;
     this.startTime = null;
 
-    this.fader = getFader();
-
     this.start = timestamp => {
         this.startTime = timestamp + 500;
         const timeoutTime = (this.messages.length+1)*this.fadeIn + 13000;
@@ -80,8 +78,6 @@ function IntroductionRenderer(endCallback) {
                 }
             }
         }
-
-        rendererState.fader.render(timestamp);
 
     }
 }

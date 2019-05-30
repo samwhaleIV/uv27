@@ -23,7 +23,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
     this.elfWidth = Math.round((elfSourceWidth / elfSourceHeight) * this.elfHeight);
 
     this.elfCenterX = Math.round(halfWidth - (this.elfWidth / 2));
-    this.fader = getFader();
     this.background = !isBoss ? new Background(this.elf.background,this.elf.backgroundColor,backgroundCycleTime) : new BossBackground(backgroundCycleTime);
     this.elfX = this.elfCenterX;
 
@@ -519,8 +518,6 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
             drawTextWhite(this.yesButtonText.text,this.yesButtonText.x,this.yesButtonText.y,this.yesButtonText.scale);
             drawTextWhite(this.noButtonText.text,this.noButtonText.x,this.noButtonText.y,this.noButtonText.scale);
         }
-
-        rendererState.fader.render(timestamp);
     }
 
     this.battleSequencer = new BattleSequencer(this);

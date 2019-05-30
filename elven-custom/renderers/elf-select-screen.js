@@ -57,7 +57,6 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         playMusicWithIntro("loop_a","intro_a",true);
         playMusicWithIntro("loop_b","intro_b",true);
     }
-    this.fader = getFader();
 
     const backgroundCycleTime = 40000;
 
@@ -568,6 +567,5 @@ function ElfSelectScreenRenderer(endCallback,highestElfIndex,loadIndex) {
         drawTextBlack(musicMuted ? "no music" : "music on",this.muteButton1TextX,this.muteButton1TextY,this.muteButtonTextScale);
         drawTextBlack(soundMuted ? "no sound" : "sound on",this.muteButton2TextX,this.muteButton2TextY,this.muteButtonTextScale);
 
-        rendererState.fader.render(timestamp);
     }
 }

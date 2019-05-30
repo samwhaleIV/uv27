@@ -1,6 +1,5 @@
 function OverworldBase(backgroundRenderer) {
 
-    this.fader = getFader();
     const playerAnimator = new PlayerAnimator();
     this.playerAnimator = playerAnimator;
     const playerScale = 20;
@@ -751,7 +750,5 @@ function OverworldBase(backgroundRenderer) {
                 playerCollisionHeight-playerCrouchDifference
             );
         }
-
-        this.fader.render(timestamp);
     }
 }

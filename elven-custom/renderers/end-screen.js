@@ -3,8 +3,6 @@ function EndScreenRenderer(endCallback) {
 
     this.endCallback = endCallback;
 
-    this.fader = getFader();
-
     this.textScale = 5;
 
     this.topText = "thanks for playing";
@@ -60,8 +58,6 @@ function EndScreenRenderer(endCallback) {
             this.bottomTextX,this.bottomTextY,
             this.textScale,1
         );
-
-        rendererState.fader.render(timestamp);
 
     }
 

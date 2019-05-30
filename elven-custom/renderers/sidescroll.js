@@ -49,8 +49,6 @@ function SidescrollRenderer(image,endCallback) {
     this.animationStartTime = 0;
     this.animationState = "walking-right";
 
-    this.fader = getFader();
-
     this.standingLeft = {
         x:spriteWidth,y:spriteHeight
     }
@@ -95,7 +93,5 @@ function SidescrollRenderer(image,endCallback) {
         );
 
         drawLoadingText();
-
-        rendererState.fader.render(timestamp);
     }
 }
