@@ -19,6 +19,8 @@ function ElfScreenRenderer(winCallback,loseCallback,elfID,isBoss) {
         this.songIntro = this.elf.songIntro;
     }
 
+    this.musicOptional = true;
+
     this.elfHeight = 372;
     this.elfWidth = Math.round((elfSourceWidth / elfSourceHeight) * this.elfHeight);
 
