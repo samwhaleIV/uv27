@@ -20,7 +20,6 @@ function IntroductionRenderer(endCallback) {
     this.forcedSizeMode = sizeModes.classic.name;
 
     this.processClick = () => {
-        playSound("click.mp3");
         if(timeout !== null) {
             clearTimeout(timeout);
         }
