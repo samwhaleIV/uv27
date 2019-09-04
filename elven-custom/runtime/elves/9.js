@@ -334,7 +334,7 @@ function HeadlessElf() {
             if(user.state.barefoot) {
                 user.dropHealth(user.maxHealth);
                 return {
-                    text: `${user.name} got ${opsov(user)} bare feet stuck in a bear trap`
+                    text: `${user.name} got ${oposv(user)} bare feet stuck in a bear trap`
                 }
             } else if(!user.state.tiedShoes) {
                 user.dropHealth(user.maxHealth);
@@ -633,10 +633,10 @@ function HeadlessElf() {
             return {
                 events: [
                     {
-                        text: `${user.name} broke ${opsov(user)} ankle`
+                        text: `${user.name} broke ${oposv(user)} ankle`
                     },
                     {
-                        text: `${opsov(user)} racing days are over`
+                        text: `${oposv(user)} racing days are over`
                     },
                     {
                         text: "this is so sad"
