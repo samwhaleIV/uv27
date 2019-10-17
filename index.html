@@ -10,14 +10,21 @@
 </head>
 <body>
     <script>const ENV_FLAGS={
+    MUSIC_FILE_FORMAT: "ogg",
+    DEBUG: false,
+    CONTROLLER_DISABLED: false,
+    DO_STEAM_SETUP: false,
+    NO_CONTEXT_MENU: true,
+    STATIC_BACKGROUND: true,
+    ENABLE_DEV_F12: false,
     DEFAULT_SIZE_MODE: "fit"
     };</script>
+    <script src="../elven-engine/constants.js"></script>
     <script src="elven-custom/constants.js"></script>
     <canvas id="background-canvas" width="1" height="1"></canvas>
     <canvas id="canvas"></canvas>
     <p id="picture-mode-element"></p>
     <script src="../elven-engine/steam-helper.js"></script>
-    <script src="../elven-engine/constants.js"></script>
     <script src="../elven-engine/canvas-manager.js"></script>
     <script src="../elven-engine/controller-helper.js"></script>
     <script src="../elven-engine/audio-manager.js"></script>
